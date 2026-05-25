@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BRAVO! — v1 Editorial Manifesto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&family=Raleway:wght@300;400;500;700;900&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  :root {
+    --bravo: #4923F4;
+    --ink: #0a0a0a;
+    --paper: #f5f1ea;
+    --rule: rgba(10, 10, 10, 0.18);
+    --serif: 'Source Serif 4', 'Source Serif Pro', Georgia, serif;
+    --sans: 'Raleway', system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  ::selection { background: var(--bravo); color: var(--paper); }
+
+  html { font-size: clamp(14px, 0.7vw + 11px, 18px); scroll-behavior: smooth; }
+  body {
+    font-family: var(--serif);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.4;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Paper grain */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(circle at 25% 35%, rgba(10,10,10,0.025) 0, transparent 30%),
+      radial-gradient(circle at 75% 65%, rgba(10,10,10,0.02) 0, transparent 30%);
+    pointer-events: none; z-index: 1;
+    mix-blend-mode: multiply;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 999;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.42'/></svg>");
+    pointer-events: none; opacity: 0.06; mix-blend-mode: multiply;
+  }
+
+  .wrap { max-width: 1480px; margin: 0 auto; padding: 0 clamp(1.25rem, 3vw, 3.5rem); position: relative; z-index: 2; }
+
+  /* MASTHEAD */
+  .masthead {
+    padding: 1.25rem 0 1rem;
+    border-bottom: 1px solid var(--ink);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: end;
+    gap: 1.5rem;
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .masthead .left,
+  .masthead .right { display: flex; gap: 1.5rem; align-items: end; }
+  .masthead .right { justify-content: flex-end; }
+  .masthead a { color: inherit; text-decoration: none; padding-bottom: 2px; border-bottom: 1px solid transparent; transition: border-color .25s; }
+  .masthead a:hover { border-bottom-color: var(--ink); }
+
+  .wordmark {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: clamp(1.5rem, 2.2vw + 0.5rem, 2.4rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    text-transform: none;
+    color: var(--ink);
+  }
+  .wordmark .bang { color: var(--bravo); }
+
+  .issue {
+    font-family: var(--serif);
+    font-style: italic;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 0.85rem;
+  }
+
+  /* HERO — magazine spread */
+  .hero {
+    padding: clamp(2.5rem, 6vw, 5rem) 0 clamp(3rem, 7vw, 6rem);
+    border-bottom: 1px solid var(--ink);
+    position: relative;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: end;
+  }
+  @media (max-width: 880px) { .hero-grid { grid-template-columns: 1fr; gap: 2.5rem; } }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(3.2rem, 9.5vw, 9.5rem);
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+  }
+  .hero h1 .italic { font-style: italic; font-weight: 400; }
+  .hero h1 .highlight {
+    background-image: linear-gradient(transparent 55%, rgba(73,35,244,0.92) 55%, rgba(73,35,244,0.92) 92%, transparent 92%);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    padding: 0 0.04em;
+    color: var(--paper);
+    font-weight: 500;
+  }
+  .hero h1 .accent { color: var(--bravo); }
+
+  .hero-aside {
+    border-left: 1px solid var(--ink);
+    padding-left: clamp(1rem, 2vw, 2rem);
+    align-self: end;
+  }
+  @media (max-width: 880px) { .hero-aside { border-left: 0; padding-left: 0; border-top: 1px solid var(--ink); padding-top: 1.25rem; } }
+
+  .hero-aside .kicker {
+    font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .hero-aside p {
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    line-height: 1.55;
+    max-width: 36ch;
+  }
+  .hero-aside p + p { margin-top: 1rem; }
+  .hero-aside p .underline { background-image: linear-gradient(var(--bravo), var(--bravo)); background-repeat: no-repeat; background-position: 0 95%; background-size: 100% 1px; }
+
+  .hero-toc {
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem 1.5rem;
+    align-items: baseline;
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    border-top: 1px solid var(--rule);
+    padding-top: 1.25rem;
+  }
+  .hero-toc .row {
+    display: contents;
+  }
+  .hero-toc .row > * { padding: 0.4rem 0; border-bottom: 1px dotted var(--rule); }
+  .hero-toc .num { color: var(--bravo); font-weight: 700; }
+  .hero-toc .title { font-family: var(--serif); font-style: italic; text-transform: none; letter-spacing: 0; font-size: 1.05rem; }
+  .hero-toc .page { text-align: right; }
+
+  /* MANIFESTO — long-form with dropcap */
+  .manifesto {
+    padding: clamp(4rem, 8vw, 7rem) 0;
+    border-bottom: 1px solid var(--ink);
+  }
+  .section-label {
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin-bottom: 1.75rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1; height: 1px; background: var(--ink);
+  }
+
+  .manifesto-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: start;
+  }
+  @media (max-width: 900px) { .manifesto-grid { grid-template-columns: 1fr; gap: 2rem; } }
+
+  .manifesto h2 {
+    font-family: var(--serif);
+    font-size: clamp(2.2rem, 4.5vw, 4rem);
+    line-height: 0.98;
+    font-weight: 300;
+    letter-spacing: -0.025em;
+  }
+  .manifesto h2 em { font-style: italic; }
+
+  .manifesto-body { columns: 2; column-gap: 2.5rem; font-family: var(--serif); font-size: 1.05rem; line-height: 1.65; }
+  @media (max-width: 700px) { .manifesto-body { columns: 1; } }
+  .manifesto-body p { text-align: justify; hyphens: auto; orphans: 3; widows: 3; }
+  .manifesto-body p + p { margin-top: 1em; text-indent: 1.3em; }
+
+  .manifesto-body p:first-child::first-letter {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: 5.5em;
+    float: left;
+    line-height: 0.82;
+    padding: 0.05em 0.12em 0 0;
+    margin-top: 0.05em;
+    color: var(--bravo);
+  }
+
+  /* PROJECTS — editorial tear sheets */
+  .projects {
+    padding: clamp(4rem, 8vw, 7rem) 0;
+    border-bottom: 1px solid var(--ink);
+  }
+  .case {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: clamp(1.5rem, 4vw, 4rem);
+    padding: clamp(2.5rem, 5vw, 4.5rem) 0;
+    border-top: 1px solid var(--ink);
+    align-items: start;
+  }
+  .case:nth-child(odd) { grid-template-columns: 1.5fr 1fr; }
+  .case:nth-child(odd) .case-meta { order: 2; padding-left: clamp(1rem, 2vw, 2rem); border-left: 1px solid var(--rule); }
+  .case:nth-child(odd) .case-visual { order: 1; }
+  @media (max-width: 800px) {
+    .case, .case:nth-child(odd) { grid-template-columns: 1fr; gap: 1.5rem; }
+    .case:nth-child(odd) .case-meta { padding-left: 0; border-left: 0; order: 1; }
+    .case:nth-child(odd) .case-visual { order: 2; }
+  }
+
+  .case-no {
+    font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink);
+    margin-bottom: 1.25rem;
+  }
+  .case-no .year { color: var(--bravo); font-weight: 700; margin-left: 0.7rem; }
+
+  .case h3 {
+    font-family: var(--serif);
+    font-size: clamp(2.4rem, 5.5vw, 5rem);
+    line-height: 0.95;
+    font-weight: 300;
+    letter-spacing: -0.025em;
+    margin-bottom: 1rem;
+  }
+  .case h3 em { font-style: italic; }
+
+  .case-kicker {
+    font-family: var(--serif); font-style: italic;
+    font-size: 1.15rem; line-height: 1.55;
+    max-width: 40ch;
+    color: var(--ink);
+    opacity: 0.85;
+    margin-bottom: 1.5rem;
+  }
+
+  .case-tags {
+    display: flex; flex-wrap: wrap; gap: 0.4rem 0.8rem;
+    font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase;
+    margin-bottom: 1.75rem;
+  }
+  .case-tags span { padding: 0.3rem 0.6rem; border: 1px solid var(--ink); border-radius: 99px; }
+
+  .case-link {
+    font-family: var(--sans); font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--ink); text-decoration: none;
+    border-bottom: 1px solid var(--ink); padding-bottom: 2px;
+    transition: color .25s;
+  }
+  .case-link:hover { color: var(--bravo); }
+  .case-link::after { content: ' →'; }
+
+  .case-visual {
+    aspect-ratio: 4/5;
+    background: linear-gradient(135deg, var(--bravo) 0%, #5a31ff 50%, #2f10b5 100%);
+    position: relative;
+    overflow: hidden;
+    border-radius: 2px;
+  }
+  .case-visual.wwf { background: radial-gradient(circle at 30% 30%, #0c4a3a, #0a2f24 70%); }
+  .case-visual.wwf::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 70% 60%, rgba(255,255,255,0.08), transparent 60%),
+      linear-gradient(165deg, transparent 60%, rgba(73,35,244,0.45));
+  }
+  .case-visual.eletheo { background: linear-gradient(180deg, #1a1118 0%, #3a1d3a 60%, #4923F4 100%); }
+  .case-visual.eletheo::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 80%, rgba(255,255,255,0.12), transparent 50%);
+  }
+  .case-visual.sparkoh { background: linear-gradient(135deg, #f5d100 0%, #ff7a00 55%, #4923F4 100%); }
+
+  .case-visual .stencil {
+    position: absolute; left: 1.2rem; bottom: 1rem;
+    font-family: var(--serif); font-style: italic; font-weight: 300;
+    color: rgba(255,255,255,0.92); font-size: clamp(1.5rem, 3vw, 2.5rem); line-height: 1;
+    text-shadow: 0 2px 16px rgba(0,0,0,0.4);
+  }
+  .case-visual .corner {
+    position: absolute; top: 1rem; right: 1.2rem;
+    font-family: var(--sans); font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: rgba(255,255,255,0.8); writing-mode: vertical-rl; transform: rotate(180deg);
+  }
+
+  /* NEWS */
+  .news {
+    padding: clamp(4rem, 8vw, 7rem) 0;
+    border-bottom: 1px solid var(--ink);
+  }
+  .news-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    margin-top: 2rem;
+  }
+  @media (max-width: 800px) { .news-grid { grid-template-columns: 1fr; } }
+
+  .news-item {
+    padding: 2rem 1.5rem;
+    border-right: 1px solid var(--rule);
+    border-top: 1px solid var(--ink);
+  }
+  .news-item:last-child { border-right: 0; }
+  @media (max-width: 800px) { .news-item { border-right: 0; } }
+
+  .news-date { font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--bravo); margin-bottom: 1rem; }
+  .news-item h4 { font-family: var(--serif); font-weight: 400; font-size: 1.6rem; line-height: 1.1; letter-spacing: -0.015em; margin-bottom: 0.75rem; }
+  .news-item h4 em { font-style: italic; }
+  .news-item p { font-family: var(--serif); font-size: 0.95rem; line-height: 1.55; opacity: 0.85; }
+  .news-item .more {
+    display: inline-block; margin-top: 1.25rem;
+    font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--ink); padding-bottom: 2px;
+  }
+
+  /* TEAM */
+  .team {
+    padding: clamp(4rem, 8vw, 7rem) 0;
+    border-bottom: 1px solid var(--ink);
+  }
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    margin-top: 2rem;
+  }
+  @media (max-width: 700px) { .team-grid { grid-template-columns: 1fr; } }
+
+  .person {
+    display: grid;
+    grid-template-columns: 0.55fr 1fr;
+    gap: 1.5rem;
+    align-items: end;
+  }
+  .person-photo {
+    aspect-ratio: 4/5;
+    background: linear-gradient(180deg, #d6d0c5 0%, #b9b2a4 100%);
+    position: relative; overflow: hidden; border-radius: 2px;
+  }
+  .person-photo::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 40%, rgba(73,35,244,0.18), transparent 60%);
+  }
+  .person h4 {
+    font-family: var(--serif); font-weight: 400; font-style: italic;
+    font-size: clamp(1.6rem, 2.6vw, 2.4rem); line-height: 1; letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+  .person .role {
+    font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .person p {
+    font-family: var(--serif); font-size: 0.92rem; line-height: 1.55; max-width: 32ch;
+    opacity: 0.85;
+  }
+
+  /* CONTACT / POSTCARD */
+  .contact {
+    padding: clamp(5rem, 10vw, 9rem) 0 clamp(3rem, 6vw, 5rem);
+    border-bottom: 1px solid var(--ink);
+    text-align: center;
+  }
+  .contact .section-label { justify-content: center; }
+  .contact .section-label::before { content:''; flex:1; height:1px; background: var(--ink); }
+  .contact h2 {
+    font-family: var(--serif);
+    font-size: clamp(3rem, 9vw, 8rem);
+    line-height: 0.95;
+    font-weight: 300;
+    letter-spacing: -0.03em;
+    max-width: 14ch; margin: 0 auto 2rem;
+  }
+  .contact h2 em { font-style: italic; }
+  .contact h2 .accent { color: var(--bravo); font-style: italic; }
+  .contact-cta {
+    display: inline-block;
+    font-family: var(--serif); font-style: italic;
+    font-size: 1.5rem;
+    color: var(--ink);
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 4px;
+    text-decoration: none;
+    transition: color .25s, border-color .25s, letter-spacing .4s;
+  }
+  .contact-cta:hover { color: var(--bravo); border-color: var(--bravo); letter-spacing: 0.02em; }
+
+  .contact-meta {
+    margin-top: 3rem;
+    display: flex; gap: 2.5rem; justify-content: center; flex-wrap: wrap;
+    font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
+  }
+  .contact-meta a { color: var(--ink); text-decoration: none; border-bottom: 1px solid transparent; padding-bottom: 2px; transition: border-color .25s; }
+  .contact-meta a:hover { border-bottom-color: var(--ink); }
+
+  /* COLOPHON */
+  .colophon {
+    padding: 2.5rem 0 3rem;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2rem;
+    align-items: end;
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+  .colophon .right { text-align: right; }
+  .colophon .center { font-family: var(--serif); font-style: italic; text-transform: none; letter-spacing: 0; font-size: 0.9rem; }
+
+  /* Scroll reveals */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 1.1s ease-out, transform 1.1s ease-out; }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* Back-to-design-index pin */
+  .back-pin {
+    position: fixed; left: 1rem; bottom: 1rem; z-index: 1000;
+    font-family: var(--sans); font-size: 0.65rem; letter-spacing: 0.22em; text-transform: uppercase;
+    background: var(--ink); color: var(--paper);
+    padding: 0.6rem 0.9rem; border-radius: 99px; text-decoration: none;
+    transition: background .25s;
+  }
+  .back-pin:hover { background: var(--bravo); }
+</style>
+</head>
+<body>
+
+<a class="back-pin" href="./index.html">← Comparer les 3 directions</a>
+
+<div class="wrap">
+
+  <!-- MASTHEAD -->
+  <header class="masthead">
+    <div class="left">
+      <span>Bruxelles · Belgique</span>
+      <span class="issue">Vol. VII — Hiver 2026</span>
+    </div>
+    <a href="#" class="wordmark">BRAVO<span class="bang">!</span></a>
+    <nav class="right">
+      <a href="#manifesto">Manifesto</a>
+      <a href="#travaux">Travaux</a>
+      <a href="#equipe">Équipe</a>
+      <a href="#nouvelles">Nouvelles</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <h1 class="reveal">
+          Les <span class="italic">idées</span><br />
+          en <span class="highlight">actions</span>.
+        </h1>
+      </div>
+      <aside class="hero-aside reveal">
+        <div class="kicker">— Édito · No. 12</div>
+        <p>
+          Bravo<span style="color:var(--bravo);font-weight:600">!</span> est une <span class="underline">agence de communication multidisciplinaire</span> qui accompagne l'engagement des marques et génère pour elles des expériences positives avec le public.
+        </p>
+        <p>
+          <em>« Une goutte d'eau peut-être, mais heureusement, nous ne sommes pas seuls. »</em>
+        </p>
+      </aside>
+    </div>
+
+    <div class="hero-toc reveal">
+      <div class="row">
+        <span class="num">01</span><span class="title">Manifesto</span><span class="page">p.&nbsp;02</span>
+      </div>
+      <div class="row">
+        <span class="num">02</span><span class="title">Travaux récents <em>— WWF, Eletheo, Spark OH!</em></span><span class="page">p.&nbsp;04</span>
+      </div>
+      <div class="row">
+        <span class="num">03</span><span class="title">Bonnes nouvelles</span><span class="page">p.&nbsp;11</span>
+      </div>
+      <div class="row">
+        <span class="num">04</span><span class="title">L'équipe</span><span class="page">p.&nbsp;14</span>
+      </div>
+      <div class="row">
+        <span class="num">05</span><span class="title">Premier pas</span><span class="page">p.&nbsp;16</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- MANIFESTO -->
+  <section class="manifesto" id="manifesto">
+    <div class="section-label">Chapitre 01 · Ce que nous faisons</div>
+    <div class="manifesto-grid">
+      <h2 class="reveal">
+        Porteurs<br />de sens.<br />
+        <em>Déclencheurs</em><br /><em>d'actions.</em>
+      </h2>
+      <div class="manifesto-body reveal">
+        <p>
+          Chez Bravo<span style="color:var(--bravo);font-weight:600">!</span>, nous travaillons activement et pro-activement avec nos idées, notre savoir-faire et nos tripes. Nous accompagnons nos clients et partenaires ou réalisons nos propres projets pour agir sur le monde. Pas pour faire joli. Pour faire bouger. Quelques gouttes d'eau dans l'océan pour étancher la soif de changement, garder la tête hors de l'eau, éteindre les incendies — peu importe la métaphore tant que l'action suit.
+        </p>
+        <p>
+          Nous ne savons pas tout faire, et c'est tant mieux : autour de nous gravite un écosystème de partenaires précis, capables et fidèles. Stratèges, photographes, motion designers, développeurs, illustrateurs, sociologues — chacun choisi pour ce qu'il sait faire de mieux. Nous orchestrons. Nous traduisons les ambitions en signes, en sons, en gestes, en interfaces. Nous mesurons. Nous recommençons quand c'est nécessaire.
+        </p>
+        <p>
+          La communication n'est pas un emballage. C'est une infrastructure d'attention, de confiance et d'engagement. Bien faite, elle déplace des budgets, des comportements, parfois des montagnes. Mal faite, elle pollue. Nous choisissons les projets qui valent la peine d'être racontés — et nous racontons tout le reste autrement.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section class="projects" id="travaux">
+    <div class="section-label">Chapitre 02 · Travaux récents</div>
+
+    <article class="case reveal">
+      <div class="case-meta">
+        <div class="case-no">No. 01<span class="year">2024</span></div>
+        <h3>Together<br /><em>for tomorrow.</em></h3>
+        <p class="case-kicker">Une campagne pour rallumer le sens du commun — comment faire de la planète une cause vraiment partagée, sans culpabilisation et sans clichés.</p>
+        <div class="case-tags">
+          <span>WWF Belgium</span><span>Identité de campagne</span><span>Film</span><span>Digital</span>
+        </div>
+        <a href="#" class="case-link">Lire le case study</a>
+      </div>
+      <div class="case-visual wwf">
+        <span class="corner">WWF · Engagement</span>
+        <span class="stencil">Together<br /><em>for tomorrow.</em></span>
+      </div>
+    </article>
+
+    <article class="case reveal">
+      <div class="case-meta">
+        <div class="case-no">No. 02<span class="year">2024</span></div>
+        <h3>Eletheo<br /><em>— une marque qui respire.</em></h3>
+        <p class="case-kicker">Repositionnement, identité visuelle et site pour une jeune marque de produits engagés. Du logo au e-commerce, en passant par la voix.</p>
+        <div class="case-tags">
+          <span>Eletheo</span><span>Stratégie</span><span>Identité</span><span>Web</span>
+        </div>
+        <a href="#" class="case-link">Lire le case study</a>
+      </div>
+      <div class="case-visual eletheo">
+        <span class="corner">Eletheo · Marque</span>
+        <span class="stencil">Eletheo.</span>
+      </div>
+    </article>
+
+    <article class="case reveal">
+      <div class="case-meta">
+        <div class="case-no">No. 03<span class="year">2023</span></div>
+        <h3>Spark OH!<br /><em>— faire briller la science.</em></h3>
+        <p class="case-kicker">Identité et campagne pour le centre de découverte des sciences. Rendre la curiosité aussi désirable qu'un samedi soir.</p>
+        <div class="case-tags">
+          <span>Spark OH!</span><span>Frameries</span><span>Identité</span><span>Campagne</span>
+        </div>
+        <a href="#" class="case-link">Lire le case study</a>
+      </div>
+      <div class="case-visual sparkoh">
+        <span class="corner">Spark OH! · Culture</span>
+        <span class="stencil">Spark<br /><em>OH!</em></span>
+      </div>
+    </article>
+  </section>
+
+  <!-- NEWS -->
+  <section class="news" id="nouvelles">
+    <div class="section-label">Chapitre 03 · Bonnes nouvelles</div>
+    <div class="news-grid">
+      <article class="news-item reveal">
+        <div class="news-date">14 mars 2026</div>
+        <h4>Pourquoi <em>les agences</em> doivent arrêter de vendre des deliverables.</h4>
+        <p>Un édito sur ce que devient le métier quand on remet la transformation au centre, plutôt que la production.</p>
+        <a href="#" class="more">Lire</a>
+      </article>
+      <article class="news-item reveal">
+        <div class="news-date">28 février 2026</div>
+        <h4>Le jardin <em>continue</em> de pousser.</h4>
+        <p>Trois saisons après le lancement, retour sur les apprentissages d'un projet auto-initié et sur ce qu'il a déclenché chez nous.</p>
+        <a href="#" class="more">Lire</a>
+      </article>
+      <article class="news-item reveal">
+        <div class="news-date">07 février 2026</div>
+        <h4>Machao, <em>année II</em>.</h4>
+        <p>Bilan d'étape de notre podcast d'enquête sur les communications militantes — six épisodes, six déclics.</p>
+        <a href="#" class="more">Lire</a>
+      </article>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section class="team" id="equipe">
+    <div class="section-label">Chapitre 04 · L'équipe</div>
+    <div class="team-grid">
+      <div class="person reveal">
+        <div class="person-photo"></div>
+        <div>
+          <h4>Stephan Marly</h4>
+          <div class="role">Concept &amp; Activation</div>
+          <p>Vingt ans à transformer des briefs en idées qui survivent au premier comité de marque. Co-fondateur.</p>
+        </div>
+      </div>
+      <div class="person reveal">
+        <div class="person-photo"></div>
+        <div>
+          <h4>Michael Vargiakakis</h4>
+          <div class="role">Création &amp; UX/UI Design</div>
+          <p>Direction artistique, identité, design d'interfaces — toujours du côté de la simplicité utile. Co-fondateur.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <div class="section-label">Chapitre 05 · Premier pas</div>
+    <h2>Venez <em>travailler</em><br />avec <span class="accent">nous</span>.</h2>
+    <a class="contact-cta" href="mailto:hello@bravo-agency.be">hello@bravo-agency.be</a>
+    <div class="contact-meta">
+      <a href="#">Rue exemple 12, 1000 Bruxelles</a>
+      <a href="tel:+3220000000">+32 2 000 00 00</a>
+      <a href="#">LinkedIn</a>
+      <a href="#">Instagram</a>
+    </div>
+  </section>
+
+  <!-- COLOPHON -->
+  <footer class="colophon">
+    <div>© BRAVO! · 2026</div>
+    <div class="center"><em>Édité à Bruxelles, sur papier numérique.</em></div>
+    <div class="right">Mentions · Cookies · Crédits</div>
+  </footer>
+
+</div>
+
+<script>
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+</script>
+
+</body>
+</html>

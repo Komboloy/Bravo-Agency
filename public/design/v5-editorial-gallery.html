@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BRAVO! — v5 Editorial Gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400..900;1,400..900&family=Raleway:wght@300;400;500;600;700;800&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  :root {
+    --bravo: #4923F4;
+    --bravo-deep: #2a10a8;
+    --ink: #0a0a0c;
+    --paper: #f1ecde;
+    --paper-2: #e8e0cd;
+    --rule: rgba(10,10,12,0.16);
+    --sans: 'Raleway', system-ui, sans-serif;
+    --serif: 'Source Serif 4', Georgia, serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  ::selection { background: var(--bravo); color: var(--paper); }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    line-height: 1.5;
+  }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 999;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.5'/></svg>");
+    opacity: 0.05; mix-blend-mode: multiply;
+  }
+
+  /* NAV */
+  .nav {
+    padding: 1.75rem clamp(2rem, 4vw, 4rem);
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+    font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500;
+  }
+  .nav .logo {
+    font-family: var(--serif); font-weight: 700;
+    font-size: 1.6rem; letter-spacing: -0.02em; text-transform: none; line-height: 1;
+  }
+  .nav .logo .bang { color: var(--bravo); }
+  .nav-links { display: flex; gap: 2rem; justify-content: center; }
+  .nav-links a { position: relative; padding-bottom: 4px; transition: color .25s; }
+  .nav-links a::after { content:''; position:absolute; left:0; right:0; bottom:0; height:1px; background: var(--bravo); transform: scaleX(0); transform-origin: left; transition: transform .35s cubic-bezier(.7,0,.3,1); }
+  .nav-links a:hover { color: var(--bravo); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+  .nav-right { display: flex; gap: 1.25rem; justify-content: flex-end; align-items: center; }
+  .nav-right .lang { display: flex; gap: 0.4rem; }
+  .nav-right .lang span:not(.active) { opacity: 0.45; }
+
+  /* HERO — asymmetric editorial */
+  .hero {
+    padding: clamp(2rem, 5vw, 4rem) clamp(2rem, 4vw, 4rem) clamp(4rem, 8vw, 7rem);
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 7fr 5fr;
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: stretch;
+  }
+  @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 1.5rem; } }
+
+  .hero-img {
+    position: relative;
+    aspect-ratio: 4/5;
+    overflow: hidden;
+    background-color: var(--paper-2);
+  }
+  @media (min-width: 900px) {
+    .hero-img { aspect-ratio: auto; min-height: 78vh; }
+  }
+  .hero-img .slide {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    opacity: 0; transition: opacity 1.6s ease;
+  }
+  .hero-img .slide.active { opacity: 1; }
+  .hero-img .slide-meta {
+    position: absolute; left: 1.5rem; bottom: 1.5rem; z-index: 2;
+    color: var(--paper);
+    font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 600;
+    display: flex; gap: 0.5rem; align-items: center;
+    padding: 0.5rem 0.85rem;
+    background: rgba(10,10,12,0.45);
+    backdrop-filter: blur(8px);
+    border-radius: 99px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  }
+  .hero-img .slide-meta .num { color: var(--bravo); font-weight: 800; }
+
+  /* hero side */
+  .hero-side {
+    display: flex; flex-direction: column; justify-content: space-between;
+    gap: 2rem;
+    padding-top: 0;
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(3.5rem, 8vw, 8.5rem);
+    line-height: 0.92; letter-spacing: -0.045em;
+  }
+  .hero h1 em { font-style: italic; }
+  .hero h1 .accent { color: var(--bravo); font-style: italic; }
+
+  .hero-side .lede {
+    max-width: 38ch;
+    font-family: var(--serif); font-size: 1.1rem; font-style: italic;
+    line-height: 1.5;
+    color: var(--ink); opacity: 0.85;
+  }
+  .hero-side .lede strong { font-style: normal; font-weight: 700; color: var(--bravo); }
+
+  .hero-foot {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1.5rem;
+    align-items: end;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--ink);
+    font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 600;
+  }
+  .hero-foot .meta { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+  .hero-foot .meta .item { display: flex; flex-direction: column; gap: 0.2rem; }
+  .hero-foot .meta .k { opacity: 0.55; }
+  .hero-foot .pagination {
+    display: flex; gap: 0.5rem;
+    align-items: center;
+  }
+  .hero-foot .pagination button {
+    background: none; border: 0; padding: 0; cursor: pointer;
+    width: 2.2rem; height: 0.15rem;
+    background: var(--ink); opacity: 0.18; transition: opacity .35s, background .35s;
+  }
+  .hero-foot .pagination button.active { opacity: 1; background: var(--bravo); }
+
+  /* SECTION LABEL */
+  .section-label {
+    display: flex; align-items: center; gap: 0.85rem;
+    font-size: 0.7rem; letter-spacing: 0.32em; text-transform: uppercase; font-weight: 700;
+    color: var(--bravo);
+    margin-bottom: 1.5rem;
+  }
+  .section-label::before { content:''; width: 2.5rem; height: 1px; background: currentColor; }
+
+  /* INTRO STATEMENT — extreme aération */
+  .intro {
+    padding: clamp(7rem, 14vw, 14rem) clamp(2rem, 4vw, 4rem);
+    border-top: 1px solid var(--rule);
+  }
+  .intro-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: clamp(3rem, 6vw, 7rem);
+    align-items: start;
+  }
+  @media (max-width: 800px) { .intro-grid { grid-template-columns: 1fr; gap: 1.5rem; } }
+  .intro h2 {
+    font-family: var(--serif); font-weight: 300;
+    font-size: clamp(2.5rem, 6vw, 6rem); line-height: 0.95; letter-spacing: -0.035em;
+    max-width: 16ch;
+  }
+  .intro h2 em { font-style: italic; color: var(--bravo); }
+  .intro-text {
+    font-family: var(--serif); font-style: italic;
+    font-size: 1.25rem; line-height: 1.55; max-width: 38ch;
+    color: var(--ink); opacity: 0.85;
+    margin-top: 1.5rem;
+  }
+
+  /* FEATURED PROJECT — full bleed dark interlude */
+  .featured {
+    position: relative;
+    height: 100vh; min-height: 600px;
+    background: var(--ink); color: var(--paper);
+    overflow: hidden;
+  }
+  .featured-img {
+    position: absolute; inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=2400&q=85&auto=format');
+    background-size: cover; background-position: center;
+    transform: scale(1.04);
+    animation: zoomslow 18s ease-out forwards;
+  }
+  @keyframes zoomslow { to { transform: scale(1.12); } }
+  .featured::after {
+    content:''; position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, rgba(10,10,12,0.55) 0%, transparent 22%, transparent 52%, rgba(10,10,12,0.85) 100%);
+    pointer-events: none;
+  }
+  .featured-content {
+    position: relative; z-index: 2;
+    height: 100%;
+    padding: clamp(2rem, 4vw, 4rem);
+    display: grid; grid-template-rows: auto 1fr auto; gap: 2rem;
+  }
+  .featured-top { display: flex; justify-content: space-between; font-size: 0.72rem; letter-spacing: 0.28em; text-transform: uppercase; font-weight: 600; }
+  .featured-mid { align-self: center; max-width: 16ch; }
+  .featured-mid h2 {
+    font-family: var(--serif); font-weight: 400;
+    font-size: clamp(3rem, 9vw, 9rem); line-height: 0.95; letter-spacing: -0.04em;
+  }
+  .featured-mid h2 em { font-style: italic; color: #c9bdff; }
+  .featured-bot {
+    display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: end;
+  }
+  .featured-bot .desc {
+    font-family: var(--serif); font-style: italic;
+    font-size: 1.15rem; line-height: 1.5; max-width: 40ch; opacity: 0.92;
+  }
+  .featured-bot .open {
+    padding: 1rem 1.5rem; border: 1px solid var(--paper); border-radius: 99px;
+    font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600;
+    transition: background .25s, color .25s;
+    align-self: end;
+  }
+  .featured-bot .open:hover { background: var(--paper); color: var(--ink); }
+  .featured-bot .open::after { content: ' →'; }
+
+  /* PROJECTS GRID — extremely airy */
+  .projects {
+    padding: clamp(7rem, 12vw, 12rem) clamp(2rem, 4vw, 4rem) clamp(5rem, 10vw, 10rem);
+  }
+  .projects-head {
+    display: grid; grid-template-columns: 1fr auto; align-items: end;
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+    gap: 2rem; flex-wrap: wrap;
+  }
+  .projects-head h2 {
+    font-family: var(--serif); font-weight: 300;
+    font-size: clamp(2.4rem, 5.5vw, 5.5rem); line-height: 0.95; letter-spacing: -0.035em;
+    max-width: 16ch;
+  }
+  .projects-head h2 em { font-style: italic; color: var(--bravo); }
+  .projects-head .all {
+    font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600;
+    padding-bottom: 4px; border-bottom: 1px solid var(--ink);
+    transition: color .25s, border-color .25s;
+  }
+  .projects-head .all:hover { color: var(--bravo); border-color: var(--bravo); }
+
+  .grid-projects {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: clamp(1rem, 2vw, 2rem);
+    row-gap: clamp(4rem, 8vw, 7rem);
+  }
+  /* Asymmetric placements */
+  .proj-1 { grid-column: 1 / span 7; }
+  .proj-2 { grid-column: 8 / span 5; margin-top: clamp(2rem, 6vw, 6rem); }
+  .proj-3 { grid-column: 2 / span 5; }
+  .proj-4 { grid-column: 8 / span 4; margin-top: clamp(2rem, 5vw, 5rem); }
+  .proj-5 { grid-column: 3 / span 7; }
+
+  @media (max-width: 800px) {
+    .proj-1, .proj-2, .proj-3, .proj-4, .proj-5 { grid-column: 1 / -1; margin-top: 0; }
+  }
+
+  .project {
+    position: relative;
+    display: block;
+  }
+  .project-img {
+    position: relative;
+    aspect-ratio: 4/5;
+    overflow: hidden;
+    background-color: var(--paper-2);
+  }
+  .project.tall .project-img { aspect-ratio: 3/4; }
+  .project.wide .project-img { aspect-ratio: 5/4; }
+
+  .project-img > div {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    transition: transform 1.2s cubic-bezier(.2,.7,.2,1);
+  }
+  .project:hover .project-img > div { transform: scale(1.05); }
+  .project-img::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 60%, rgba(73,35,244,0.4));
+    opacity: 0; transition: opacity .4s;
+    mix-blend-mode: multiply;
+  }
+  .project:hover .project-img::after { opacity: 1; }
+
+  .project-meta {
+    margin-top: 1.25rem;
+    display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: end;
+  }
+  .project-meta .num {
+    font-family: var(--serif); font-style: italic;
+    font-size: 1.4rem; color: var(--bravo); font-weight: 400;
+  }
+  .project-meta .title {
+    font-family: var(--serif); font-weight: 400;
+    font-size: clamp(1.4rem, 2.2vw, 2rem); line-height: 1.05; letter-spacing: -0.02em;
+  }
+  .project-meta .title em { font-style: italic; }
+  .project-meta .year {
+    font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 600; opacity: 0.65;
+  }
+  .project-meta .tags {
+    grid-column: 2 / 3;
+    margin-top: 0.4rem;
+    display: flex; gap: 0.5rem; flex-wrap: wrap;
+    font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600; opacity: 0.6;
+  }
+
+  /* STUDIO — light duo */
+  .studio {
+    padding: clamp(5rem, 10vw, 10rem) clamp(2rem, 4vw, 4rem);
+    border-top: 1px solid var(--rule);
+  }
+  .studio-head {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: end;
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+  }
+  .studio-head h2 {
+    font-family: var(--serif); font-weight: 300;
+    font-size: clamp(2.4rem, 5vw, 4.5rem); line-height: 1; letter-spacing: -0.03em;
+    max-width: 14ch;
+  }
+  .studio-head h2 em { font-style: italic; color: var(--bravo); }
+  .studio-head .lede {
+    font-family: var(--serif); font-style: italic;
+    font-size: 1.1rem; line-height: 1.5; max-width: 38ch; opacity: 0.85;
+    align-self: end;
+  }
+  @media (max-width: 800px) { .studio-head { grid-template-columns: 1fr; } }
+
+  .studio-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 4vw, 4rem);
+  }
+  @media (max-width: 800px) { .studio-grid { grid-template-columns: 1fr; } }
+  .member {
+    display: grid; gap: 1.5rem;
+  }
+  .member-img {
+    aspect-ratio: 5/6;
+    background-size: cover; background-position: center;
+    background-color: var(--paper-2);
+    overflow: hidden; position: relative;
+    transition: transform .8s;
+  }
+  .member:hover .member-img { transform: translateY(-4px); }
+
+  .member-info {
+    display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: end;
+  }
+  .member-info .num {
+    font-family: var(--serif); font-style: italic;
+    font-size: 1.6rem; color: var(--bravo); line-height: 1;
+  }
+  .member-info h3 {
+    font-family: var(--serif); font-weight: 400;
+    font-size: clamp(1.6rem, 2.4vw, 2.2rem); line-height: 1; letter-spacing: -0.02em;
+  }
+  .member-info h3 em { font-style: italic; }
+  .member-info .role {
+    grid-column: 2;
+    font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 600; opacity: 0.65;
+    margin-top: 0.3rem;
+  }
+
+  /* CTA */
+  .cta {
+    background: var(--ink); color: var(--paper);
+    padding: clamp(8rem, 16vw, 14rem) clamp(2rem, 4vw, 4rem);
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .cta::before {
+    content:''; position: absolute; left: -20vw; bottom: -30vw;
+    width: 80vw; height: 80vw; border-radius: 50%;
+    background: radial-gradient(circle, var(--bravo) 0%, transparent 60%);
+    filter: blur(120px); opacity: 0.45; pointer-events: none;
+  }
+  .cta-inner { position: relative; z-index: 2; }
+  .cta-label { font-size: 0.72rem; letter-spacing: 0.32em; text-transform: uppercase; font-weight: 700; opacity: 0.65; margin-bottom: 2rem; color: var(--paper); }
+  .cta-label::before { content:''; display: inline-block; width: 2rem; height: 1px; background: currentColor; margin-right: 0.85rem; vertical-align: middle; }
+  .cta h2 {
+    font-family: var(--serif); font-weight: 300;
+    font-size: clamp(3rem, 10vw, 10rem); line-height: 0.92; letter-spacing: -0.04em;
+    max-width: 14ch; margin: 0 auto 3rem;
+  }
+  .cta h2 em { font-style: italic; color: #c9bdff; }
+  .cta-email {
+    display: inline-block;
+    font-family: var(--serif); font-style: italic;
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    color: var(--paper);
+    border-bottom: 2px solid var(--paper);
+    padding-bottom: 6px;
+    transition: color .25s, border-color .25s, letter-spacing .5s;
+  }
+  .cta-email:hover { color: #c9bdff; border-color: #c9bdff; letter-spacing: 0.02em; }
+
+  /* FOOTER */
+  .footer {
+    padding: 3rem clamp(2rem, 4vw, 4rem) 2.5rem;
+    background: var(--ink); color: var(--paper);
+    border-top: 1px solid rgba(244,237,225,0.12);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 2rem; align-items: start;
+  }
+  @media (max-width: 800px) { .footer { grid-template-columns: 1fr 1fr; } }
+  .footer .logo {
+    font-family: var(--serif); font-weight: 700; font-size: 2.6rem;
+    letter-spacing: -0.02em; line-height: 1; color: var(--paper);
+  }
+  .footer .logo .bang { color: #c9bdff; }
+  .footer .logo + p { margin-top: 1rem; opacity: 0.65; max-width: 28ch; font-size: 0.85rem; line-height: 1.5; }
+  .footer .col-title { font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; opacity: 0.55; margin-bottom: 0.8rem; }
+  .footer ul { list-style: none; display: grid; gap: 0.5rem; font-size: 0.9rem; }
+  .footer ul a:hover { color: #c9bdff; }
+  .footer .copy { grid-column: 1 / -1; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid rgba(244,237,225,0.12); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.55; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+
+  /* Reveal */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 1s ease-out, transform 1s cubic-bezier(.2,.7,.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* Back pin */
+  .back-pin {
+    position: fixed; left: 1rem; bottom: 1rem; z-index: 1000;
+    font-size: 0.65rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    background: var(--ink); color: var(--paper);
+    padding: 0.6rem 0.9rem; border-radius: 99px;
+    transition: background .25s;
+  }
+  .back-pin:hover { background: var(--bravo); }
+</style>
+</head>
+<body>
+
+<a class="back-pin" href="./index.html">← Comparer les directions</a>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="#" class="logo">BRAVO<span class="bang">!</span></a>
+  <div class="nav-links">
+    <a href="#travaux">Travaux</a>
+    <a href="#studio">Studio</a>
+    <a href="#news">News</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="nav-right">
+    <div class="lang"><span class="active">FR</span><span>NL</span><span>EN</span></div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid">
+    <div class="hero-img" id="heroCarousel">
+      <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=2000&q=85&auto=format');"></div>
+      <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=2000&q=85&auto=format');"></div>
+      <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1559686043-aef1abad5805?w=2000&q=85&auto=format');"></div>
+      <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=2000&q=85&auto=format');"></div>
+      <div class="slide-meta" id="slideMeta">
+        <span class="num">01</span><span>Eletheo · Identité · 2024</span>
+      </div>
+    </div>
+
+    <aside class="hero-side">
+      <h1>Les <em>idées</em><br />en <span class="accent">actions</span>.</h1>
+
+      <div>
+        <p class="lede">
+          Agence créative à Bruxelles. On accompagne <strong>l'engagement</strong> des marques et on génère des expériences positives.
+        </p>
+      </div>
+
+      <div class="hero-foot">
+        <div class="meta">
+          <div class="item"><span class="k">Depuis</span><span>2018</span></div>
+          <div class="item"><span class="k">Lieu</span><span>Bruxelles</span></div>
+          <div class="item"><span class="k">Projets</span><span>38+</span></div>
+        </div>
+        <div class="pagination" id="pag">
+          <button class="active" data-go="0"></button>
+          <button data-go="1"></button>
+          <button data-go="2"></button>
+          <button data-go="3"></button>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- INTRO STATEMENT -->
+<section class="intro">
+  <div class="intro-grid">
+    <div class="section-label reveal">À propos</div>
+    <div>
+      <h2 class="reveal">
+        On déclenche.<br />
+        On ne <em>vend pas</em>.
+      </h2>
+      <p class="intro-text reveal">
+        Bravo! est une agence de communication multidisciplinaire qui accompagne l'engagement des marques. Une goutte d'eau, peut-être — heureusement, on n'est pas seuls.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED — full bleed dark -->
+<section class="featured" id="featured">
+  <div class="featured-img"></div>
+  <div class="featured-content">
+    <div class="featured-top">
+      <span>Featured · 2024</span>
+      <span>WWF Belgium</span>
+    </div>
+    <div class="featured-mid">
+      <h2>Together <em>for tomorrow.</em></h2>
+    </div>
+    <div class="featured-bot">
+      <p class="desc">
+        Une campagne pour rallumer le sens du commun. Sans culpabilisation, sans clichés.
+      </p>
+      <a href="#" class="open">Voir le projet</a>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS GRID -->
+<section class="projects" id="travaux">
+  <div class="projects-head reveal">
+    <div>
+      <div class="section-label">Travaux · Sélection 2026</div>
+      <h2>Une <em>sélection</em><br />de projets récents.</h2>
+    </div>
+    <a href="#" class="all">Voir tout l'index →</a>
+  </div>
+
+  <div class="grid-projects">
+    <a href="#" class="project proj-1 reveal">
+      <div class="project-img"><div style="background-image: url('https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=1600&q=85&auto=format');"></div></div>
+      <div class="project-meta">
+        <span class="num">01</span>
+        <span class="title">Eletheo, <em>une marque qui respire</em></span>
+        <span class="year">2024</span>
+        <span class="tags"><span>Stratégie</span><span>Identité</span><span>Web</span></span>
+      </div>
+    </a>
+
+    <a href="#" class="project proj-2 tall reveal">
+      <div class="project-img"><div style="background-image: url('https://images.unsplash.com/photo-1559686043-aef1abad5805?w=1400&q=85&auto=format');"></div></div>
+      <div class="project-meta">
+        <span class="num">02</span>
+        <span class="title">Spark OH!, <em>la science qui pique</em></span>
+        <span class="year">2023</span>
+        <span class="tags"><span>Identité</span><span>Campagne</span></span>
+      </div>
+    </a>
+
+    <a href="#" class="project proj-3 reveal">
+      <div class="project-img"><div style="background-image: url('https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=1600&q=85&auto=format');"></div></div>
+      <div class="project-meta">
+        <span class="num">03</span>
+        <span class="title">Le jardin, <em>année III</em></span>
+        <span class="year">2023</span>
+        <span class="tags"><span>Initiative</span><span>Édition</span></span>
+      </div>
+    </a>
+
+    <a href="#" class="project proj-4 reveal">
+      <div class="project-img"><div style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&q=85&auto=format');"></div></div>
+      <div class="project-meta">
+        <span class="num">04</span>
+        <span class="title">Machao <em>— podcast</em></span>
+        <span class="year">2024</span>
+        <span class="tags"><span>Audio</span><span>Édition</span></span>
+      </div>
+    </a>
+
+    <a href="#" class="project proj-5 wide reveal">
+      <div class="project-img"><div style="background-image: url('https://images.unsplash.com/photo-1551434678-e076c223a692?w=2000&q=85&auto=format');"></div></div>
+      <div class="project-meta">
+        <span class="num">05</span>
+        <span class="title">L'enfant sauvage <em>— exposition</em></span>
+        <span class="year">2022</span>
+        <span class="tags"><span>Identité</span><span>Signalétique</span><span>Édition</span></span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- STUDIO -->
+<section class="studio" id="studio">
+  <div class="studio-head reveal">
+    <div>
+      <div class="section-label">Studio · Effectif</div>
+      <h2>Une équipe <em>resserrée</em>,<br />un réseau étendu.</h2>
+    </div>
+    <p class="lede">
+      Deux têtes au studio à Bruxelles, et autour de nous un écosystème de partenaires choisis pour ce qu'ils font de mieux.
+    </p>
+  </div>
+
+  <div class="studio-grid">
+    <article class="member reveal">
+      <div class="member-img" style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1400&q=85&auto=format');"></div>
+      <div class="member-info">
+        <span class="num">01</span>
+        <h3>Stephan Marly</h3>
+        <span class="role">Concept &amp; Activation</span>
+      </div>
+    </article>
+    <article class="member reveal">
+      <div class="member-img" style="background-image: url('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=1400&q=85&auto=format');"></div>
+      <div class="member-info">
+        <span class="num">02</span>
+        <h3>Michael Vargiakakis</h3>
+        <span class="role">Création &amp; UX/UI Design</span>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="contact">
+  <div class="cta-inner">
+    <div class="cta-label">Premier pas</div>
+    <h2 class="reveal">Venez, on en <em>parle</em>.</h2>
+    <a href="mailto:hello@bravo-agency.be" class="cta-email">hello@bravo-agency.be</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div>
+    <div class="logo">BRAVO<span class="bang">!</span></div>
+    <p>Agence de communication multidisciplinaire à Bruxelles. Engagement, sens, déclenchements.</p>
+  </div>
+  <div>
+    <div class="col-title">Studio</div>
+    <ul>
+      <li><a href="#travaux">Travaux</a></li>
+      <li><a href="#studio">Équipe</a></li>
+      <li><a href="#news">News</a></li>
+    </ul>
+  </div>
+  <div>
+    <div class="col-title">Suivez</div>
+    <ul>
+      <li><a href="#">Instagram</a></li>
+      <li><a href="#">LinkedIn</a></li>
+      <li><a href="#">Behance</a></li>
+    </ul>
+  </div>
+  <div>
+    <div class="col-title">Contact</div>
+    <ul>
+      <li><a href="mailto:hello@bravo-agency.be">hello@bravo-agency.be</a></li>
+      <li><a href="#">Rue exemple 12, 1000 Bruxelles</a></li>
+    </ul>
+  </div>
+  <div class="copy">
+    <div>© BRAVO! · 2026 — Bruxelles</div>
+    <div>Mentions · Cookies · Crédits</div>
+  </div>
+</footer>
+
+<script>
+  // Hero carousel
+  const slides = document.querySelectorAll('#heroCarousel .slide');
+  const buttons = document.querySelectorAll('#pag button');
+  const meta = document.getElementById('slideMeta');
+  const slideData = [
+    { num: '01', label: 'Eletheo · Identité · 2024' },
+    { num: '02', label: 'WWF — Together for tomorrow · 2024' },
+    { num: '03', label: 'Spark OH! · Identité · 2023' },
+    { num: '04', label: 'Le jardin · Projet interne · 2023' },
+  ];
+  let idx = 0; let timer;
+  function go(i) {
+    idx = i;
+    slides.forEach((s, k) => s.classList.toggle('active', k === i));
+    buttons.forEach((b, k) => b.classList.toggle('active', k === i));
+    meta.innerHTML = '<span class="num">' + slideData[i].num + '</span><span>' + slideData[i].label + '</span>';
+  }
+  function loop() { clearInterval(timer); timer = setInterval(() => go((idx + 1) % slides.length), 5000); }
+  buttons.forEach((b) => b.addEventListener('click', (e) => { go(+e.currentTarget.dataset.go); loop(); }));
+  loop();
+
+  // Reveal
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+</script>
+</body>
+</html>

@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BRAVO! — Design preview · 9 maquettes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800;900&family=Big+Shoulders+Display:wght@300;400;700;800;900&family=Fraunces:ital,opsz,wght@1,9..144,400..900&family=JetBrains+Mono:wght@400;500;700&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  :root {
+    --bravo: #4923F4;
+    --bravo-bright: #6843ff;
+    --bravo-soft: #c9bdff;
+    --ink: #050507;
+    --ink-2: #0f0f15;
+    --paper: #f3ecde;
+    --paper-2: #ede4d2;
+    --rule-dark: rgba(244,237,225,0.14);
+    --sans: 'Raleway', system-ui, sans-serif;
+    --display: 'Big Shoulders Display', sans-serif;
+    --editorial: 'Fraunces', Georgia, serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  ::selection { background: var(--bravo); color: var(--paper); }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    background: var(--ink);
+    color: var(--paper);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    line-height: 1.5;
+  }
+  a { color: inherit; text-decoration: none; }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 999;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.55'/></svg>");
+    opacity: 0.04; mix-blend-mode: overlay;
+  }
+
+  .wrap { max-width: 1640px; margin: 0 auto; padding: 0 clamp(1.5rem, 3vw, 3rem); }
+
+  /* TOP STATUS BAR */
+  .topbar {
+    padding: 0.85rem clamp(1.5rem, 3vw, 3rem);
+    border-bottom: 1px solid var(--rule-dark);
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .topbar .left { display: flex; align-items: center; gap: 0.85rem; }
+  .topbar .pulse {
+    display: inline-block; width: 0.5rem; height: 0.5rem; border-radius: 50%;
+    background: var(--bravo-bright);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.4; } }
+  .topbar .right { display: flex; gap: 1.5rem; opacity: 0.55; }
+
+  /* HERO */
+  .hero {
+    padding: clamp(5rem, 10vw, 9rem) 0 clamp(4rem, 7vw, 6rem);
+    border-bottom: 1px solid var(--rule-dark);
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content:''; position: absolute; right: -20vw; top: -10vw;
+    width: 60vw; height: 60vw; border-radius: 50%;
+    background: radial-gradient(circle, var(--bravo) 0%, transparent 65%);
+    filter: blur(120px); opacity: 0.35; pointer-events: none;
+  }
+  .hero-inner { position: relative; z-index: 2; }
+  .hero .label {
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    color: var(--bravo-soft);
+    display: inline-flex; align-items: center; gap: 0.85rem;
+    margin-bottom: 1.5rem;
+  }
+  .hero .label::before { content:''; width: 2.5rem; height: 1px; background: currentColor; }
+
+  .hero h1 {
+    font-family: var(--display); font-weight: 800;
+    font-size: clamp(3rem, 9vw, 9rem); line-height: 0.88;
+    letter-spacing: -0.015em; text-transform: uppercase;
+    max-width: 18ch;
+  }
+  .hero h1 .light { font-weight: 300; }
+  .hero h1 .editorial { font-family: var(--editorial); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: -0.02em; color: var(--bravo-soft); }
+
+  .hero .lede {
+    margin-top: 2rem;
+    max-width: 60ch;
+    font-family: var(--editorial); font-style: italic;
+    font-size: 1.2rem; line-height: 1.55; opacity: 0.9;
+  }
+  .hero .lede strong { font-style: normal; font-family: var(--sans); font-weight: 700; color: var(--bravo-soft); }
+
+  .meta {
+    margin-top: 3rem;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.5rem;
+    padding-top: 2rem; border-top: 1px solid var(--rule-dark);
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  @media (max-width: 800px) { .meta { grid-template-columns: repeat(2, 1fr); } }
+  .meta .item { display: flex; flex-direction: column; gap: 0.35rem; }
+  .meta .k { opacity: 0.5; }
+  .meta .v { color: var(--paper); font-weight: 700; }
+  .meta .v.bravo { color: var(--bravo-bright); }
+  .meta .v.editorial { font-family: var(--editorial); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: -0.02em; font-size: 0.95rem; color: var(--bravo-soft); }
+
+  /* GROUP HEAD */
+  .group-head {
+    padding: clamp(4rem, 7vw, 6rem) 0 clamp(2rem, 4vw, 3rem);
+    display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: end;
+    border-bottom: 1px solid var(--rule-dark);
+    margin-bottom: clamp(2rem, 4vw, 3.5rem);
+  }
+  .group-head .left { display: flex; flex-direction: column; gap: 1rem; }
+  .group-head .group-label {
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    display: inline-flex; align-items: center; gap: 0.85rem;
+  }
+  .group-head .group-label::before { content:''; width: 2.5rem; height: 1px; background: currentColor; }
+  .group-head .group-label.bravo { color: var(--bravo-bright); }
+  .group-head .group-label.muted { color: var(--paper); opacity: 0.55; }
+
+  .group-head h2 {
+    font-family: var(--display); font-weight: 800;
+    font-size: clamp(2.4rem, 5vw, 4.5rem); line-height: 0.95;
+    letter-spacing: -0.005em; text-transform: uppercase;
+  }
+  .group-head h2 .light { font-weight: 300; }
+  .group-head h2 .editorial { font-family: var(--editorial); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: -0.02em; color: var(--bravo-soft); }
+
+  .group-head .badge {
+    padding: 0.5rem 0.95rem;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 55%),
+      rgba(73, 35, 244, 0.55);
+    border: 1px solid rgba(244, 237, 225, 0.22);
+    border-radius: 99px;
+    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    color: var(--paper);
+    backdrop-filter: blur(20px) saturate(170%);
+    -webkit-backdrop-filter: blur(20px) saturate(170%);
+    box-shadow: 0 14px 36px -8px rgba(73, 35, 244, 0.4), 0 1px 0 rgba(255,255,255,0.22) inset;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    align-self: end;
+  }
+  .group-head .badge::before { content:'●'; color: var(--bravo-soft); font-size: 0.6em; }
+  .group-head .badge.muted {
+    background: transparent;
+    border-color: var(--rule-dark);
+    box-shadow: none;
+    backdrop-filter: none;
+    opacity: 0.65;
+  }
+  .group-head .badge.muted::before { color: var(--paper); }
+
+  /* CARDS GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(1rem, 1.8vw, 1.8rem);
+    margin-bottom: clamp(3rem, 5vw, 4rem);
+  }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    position: relative;
+    display: block;
+    background: var(--ink-2);
+    border: 1px solid var(--rule-dark);
+    overflow: hidden;
+    transition: transform .4s cubic-bezier(.2,.7,.2,1), border-color .4s, box-shadow .4s;
+  }
+  .card:hover {
+    transform: translateY(-6px);
+    border-color: var(--bravo-bright);
+    box-shadow: 0 22px 56px -12px rgba(73, 35, 244, 0.5);
+  }
+  .card .preview {
+    aspect-ratio: 4/3;
+    border-bottom: 1px solid var(--rule-dark);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* SHARED PREVIEW STYLES */
+  .preview .shot {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: top center;
+    transition: transform 1.2s cubic-bezier(.2,.7,.2,1);
+  }
+  .card:hover .preview .shot { transform: scale(1.04); }
+  .preview .veil {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 0%, transparent 35%, rgba(5,5,7,0.65) 100%);
+  }
+  .preview .badge-num {
+    position: absolute; top: 0.85rem; left: 0.85rem; z-index: 2;
+    font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    color: var(--paper);
+    padding: 0.3rem 0.65rem;
+    background: rgba(5,5,7,0.55); backdrop-filter: blur(8px);
+    border: 1px solid rgba(244,237,225,0.18);
+    border-radius: 99px;
+  }
+  .preview .badge-num.featured {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 55%),
+      rgba(73, 35, 244, 0.55);
+    border-color: rgba(244,237,225,0.25);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.18) inset;
+  }
+  .preview .label-overlay {
+    position: absolute; bottom: 0.85rem; left: 0.85rem; right: 0.85rem; z-index: 2;
+    color: var(--paper);
+    font-family: var(--display); font-weight: 800;
+    font-size: clamp(1.4rem, 2.4vw, 2rem); line-height: 0.9;
+    letter-spacing: -0.005em; text-transform: uppercase;
+  }
+  .preview .label-overlay .editorial { font-family: var(--editorial); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: -0.02em; color: var(--bravo-soft); }
+
+  /* PER-VERSION PREVIEW IMG */
+  .preview.p-v7 .shot { background-image: url('https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=1600&q=80&auto=format'); }
+  .preview.p-v8 .shot { background-image: url('https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=1600&q=80&auto=format'); }
+  .preview.p-v9 .shot { background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1600&q=80&auto=format'); }
+  .preview.p-v4 .shot { background-image: url('https://images.unsplash.com/photo-1532012197267-da84d127e765?w=1400&q=80&auto=format'); }
+  .preview.p-v5 .shot { background-image: url('https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=1400&q=80&auto=format'); }
+  .preview.p-v6 .shot { background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1400&q=80&auto=format'); }
+
+  /* v1, v2, v3 previews (no real photo, use CSS art) */
+  .preview.p-v1 { background: var(--paper); padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; }
+  .preview.p-v1 .pseudo { font-family: var(--editorial); font-style: italic; font-weight: 300; font-size: clamp(1.8rem, 3.5vw, 3rem); line-height: 0.92; letter-spacing: -0.03em; color: var(--ink); }
+  .preview.p-v1 .pseudo em { font-style: italic; }
+  .preview.p-v1 .pseudo .hl { background-image: linear-gradient(transparent 55%, var(--bravo) 55%, var(--bravo) 92%, transparent 92%); background-repeat: no-repeat; color: var(--paper); padding: 0 0.05em; }
+  .preview.p-v1 .top-l { position: absolute; top: 1rem; left: 1.5rem; font-family: var(--sans); font-weight: 900; color: var(--ink); font-size: 0.95rem; letter-spacing: -0.02em; }
+  .preview.p-v1 .top-r { position: absolute; top: 1rem; right: 1.5rem; font-family: var(--editorial); font-style: italic; color: var(--ink); font-size: 0.7rem; }
+
+  .preview.p-v2 { background: var(--bravo); padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; color: var(--paper); }
+  .preview.p-v2 .pseudo { font-family: var(--sans); font-weight: 900; font-size: clamp(2rem, 4.5vw, 4rem); line-height: 0.85; letter-spacing: -0.05em; margin-top: 1.5rem; }
+  .preview.p-v2 .pseudo .e { font-family: var(--editorial); font-style: italic; font-weight: 400; }
+  .preview.p-v2 .top-l { position: absolute; top: 1rem; left: 1.5rem; font-family: var(--sans); font-weight: 900; font-size: 0.95rem; letter-spacing: -0.02em; }
+  .preview.p-v2 .top-r { position: absolute; top: 1rem; right: 1.5rem; font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.2em; }
+  .preview.p-v2 .marquee { margin: 1rem -1.5rem 0; padding: 0.5rem 0; background: var(--paper); color: var(--bravo); font-family: var(--editorial); font-style: italic; font-weight: 700; font-size: 0.95rem; overflow: hidden; white-space: nowrap; }
+  .preview.p-v2 .marquee span { display: inline-block; padding: 0 1.5rem; }
+
+  .preview.p-v3 { background: var(--paper); padding: 1rem; display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem; }
+  .preview.p-v3 .side { border-right: 1px solid rgba(0,0,0,0.15); padding-right: 0.5rem; font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.05em; text-transform: uppercase; display: flex; flex-direction: column; gap: 0.4rem; color: var(--ink); }
+  .preview.p-v3 .side .row { display: grid; grid-template-columns: 1.4rem 1fr; gap: 0.4rem; }
+  .preview.p-v3 .side .row .num { color: var(--bravo); font-weight: 700; }
+  .preview.p-v3 .main { padding-left: 0.5rem; display: flex; flex-direction: column; justify-content: center; color: var(--ink); }
+  .preview.p-v3 .main .big { font-family: var(--sans); font-weight: 900; font-size: clamp(1.6rem, 3vw, 2.8rem); line-height: 0.88; letter-spacing: -0.045em; }
+  .preview.p-v3 .main .big .a { color: var(--bravo); }
+  .preview.p-v3 .main .strip { margin-top: 0.7rem; display: grid; grid-template-columns: repeat(3, 1fr); height: 1.4rem; }
+  .preview.p-v3 .main .strip .a { background: linear-gradient(135deg, #0c4a3a, #1e7a55); }
+  .preview.p-v3 .main .strip .b { background: linear-gradient(180deg, #1a1118, var(--bravo)); }
+  .preview.p-v3 .main .strip .c { background: linear-gradient(135deg, #ffd83b, #ff7a00); }
+
+  /* CARD BODY */
+  .card .body {
+    padding: 1.5rem;
+    display: flex; flex-direction: column; gap: 0.65rem;
+  }
+  .card .head {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+    margin-bottom: 0.25rem;
+  }
+  .card .id {
+    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    color: var(--bravo-soft);
+  }
+  .card .role {
+    font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.45;
+  }
+  .card h3 {
+    font-family: var(--display); font-weight: 800;
+    font-size: 2rem; line-height: 0.95;
+    letter-spacing: -0.005em; text-transform: uppercase;
+  }
+  .card h3 .light { font-weight: 300; }
+  .card h3 .editorial { font-family: var(--editorial); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: -0.02em; color: var(--bravo-soft); }
+  .card .desc {
+    font-size: 0.92rem; line-height: 1.55; opacity: 0.78;
+  }
+  .card .tags {
+    display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.25rem;
+    font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .card .tags span { padding: 0.25rem 0.55rem; border: 1px solid var(--rule-dark); border-radius: 99px; opacity: 0.7; }
+  .card .open {
+    margin-top: 0.5rem; padding-top: 1rem;
+    border-top: 1px solid var(--rule-dark);
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+  }
+  .card .open .filename { opacity: 0.5; }
+  .card .open .go { color: var(--bravo-bright); transition: gap .3s; display: inline-flex; align-items: center; gap: 0.4rem; }
+  .card .open .go::after { content: '→'; transition: transform .3s; }
+  .card:hover .open .go::after { transform: translateX(0.3rem); }
+
+  /* FLOW connector for the validated direction (v7→v8→v9) */
+  .flow-connector {
+    text-align: center; padding: 0 0 2rem;
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600;
+    color: var(--bravo-soft); opacity: 0.85;
+  }
+  .flow-connector .nodes { display: inline-flex; align-items: center; gap: 1rem; padding: 0.6rem 1.25rem; border: 1px solid var(--rule-dark); border-radius: 99px; }
+  .flow-connector .nodes .dot { width: 0.4rem; height: 0.4rem; border-radius: 50%; background: currentColor; }
+  .flow-connector .nodes .arrow { opacity: 0.55; }
+
+  /* FOOTER design system summary */
+  .summary {
+    margin-top: clamp(5rem, 9vw, 8rem);
+    padding: clamp(3rem, 6vw, 5rem) 0;
+    border-top: 1px solid var(--rule-dark);
+  }
+  .summary h2 {
+    font-family: var(--display); font-weight: 800;
+    font-size: clamp(2rem, 4vw, 3.5rem); line-height: 0.95;
+    letter-spacing: -0.005em; text-transform: uppercase;
+    margin-bottom: 2rem;
+  }
+  .summary h2 .editorial { font-family: var(--editorial); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: -0.02em; color: var(--bravo-soft); }
+
+  .summary-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;
+    padding-top: 1.5rem; border-top: 1px solid var(--rule-dark);
+  }
+  @media (max-width: 800px) { .summary-grid { grid-template-columns: repeat(2, 1fr); } }
+  .summary .item { display: flex; flex-direction: column; gap: 0.5rem; }
+  .summary .item .k { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.55; }
+  .summary .item .v {
+    font-family: var(--display); font-weight: 700;
+    font-size: 1.4rem; letter-spacing: -0.005em; text-transform: uppercase;
+    color: var(--paper);
+  }
+  .summary .item .v.editorial { font-family: var(--editorial); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: -0.02em; }
+  .summary .item .v.bravo { color: var(--bravo-bright); }
+  .summary .item .v.mono { font-family: var(--mono); font-size: 1rem; font-weight: 700; letter-spacing: 0; }
+  .summary .item .desc { font-size: 0.82rem; line-height: 1.4; opacity: 0.6; }
+
+  .footer-strip {
+    padding: 1.25rem clamp(1.5rem, 3vw, 3rem);
+    border-top: 1px solid var(--rule-dark);
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    opacity: 0.55;
+  }
+  .footer-strip em { font-family: var(--editorial); font-style: italic; text-transform: none; letter-spacing: 0; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="left"><span class="pulse"></span>BRAVO! · Design preview · 9 maquettes statiques</div>
+  <div class="right">
+    <span>Bruxelles · 2026</span>
+    <span>localhost:3000/design</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-inner">
+    <div class="label">Design preview · v0.9</div>
+    <h1>Trouvons la <span class="light">direction</span><br />qui fait <span class="editorial">waouw.</span></h1>
+    <p class="lede">
+      Trois tours d'itération sur le futur site BRAVO! Agency. La <strong>direction validée</strong> est le triptyque <strong>v7 + v8 + v9</strong> ci-dessous — une home, une page projets, un case study, tous reliés. Les tours 1 et 2 sont conservés en archive pour comprendre le chemin.
+    </p>
+
+    <div class="meta">
+      <div class="item"><span class="k">Couleur</span><span class="v bravo">#4923F4</span></div>
+      <div class="item"><span class="k">Display</span><span class="v">Big Shoulders</span></div>
+      <div class="item"><span class="k">Body</span><span class="v">Raleway</span></div>
+      <div class="item"><span class="k">Editorial</span><span class="v editorial">Fraunces italic</span></div>
+      <div class="item"><span class="k">Mono</span><span class="v" style="font-family:var(--mono);font-size:0.95rem;letter-spacing:0;">JetBrains Mono</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+
+  <!-- TOUR 3 / VALIDATED -->
+  <div class="group-head">
+    <div class="left">
+      <div class="group-label bravo">Tour 3 · Direction validée</div>
+      <h2>Le triptyque <span class="editorial">final.</span></h2>
+    </div>
+    <span class="badge">Validé 2026-05-25</span>
+  </div>
+
+  <div class="flow-connector">
+    <span class="nodes">
+      <span>v7 Home</span>
+      <span class="dot"></span>
+      <span class="arrow">→</span>
+      <span>v8 Projets</span>
+      <span class="dot"></span>
+      <span class="arrow">→</span>
+      <span>v9 Case Study</span>
+    </span>
+  </div>
+
+  <div class="grid">
+
+    <!-- v7 -->
+    <a href="./v7-home.html" class="card">
+      <div class="preview p-v7">
+        <div class="shot"></div>
+        <div class="veil"></div>
+        <span class="badge-num featured">v7 · Home</span>
+        <div class="label-overlay">Les <span class="editorial">idées</span><br />en actions.</div>
+      </div>
+      <div class="body">
+        <div class="head">
+          <span class="id">01 — Home</span>
+          <span class="role">Landing</span>
+        </div>
+        <h3>Carrousel <span class="editorial">cinematic</span></h3>
+        <p class="desc">Hero carrousel auto (3 visuels, 5.5s), liquid glass nav, manifeste BRAVO color full-bleed, projects en bandes 90vh.</p>
+        <div class="tags"><span>Hero carousel</span><span>Liquid glass nav</span><span>Big type</span></div>
+        <div class="open"><span class="filename">v7-home.html</span><span class="go">Ouvrir</span></div>
+      </div>
+    </a>
+
+    <!-- v8 -->
+    <a href="./v8-projects.html" class="card">
+      <div class="preview p-v8">
+        <div class="shot"></div>
+        <div class="veil"></div>
+        <span class="badge-num featured">v8 · Projets</span>
+        <div class="label-overlay">Travaux<br /><span class="editorial">— index complet.</span></div>
+      </div>
+      <div class="body">
+        <div class="head">
+          <span class="id">02 — Projets</span>
+          <span class="role">Gallery</span>
+        </div>
+        <h3>Gallery <span class="editorial">asymétrique</span></h3>
+        <p class="desc">Grille 12 cols mix de tailles (large, medium, small, tall, wide), filter bar sticky, featured bands full-bleed entre les rangs.</p>
+        <div class="tags"><span>Asymétrique</span><span>Filter sticky</span><span>14 / 38 projets</span></div>
+        <div class="open"><span class="filename">v8-projects.html</span><span class="go">Ouvrir</span></div>
+      </div>
+    </a>
+
+    <!-- v9 -->
+    <a href="./v9-case-study.html" class="card">
+      <div class="preview p-v9">
+        <div class="shot"></div>
+        <div class="veil"></div>
+        <span class="badge-num featured">v9 · Case Study</span>
+        <div class="label-overlay">Together <span class="editorial">for tomorrow.</span></div>
+      </div>
+      <div class="body">
+        <div class="head">
+          <span class="id">03 — Case study</span>
+          <span class="role">Project page</span>
+        </div>
+        <h3>WWF — <span class="editorial">détail</span></h3>
+        <p class="desc">Hero full-bleed, meta-bar <strong style="color:var(--bravo-soft)">Création / Réalisation / Partenaires</strong>, contexte/défi/solution, gallery 6 layouts, résultats chiffrés, testimonial.</p>
+        <div class="tags"><span>Credits pattern</span><span>Gallery 6 layouts</span><span>Big numbers</span></div>
+        <div class="open"><span class="filename">v9-case-study.html</span><span class="go">Ouvrir</span></div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- TOUR 2 -->
+  <div class="group-head">
+    <div class="left">
+      <div class="group-label muted">Tour 2 · Refonte avec aération</div>
+      <h2>Itérations <span class="editorial">intermédiaires.</span></h2>
+    </div>
+    <span class="badge muted">Archive</span>
+  </div>
+
+  <div class="grid">
+
+    <a href="./v4-cinematic.html" class="card">
+      <div class="preview p-v4">
+        <div class="shot"></div>
+        <div class="veil"></div>
+        <span class="badge-num">v4</span>
+        <div class="label-overlay">Cinematic<br /><span class="editorial">carousel</span></div>
+      </div>
+      <div class="body">
+        <div class="head"><span class="id">v4 — Home</span><span class="role">Iteration</span></div>
+        <h3>Cinematic <span class="editorial">carousel</span></h3>
+        <p class="desc">Première version du hero carousel sombre + projects en bandes. Base directe de la v7.</p>
+        <div class="tags"><span>Dark</span><span>Carousel</span><span>Base v7</span></div>
+        <div class="open"><span class="filename">v4-cinematic.html</span><span class="go">Ouvrir</span></div>
+      </div>
+    </a>
+
+    <a href="./v5-editorial-gallery.html" class="card">
+      <div class="preview p-v5">
+        <div class="shot"></div>
+        <div class="veil"></div>
+        <span class="badge-num">v5</span>
+        <div class="label-overlay">Editorial <span class="editorial">gallery</span></div>
+      </div>
+      <div class="body">
+        <div class="head"><span class="id">v5 — Home</span><span class="role">Iteration</span></div>
+        <h3>Editorial <span class="editorial">gallery</span></h3>
+        <p class="desc">Direction crème/magazine asymétrique. Pas retenue mais grille projets reprise dans v8.</p>
+        <div class="tags"><span>Light</span><span>Asymétrique</span><span>Pentagram</span></div>
+        <div class="open"><span class="filename">v5-editorial-gallery.html</span><span class="go">Ouvrir</span></div>
+      </div>
+    </a>
+
+    <a href="./v6-bold-hybrid.html" class="card">
+      <div class="preview p-v6">
+        <div class="shot"></div>
+        <div class="veil"></div>
+        <span class="badge-num">v6</span>
+        <div class="label-overlay">Bold <span class="editorial">hybrid</span></div>
+      </div>
+      <div class="body">
+        <div class="head"><span class="id">v6 — Home</span><span class="role">Iteration</span></div>
+        <h3>Bold <span class="editorial">hybrid</span></h3>
+        <p class="desc">Mix v2 énergie + v4 dark hero. Section manifeste BRAVO color reprise dans la v7.</p>
+        <div class="tags"><span>Mix dramatique</span><span>Type big</span><span>Manifesto</span></div>
+        <div class="open"><span class="filename">v6-bold-hybrid.html</span><span class="go">Ouvrir</span></div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- TOUR 1 -->
+  <div class="group-head">
+    <div class="left">
+      <div class="group-label muted">Tour 1 · Premières pistes (text-heavy)</div>
+      <h2>Le point <span class="editorial">de départ.</span></h2>
+    </div>
+    <span class="badge muted">Archive</span>
+  </div>
+
+  <div class="grid">
+
+    <a href="./v1-editorial.html" class="card">
+      <div class="preview p-v1">
+        <div class="top-l">BRAVO!</div>
+        <div class="top-r">Vol. VII · 2026</div>
+        <div class="pseudo">Les <em>idées</em><br />en <span class="hl">actions</span>.</div>
+      </div>
+      <div class="body">
+        <div class="head"><span class="id">v1 — Home</span><span class="role">Premier jet</span></div>
+        <h3>Manifesto <span class="editorial">editorial</span></h3>
+        <p class="desc">Magazine d'auteur, typo serif énorme, lettrines. Trop texte-heavy, abandonnée.</p>
+        <div class="tags"><span>Éditorial</span><span>Serif</span></div>
+        <div class="open"><span class="filename">v1-editorial.html</span><span class="go">Ouvrir</span></div>
+      </div>
+    </a>
+
+    <a href="./v2-vibrant.html" class="card">
+      <div class="preview p-v2">
+        <div class="top-l">BRAVO!</div>
+        <div class="top-r">● LIVE</div>
+        <div class="pseudo">Les <span class="e">idées</span><br />en actions.</div>
+        <div class="marquee"><span>Together for tomorrow ✦ Une goutte d'eau ✦</span></div>
+      </div>
+      <div class="body">
+        <div class="head"><span class="id">v2 — Home</span><span class="role">Premier jet</span></div>
+        <h3>Color <span class="editorial">drenched</span></h3>
+        <p class="desc">Full bleed BRAVO color, marquee, énergique. Base émotionnelle de la v7.</p>
+        <div class="tags"><span>BRAVO color</span><span>Marquee</span><span>Bold</span></div>
+        <div class="open"><span class="filename">v2-vibrant.html</span><span class="go">Ouvrir</span></div>
+      </div>
+    </a>
+
+    <a href="./v3-brutalist.html" class="card">
+      <div class="preview p-v3">
+        <div class="side">
+          <div class="row"><span class="num">§01</span><span>Établis.</span></div>
+          <div class="row"><span class="num">§02</span><span>Manifesto</span></div>
+          <div class="row"><span class="num">§03</span><span>Travaux</span></div>
+          <div class="row"><span class="num">§04</span><span>Services</span></div>
+        </div>
+        <div class="main">
+          <div class="big">Les idées<br />en <span class="a">actions</span>.</div>
+          <div class="strip"><div class="a"></div><div class="b"></div><div class="c"></div></div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="head"><span class="id">v3 — Home</span><span class="role">Premier jet</span></div>
+        <h3>Swiss <span class="editorial">brutalist</span></h3>
+        <p class="desc">Grille stricte 12 cols, mono partout, info dense. Trop austère, abandonnée.</p>
+        <div class="tags"><span>Swiss</span><span>Dense</span><span>Mono</span></div>
+        <div class="open"><span class="filename">v3-brutalist.html</span><span class="go">Ouvrir</span></div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- DESIGN SYSTEM SUMMARY -->
+  <section class="summary">
+    <h2>Système <span class="editorial">design.</span></h2>
+    <div class="summary-grid">
+      <div class="item">
+        <span class="k">Couleur signature</span>
+        <span class="v bravo">#4923F4</span>
+        <span class="desc">Conservée du site actuel. Utilisée en accent et en moments full-bleed.</span>
+      </div>
+      <div class="item">
+        <span class="k">Typo body</span>
+        <span class="v">Raleway 400 / 500 / 700 / 900</span>
+        <span class="desc">Sans-serif géométrique. Body, nav, wordmark BRAVO! (poids 900).</span>
+      </div>
+      <div class="item">
+        <span class="k">Typo display</span>
+        <span class="v">Big Shoulders 800</span>
+        <span class="desc">Sans-serif condensed, all-caps. Pour TOUS les gros titres impact.</span>
+      </div>
+      <div class="item">
+        <span class="k">Typo editorial</span>
+        <span class="v editorial">Fraunces italic</span>
+        <span class="desc">Serif moderne, italique uniquement. Sur 1-2 mots clés par titre.</span>
+      </div>
+      <div class="item">
+        <span class="k">Typo technique</span>
+        <span class="v mono">JetBrains Mono</span>
+        <span class="desc">Pour les labels, metadata, sections (§01), pagination.</span>
+      </div>
+      <div class="item">
+        <span class="k">Navigation</span>
+        <span class="v">Liquid glass</span>
+        <span class="desc">Full-width transparent en haut, morph en pill BRAVO translucide au scroll.</span>
+      </div>
+      <div class="item">
+        <span class="k">Multilingue</span>
+        <span class="v">FR · NL · EN</span>
+        <span class="desc">Activé dans Payload CMS dès la v1. Switcher dans la nav.</span>
+      </div>
+      <div class="item">
+        <span class="k">Crédits projet</span>
+        <span class="v editorial">Création / Réalisation / Partenaires</span>
+        <span class="desc">Pattern pour distinguer auteur du concept vs disciplines livrées vs collaborateurs.</span>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- FOOTER STRIP -->
+<footer class="footer-strip">
+  <div>BRAVO! · Design preview · v0.9 · 2026-05-25</div>
+  <div><em>Stack : Next.js 16 · Payload CMS 3 · PostgreSQL · Tailwind 4</em></div>
+  <div>9 maquettes · 3 tours · 1 direction</div>
+</footer>
+
+</body>
+</html>

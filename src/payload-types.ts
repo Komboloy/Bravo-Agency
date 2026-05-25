@@ -67,8 +67,11 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    folders: Folder;
     pages: Page;
+    projects: Project;
     posts: Post;
+    team: Team;
     media: Media;
     categories: Category;
     users: User;
@@ -85,12 +88,15 @@ export interface Config {
   };
   collectionsJoins: {
     'payload-folders': {
-      documentsAndFolders: 'payload-folders' | 'media';
+      documentsAndFolders: 'payload-folders' | 'folders';
     };
   };
   collectionsSelect: {
+    folders: FoldersSelect<false> | FoldersSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
+    projects: ProjectsSelect<false> | ProjectsSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
+    team: TeamSelect<false> | TeamSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
@@ -106,9 +112,9 @@ export interface Config {
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('fr' | 'nl' | 'en') | ('fr' | 'nl' | 'en')[];
   globals: {
     header: Header;
     footer: Footer;
@@ -117,7 +123,7 @@ export interface Config {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
   };
-  locale: null;
+  locale: 'fr' | 'nl' | 'en';
   widgets: {
     collections: CollectionsWidget;
   };
@@ -153,10 +159,47 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "folders".
+ */
+export interface Folder {
+  id: number;
+  name: string;
+  folder?: (number | null) | FolderInterface;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-folders".
+ */
+export interface FolderInterface {
+  id: number;
+  name: string;
+  folder?: (number | null) | FolderInterface;
+  documentsAndFolders?: {
+    docs?: (
+      | {
+          relationTo?: 'payload-folders';
+          value: number | FolderInterface;
+        }
+      | {
+          relationTo?: 'folders';
+          value: number | Folder;
+        }
+    )[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  folderType?: 'folders'[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
 export interface Page {
-  id: string;
+  id: number;
   title: string;
   hero: {
     type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
@@ -183,11 +226,15 @@ export interface Page {
             reference?:
               | ({
                   relationTo: 'pages';
-                  value: string | Page;
+                  value: number | Page;
                 } | null)
               | ({
                   relationTo: 'posts';
-                  value: string | Post;
+                  value: number | Post;
+                } | null)
+              | ({
+                  relationTo: 'projects';
+                  value: number | Project;
                 } | null);
             url?: string | null;
             label: string;
@@ -199,7 +246,7 @@ export interface Page {
           id?: string | null;
         }[]
       | null;
-    media?: (string | null) | Media;
+    media?: (number | null) | Media;
   };
   layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
   meta?: {
@@ -207,7 +254,7 @@ export interface Page {
     /**
      * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
      */
-    image?: (string | null) | Media;
+    image?: (number | null) | Media;
     description?: string | null;
   };
   publishedAt?: string | null;
@@ -225,9 +272,9 @@ export interface Page {
  * via the `definition` "posts".
  */
 export interface Post {
-  id: string;
+  id: number;
   title: string;
-  heroImage?: (string | null) | Media;
+  heroImage?: (number | null) | Media;
   content: {
     root: {
       type: string;
@@ -243,18 +290,18 @@ export interface Post {
     };
     [k: string]: unknown;
   };
-  relatedPosts?: (string | Post)[] | null;
-  categories?: (string | Category)[] | null;
+  relatedPosts?: (number | Post)[] | null;
+  categories?: (number | Category)[] | null;
   meta?: {
     title?: string | null;
     /**
      * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
      */
-    image?: (string | null) | Media;
+    image?: (number | null) | Media;
     description?: string | null;
   };
   publishedAt?: string | null;
-  authors?: (string | User)[] | null;
+  authors?: (number | User)[] | null;
   populatedAuthors?:
     | {
         id?: string | null;
@@ -275,7 +322,7 @@ export interface Post {
  * via the `definition` "media".
  */
 export interface Media {
-  id: string;
+  id: number;
   alt?: string | null;
   caption?: {
     root: {
@@ -292,7 +339,6 @@ export interface Media {
     };
     [k: string]: unknown;
   } | null;
-  folder?: (string | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -365,46 +411,20 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-folders".
- */
-export interface FolderInterface {
-  id: string;
-  name: string;
-  folder?: (string | null) | FolderInterface;
-  documentsAndFolders?: {
-    docs?: (
-      | {
-          relationTo?: 'payload-folders';
-          value: string | FolderInterface;
-        }
-      | {
-          relationTo?: 'media';
-          value: string | Media;
-        }
-    )[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
-  };
-  folderType?: 'media'[] | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "categories".
  */
 export interface Category {
-  id: string;
+  id: number;
   title: string;
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
    */
   generateSlug?: boolean | null;
   slug: string;
-  parent?: (string | null) | Category;
+  parent?: (number | null) | Category;
   breadcrumbs?:
     | {
-        doc?: (string | null) | Category;
+        doc?: (number | null) | Category;
         url?: string | null;
         label?: string | null;
         id?: string | null;
@@ -418,7 +438,7 @@ export interface Category {
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
+  id: number;
   name?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -438,6 +458,245 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects".
+ */
+export interface Project {
+  id: number;
+  /**
+   * Nom interne du projet (souvent le nom du client ou de la campagne).
+   */
+  title: string;
+  /**
+   * Phrase courte qui résume le projet (apparaît sous le titre).
+   */
+  tagline?: string | null;
+  client: string;
+  year?: number | null;
+  /**
+   * Affiché sur la home et en tête de liste.
+   */
+  featured?: boolean | null;
+  sector?: ('ong' | 'culture' | 'industry' | 'tech' | 'education' | 'health' | 'public' | 'other') | null;
+  /**
+   * Les disciplines effectivement livrées par BRAVO! sur ce projet. Apparaît dans la meta-bar de la page projet.
+   */
+  services?:
+    | (
+        | 'brand-strategy'
+        | 'visual-identity'
+        | 'website'
+        | 'campaign'
+        | 'art-direction'
+        | 'video'
+        | 'print'
+        | 'social'
+        | 'events'
+        | 'consulting'
+      )[]
+    | null;
+  /**
+   * Personnes qui ont conçu le projet. Utile si Stephan ou Michael l'ont créé dans une autre agence avant BRAVO!, ou si le concept vient d'un partenaire.
+   */
+  creation?:
+    | {
+        /**
+         * Ex : "Stephan Marly"
+         */
+        name: string;
+        /**
+         * Ex : "Direction artistique"
+         */
+        role?: string | null;
+        /**
+         * Si applicable. Ex : "Second Floor"
+         */
+        agency?: string | null;
+        /**
+         * Lien optionnel vers l'agence.
+         */
+        agencyUrl?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Studios, productions, réalisateurs, photographes qui ont travaillé sur le projet avec BRAVO!.
+   */
+  partners?:
+    | {
+        name: string;
+        /**
+         * Ex : "Production", "Réalisation film"
+         */
+        role?: string | null;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Visuel utilisé sur les listings et cartes (format ~16:10).
+   */
+  thumbnail: number | Media;
+  /**
+   * Visuel principal en haut de la page case study (plein écran).
+   */
+  heroImage: number | Media;
+  /**
+   * Comment afficher le hero en haut de la page projet.
+   */
+  heroLayout?: ('high' | 'medium' | 'low') | null;
+  /**
+   * Galerie d’images projet. L’option layout par item permet de varier l’affichage.
+   */
+  gallery?:
+    | {
+        image: number | Media;
+        caption?: string | null;
+        layout?: ('full' | 'contained' | 'half-left' | 'half-right' | 'two-col') | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Pitch en 2-3 phrases du projet.
+   */
+  introduction?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  context?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  challenge?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  solution?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Mets en avant les chiffres clés. Ex : "+38% engagement", "120k vues".
+   */
+  results?:
+    | {
+        /**
+         * Ex : "+38%" ou "120k"
+         */
+        value: string;
+        /**
+         * Ex : "engagement" ou "vues"
+         */
+        label: string;
+        /**
+         * Précision optionnelle.
+         */
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  testimonial?: {
+    quote?: string | null;
+    author?: string | null;
+    /**
+     * Ex : "Directrice communication, WWF Belgium"
+     */
+    role?: string | null;
+    photo?: (number | null) | Media;
+  };
+  /**
+   * Blocs libres pour enrichir la page avec du contenu sur mesure (CTA, galerie média, texte enrichi, etc.).
+   */
+  layout?: (BannerBlock | CallToActionBlock | ContentBlock | MediaBlock)[] | null;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  relatedProjects?: (number | Project)[] | null;
+  publishedAt?: string | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BannerBlock".
+ */
+export interface BannerBlock {
+  style: 'info' | 'warning' | 'error' | 'success';
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'banner';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -467,11 +726,15 @@ export interface CallToActionBlock {
           reference?:
             | ({
                 relationTo: 'pages';
-                value: string | Page;
+                value: number | Page;
               } | null)
             | ({
                 relationTo: 'posts';
-                value: string | Post;
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'projects';
+                value: number | Project;
               } | null);
           url?: string | null;
           label: string;
@@ -517,11 +780,15 @@ export interface ContentBlock {
           reference?:
             | ({
                 relationTo: 'pages';
-                value: string | Page;
+                value: number | Page;
               } | null)
             | ({
                 relationTo: 'posts';
-                value: string | Post;
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'projects';
+                value: number | Project;
               } | null);
           url?: string | null;
           label: string;
@@ -542,7 +809,7 @@ export interface ContentBlock {
  * via the `definition` "MediaBlock".
  */
 export interface MediaBlock {
-  media: string | Media;
+  media: number | Media;
   id?: string | null;
   blockName?: string | null;
   blockType: 'mediaBlock';
@@ -569,12 +836,12 @@ export interface ArchiveBlock {
   } | null;
   populateBy?: ('collection' | 'selection') | null;
   relationTo?: 'posts' | null;
-  categories?: (string | Category)[] | null;
+  categories?: (number | Category)[] | null;
   limit?: number | null;
   selectedDocs?:
     | {
         relationTo: 'posts';
-        value: string | Post;
+        value: number | Post;
       }[]
     | null;
   id?: string | null;
@@ -586,7 +853,7 @@ export interface ArchiveBlock {
  * via the `definition` "FormBlock".
  */
 export interface FormBlock {
-  form: string | Form;
+  form: number | Form;
   enableIntro?: boolean | null;
   introContent?: {
     root: {
@@ -612,7 +879,7 @@ export interface FormBlock {
  * via the `definition` "forms".
  */
 export interface Form {
-  id: string;
+  id: number;
   title: string;
   fields?:
     | (
@@ -782,11 +1049,71 @@ export interface Form {
   createdAt: string;
 }
 /**
+ * Profils des membres de l’équipe affichés sur la page Équipe.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team".
+ */
+export interface Team {
+  id: number;
+  name: string;
+  /**
+   * Ordre d’affichage. Plus petit = en premier.
+   */
+  order?: number | null;
+  /**
+   * Ex : "Création & UX/UI Design"
+   */
+  role: string;
+  photo: number | Media;
+  /**
+   * Variante affichée au hover (optionnel).
+   */
+  photoHover?: (number | null) | Media;
+  bio?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  links?:
+    | {
+        /**
+         * Ex : "LinkedIn", "Site perso"
+         */
+        label: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Optionnel — pour un lien de contact direct.
+   */
+  email?: string | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
-  id: string;
+  id: number;
   /**
    * You will need to rebuild the website when changing this field.
    */
@@ -796,11 +1123,15 @@ export interface Redirect {
     reference?:
       | ({
           relationTo: 'pages';
-          value: string | Page;
+          value: number | Page;
         } | null)
       | ({
           relationTo: 'posts';
-          value: string | Post;
+          value: number | Post;
+        } | null)
+      | ({
+          relationTo: 'projects';
+          value: number | Project;
         } | null);
     url?: string | null;
   };
@@ -812,8 +1143,8 @@ export interface Redirect {
  * via the `definition` "form-submissions".
  */
 export interface FormSubmission {
-  id: string;
-  form: string | Form;
+  id: number;
+  form: number | Form;
   submissionData?:
     | {
         field: string;
@@ -831,18 +1162,23 @@ export interface FormSubmission {
  * via the `definition` "search".
  */
 export interface Search {
-  id: string;
+  id: number;
   title?: string | null;
   priority?: number | null;
-  doc: {
-    relationTo: 'posts';
-    value: string | Post;
-  };
+  doc:
+    | {
+        relationTo: 'posts';
+        value: number | Post;
+      }
+    | {
+        relationTo: 'projects';
+        value: number | Project;
+      };
   slug?: string | null;
   meta?: {
     title?: string | null;
     description?: string | null;
-    image?: (string | null) | Media;
+    image?: (number | null) | Media;
   };
   categories?:
     | {
@@ -860,7 +1196,7 @@ export interface Search {
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: string;
+  id: number;
   key: string;
   data:
     | {
@@ -877,7 +1213,7 @@ export interface PayloadKv {
  * via the `definition` "payload-jobs".
  */
 export interface PayloadJob {
-  id: string;
+  id: number;
   /**
    * Input data provided to the job
    */
@@ -969,52 +1305,64 @@ export interface PayloadJob {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
+        relationTo: 'folders';
+        value: number | Folder;
+      } | null)
+    | ({
         relationTo: 'pages';
-        value: string | Page;
+        value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'projects';
+        value: number | Project;
       } | null)
     | ({
         relationTo: 'posts';
-        value: string | Post;
+        value: number | Post;
+      } | null)
+    | ({
+        relationTo: 'team';
+        value: number | Team;
       } | null)
     | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
       } | null)
     | ({
         relationTo: 'categories';
-        value: string | Category;
+        value: number | Category;
       } | null)
     | ({
         relationTo: 'users';
-        value: string | User;
+        value: number | User;
       } | null)
     | ({
         relationTo: 'redirects';
-        value: string | Redirect;
+        value: number | Redirect;
       } | null)
     | ({
         relationTo: 'forms';
-        value: string | Form;
+        value: number | Form;
       } | null)
     | ({
         relationTo: 'form-submissions';
-        value: string | FormSubmission;
+        value: number | FormSubmission;
       } | null)
     | ({
         relationTo: 'search';
-        value: string | Search;
+        value: number | Search;
       } | null)
     | ({
         relationTo: 'payload-folders';
-        value: string | FolderInterface;
+        value: number | FolderInterface;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -1024,10 +1372,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -1047,11 +1395,21 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "folders_select".
+ */
+export interface FoldersSelect<T extends boolean = true> {
+  name?: T;
+  folder?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1190,6 +1548,99 @@ export interface FormBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects_select".
+ */
+export interface ProjectsSelect<T extends boolean = true> {
+  title?: T;
+  tagline?: T;
+  client?: T;
+  year?: T;
+  featured?: T;
+  sector?: T;
+  services?: T;
+  creation?:
+    | T
+    | {
+        name?: T;
+        role?: T;
+        agency?: T;
+        agencyUrl?: T;
+        id?: T;
+      };
+  partners?:
+    | T
+    | {
+        name?: T;
+        role?: T;
+        url?: T;
+        id?: T;
+      };
+  thumbnail?: T;
+  heroImage?: T;
+  heroLayout?: T;
+  gallery?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        layout?: T;
+        id?: T;
+      };
+  introduction?: T;
+  context?: T;
+  challenge?: T;
+  solution?: T;
+  results?:
+    | T
+    | {
+        value?: T;
+        label?: T;
+        description?: T;
+        id?: T;
+      };
+  testimonial?:
+    | T
+    | {
+        quote?: T;
+        author?: T;
+        role?: T;
+        photo?: T;
+      };
+  layout?:
+    | T
+    | {
+        banner?: T | BannerBlockSelect<T>;
+        cta?: T | CallToActionBlockSelect<T>;
+        content?: T | ContentBlockSelect<T>;
+        mediaBlock?: T | MediaBlockSelect<T>;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+      };
+  relatedProjects?: T;
+  publishedAt?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BannerBlock_select".
+ */
+export interface BannerBlockSelect<T extends boolean = true> {
+  style?: T;
+  content?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
@@ -1221,12 +1672,36 @@ export interface PostsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team_select".
+ */
+export interface TeamSelect<T extends boolean = true> {
+  name?: T;
+  order?: T;
+  role?: T;
+  photo?: T;
+  photoHover?: T;
+  bio?: T;
+  links?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        id?: T;
+      };
+  email?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
-  folder?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1636,7 +2111,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  * via the `definition` "header".
  */
 export interface Header {
-  id: string;
+  id: number;
   navItems?:
     | {
         link: {
@@ -1645,11 +2120,15 @@ export interface Header {
           reference?:
             | ({
                 relationTo: 'pages';
-                value: string | Page;
+                value: number | Page;
               } | null)
             | ({
                 relationTo: 'posts';
-                value: string | Post;
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'projects';
+                value: number | Project;
               } | null);
           url?: string | null;
           label: string;
@@ -1665,7 +2144,7 @@ export interface Header {
  * via the `definition` "footer".
  */
 export interface Footer {
-  id: string;
+  id: number;
   navItems?:
     | {
         link: {
@@ -1674,11 +2153,15 @@ export interface Footer {
           reference?:
             | ({
                 relationTo: 'pages';
-                value: string | Page;
+                value: number | Page;
               } | null)
             | ({
                 relationTo: 'posts';
-                value: string | Post;
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'projects';
+                value: number | Project;
               } | null);
           url?: string | null;
           label: string;
@@ -1756,41 +2239,20 @@ export interface TaskSchedulePublish {
     doc?:
       | ({
           relationTo: 'pages';
-          value: string | Page;
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'projects';
+          value: number | Project;
         } | null)
       | ({
           relationTo: 'posts';
-          value: string | Post;
+          value: number | Post;
         } | null);
     global?: string | null;
-    user?: (string | null) | User;
+    user?: (number | null) | User;
   };
   output?: unknown;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "BannerBlock".
- */
-export interface BannerBlock {
-  style: 'info' | 'warning' | 'error' | 'success';
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'banner';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

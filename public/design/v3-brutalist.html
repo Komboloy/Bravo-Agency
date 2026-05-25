@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BRAVO! — v3 Swiss Brutalist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  :root {
+    --bravo: #4923F4;
+    --paper: #efebe2;
+    --paper-line: #e3ddd0;
+    --ink: #0d0d0d;
+    --rule: #0d0d0d;
+    --rule-thin: rgba(13,13,13,0.2);
+    --sans: 'Raleway', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  ::selection { background: var(--bravo); color: var(--paper); }
+
+  html { font-size: clamp(13px, 0.65vw + 10px, 16px); scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* Vertical print marks every 8 cols */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1rem;
+    padding: 0 clamp(1rem, 1.5vw, 1.5rem);
+  }
+  .col-1 { grid-column: span 1; } .col-2 { grid-column: span 2; }
+  .col-3 { grid-column: span 3; } .col-4 { grid-column: span 4; }
+  .col-5 { grid-column: span 5; } .col-6 { grid-column: span 6; }
+  .col-7 { grid-column: span 7; } .col-8 { grid-column: span 8; }
+  .col-9 { grid-column: span 9; } .col-10 { grid-column: span 10; }
+  .col-11 { grid-column: span 11; } .col-12 { grid-column: span 12; }
+
+  @media (max-width: 800px) {
+    .grid { grid-template-columns: repeat(6, 1fr); }
+    .col-md-3 { grid-column: span 3; }
+    .col-md-6 { grid-column: span 6; }
+  }
+
+  /* HEADER */
+  .topbar {
+    border-bottom: 1px solid var(--ink);
+    padding: 0.7rem clamp(1rem, 1.5vw, 1.5rem);
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--mono); font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .topbar .pulse {
+    display: inline-block; width: 0.55rem; height: 0.55rem; border-radius: 50%;
+    background: var(--bravo); margin-right: 0.5rem;
+    animation: blink 1.6s ease-in-out infinite;
+    vertical-align: -1px;
+  }
+  @keyframes blink { 0%, 100% { opacity:1; } 50% { opacity: 0.35; } }
+  .topbar .right { display: flex; gap: 1.25rem; }
+
+  .nav {
+    border-bottom: 1px solid var(--ink);
+    padding: 1.2rem clamp(1rem, 1.5vw, 1.5rem);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .nav .logo {
+    font-weight: 900;
+    font-size: 1.5rem;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .nav .logo .bang { color: var(--bravo); }
+  .nav-links {
+    display: flex; gap: 2rem; justify-content: center;
+    font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase;
+    font-weight: 600;
+  }
+  .nav-links a {
+    position: relative;
+    padding-bottom: 4px;
+    transition: color .25s;
+  }
+  .nav-links a::after {
+    content:''; position: absolute; left:0; right:0; bottom:0;
+    height:2px; background: var(--bravo);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform .35s cubic-bezier(.7,0,.3,1);
+  }
+  .nav-links a:hover::after { transform: scaleX(1); }
+  .nav .right { font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; display: flex; gap: 1rem; }
+
+  /* HERO */
+  .hero {
+    border-bottom: 2px solid var(--ink);
+    padding: clamp(2rem, 4vw, 4rem) 0 0;
+  }
+  .hero .col-meta {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase;
+    border-right: 1px solid var(--rule-thin); padding-right: 1rem;
+  }
+  .hero .col-meta dl { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem 1rem; }
+  .hero .col-meta dt { opacity: 0.55; }
+  .hero .col-meta dd { font-weight: 700; }
+  .hero .col-meta dd.bravo { color: var(--bravo); }
+  .hero .col-meta .group { margin-bottom: 1.5rem; }
+  .hero .col-meta .group-label {
+    border-top: 1px solid var(--ink); padding-top: 0.5rem; margin-bottom: 0.6rem;
+    font-weight: 700;
+  }
+
+  .hero-headline {
+    font-weight: 900;
+    font-size: clamp(3.5rem, 11vw, 11rem);
+    line-height: 0.85;
+    letter-spacing: -0.06em;
+    margin: 1rem 0 1.5rem;
+  }
+  .hero-headline .accent { color: var(--bravo); }
+  .hero-headline .stroke {
+    -webkit-text-stroke: 2px var(--ink); color: transparent;
+  }
+
+  .hero-statement {
+    border-top: 1px solid var(--ink);
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    font-size: 1.05rem; line-height: 1.55;
+    max-width: 56ch;
+  }
+  .hero-statement strong { color: var(--bravo); }
+
+  .hero-footer {
+    border-top: 2px solid var(--ink);
+    margin-top: 2rem;
+    padding: 1rem clamp(1rem, 1.5vw, 1.5rem);
+    font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+  }
+  .hero-footer > div { display: flex; flex-direction: column; gap: 0.3rem; }
+  .hero-footer .label { opacity: 0.55; }
+  .hero-footer .val { font-weight: 700; font-size: 1.05rem; }
+  .hero-footer .val.bravo { color: var(--bravo); }
+  @media (max-width: 700px) { .hero-footer { grid-template-columns: repeat(2, 1fr); } }
+
+  /* MANIFESTO */
+  .manifesto {
+    border-bottom: 2px solid var(--ink);
+    padding: clamp(3rem, 6vw, 5rem) 0;
+  }
+  .section-head {
+    grid-column: span 12;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 1rem; margin-bottom: 2rem;
+    display: flex; justify-content: space-between; align-items: end;
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .section-head .index { font-weight: 700; }
+  .section-head .index .num { color: var(--bravo); }
+
+  .manifesto h2 {
+    grid-column: span 6;
+    font-weight: 800;
+    font-size: clamp(2rem, 5vw, 4.2rem);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+  }
+  .manifesto h2 .accent { color: var(--bravo); }
+  @media (max-width: 800px) { .manifesto h2 { grid-column: span 6; } }
+
+  .manifesto-body {
+    grid-column: 8 / span 5;
+    font-size: 1rem; line-height: 1.65; max-width: 50ch;
+  }
+  .manifesto-body p + p { margin-top: 0.8rem; }
+  .manifesto-body strong { color: var(--bravo); font-weight: 700; }
+  @media (max-width: 800px) { .manifesto-body { grid-column: span 6; } }
+
+  /* PROJECTS — strict table-like list */
+  .projects {
+    border-bottom: 2px solid var(--ink);
+    padding: clamp(3rem, 6vw, 5rem) 0 0;
+  }
+  .projects .section-head { padding: 0 clamp(1rem, 1.5vw, 1.5rem) 1rem; margin: 0 0 0; border-bottom: 1px solid var(--ink); }
+
+  .project-row {
+    display: grid;
+    grid-template-columns: 4rem 1.4fr 1fr 0.8fr 1.2fr 4rem;
+    gap: 1rem;
+    align-items: center;
+    padding: 1.6rem clamp(1rem, 1.5vw, 1.5rem);
+    border-bottom: 1px solid var(--rule-thin);
+    font-size: 0.92rem;
+    position: relative;
+    transition: background .25s, color .25s;
+  }
+  .project-row:hover { background: var(--bravo); color: var(--paper); }
+  .project-row:hover .num, .project-row:hover .arrow { color: var(--paper); }
+  .project-row .num {
+    font-family: var(--mono); font-weight: 700; color: var(--bravo); transition: color .25s;
+  }
+  .project-row .client {
+    font-family: var(--sans); font-weight: 800;
+    font-size: clamp(1.4rem, 2.5vw, 2.2rem); line-height: 1;
+    letter-spacing: -0.025em;
+  }
+  .project-row .client small {
+    display: block; font-weight: 500; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+    margin-top: 0.4rem; opacity: 0.6;
+  }
+  .project-row:hover .client small { opacity: 1; }
+  .project-row .meta {
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .project-row .tags {
+    display: flex; flex-wrap: wrap; gap: 0.3rem;
+    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .project-row .tags span {
+    padding: 0.2rem 0.5rem; border: 1px solid currentColor; border-radius: 1px;
+  }
+  .project-row .arrow {
+    font-family: var(--mono); font-size: 1.1rem; text-align: right; color: var(--bravo); transition: color .25s, transform .25s;
+  }
+  .project-row:hover .arrow { transform: translateX(0.3rem); }
+
+  @media (max-width: 900px) {
+    .project-row {
+      grid-template-columns: 3rem 1fr;
+      grid-template-rows: auto auto auto auto;
+      gap: 0.5rem 1rem;
+    }
+    .project-row .num { grid-row: 1; }
+    .project-row .client { grid-column: 2; grid-row: 1; }
+    .project-row .meta { grid-column: 2; grid-row: 2; }
+    .project-row .tags { grid-column: 2; grid-row: 3; }
+    .project-row .arrow { grid-column: 2; grid-row: 4; text-align: left; }
+  }
+
+  /* VISUAL STRIP — alternates projects */
+  .strip {
+    height: 12vw; min-height: 8rem; max-height: 14rem;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    border-bottom: 2px solid var(--ink);
+  }
+  .strip > div { position: relative; overflow: hidden; }
+  .strip > div::after {
+    content: attr(data-label);
+    position: absolute; left: 1rem; bottom: 0.6rem;
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--paper); font-weight: 700;
+  }
+  .strip .wwf { background: linear-gradient(135deg, #0c4a3a, #1e7a55 60%, #5fcf94); }
+  .strip .eletheo { background: linear-gradient(180deg, #1a1118, #3a1d3a 60%, var(--bravo)); }
+  .strip .sparkoh { background: linear-gradient(135deg, #ffd83b, #ff7a00 60%, var(--bravo)); }
+
+  /* SERVICES — index list */
+  .services {
+    border-bottom: 2px solid var(--ink);
+    padding: clamp(3rem, 6vw, 5rem) 0;
+  }
+  .services-list { grid-column: 1 / span 12; display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  @media (max-width: 700px) { .services-list { grid-template-columns: 1fr; } }
+  .service {
+    display: grid; grid-template-columns: 3rem 1fr auto;
+    padding: 1.4rem 1rem; gap: 1rem;
+    border-bottom: 1px solid var(--rule-thin);
+    border-right: 1px solid var(--rule-thin);
+    align-items: baseline;
+    transition: background .25s;
+    cursor: default;
+  }
+  .service:hover { background: rgba(73,35,244,0.08); }
+  .service .num { font-family: var(--mono); font-weight: 700; color: var(--bravo); font-size: 0.85rem; letter-spacing: 0.04em; }
+  .service h3 { font-weight: 700; font-size: clamp(1.2rem, 2vw, 1.7rem); letter-spacing: -0.02em; }
+  .service p { font-size: 0.92rem; opacity: 0.7; max-width: 36ch; margin-top: 0.25rem; }
+  .service .price { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.6; }
+
+  /* NEWS */
+  .news {
+    border-bottom: 2px solid var(--ink);
+    padding: clamp(3rem, 6vw, 5rem) 0;
+  }
+  .news-grid { grid-column: 1 / span 12; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
+  @media (max-width: 800px) { .news-grid { grid-template-columns: 1fr; } }
+  .news-item {
+    padding: 1.5rem 1.2rem;
+    border-right: 1px solid var(--rule-thin);
+    border-top: 1px solid var(--ink);
+  }
+  .news-item:last-child { border-right: 0; }
+  .news-item .date {
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--bravo); font-weight: 700; margin-bottom: 1rem;
+    display: flex; justify-content: space-between;
+  }
+  .news-item .date .cat { color: var(--ink); opacity: 0.6; }
+  .news-item h4 {
+    font-weight: 700; font-size: 1.5rem; line-height: 1.15;
+    letter-spacing: -0.02em; margin-bottom: 0.6rem;
+  }
+  .news-item p { font-size: 0.9rem; line-height: 1.55; opacity: 0.75; }
+  .news-item .read {
+    display: inline-block; margin-top: 1rem;
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase;
+    border-bottom: 1px solid var(--ink); padding-bottom: 2px; font-weight: 700;
+  }
+  .news-item .read:hover { color: var(--bravo); border-bottom-color: var(--bravo); }
+
+  /* TEAM */
+  .team {
+    border-bottom: 2px solid var(--ink);
+    padding: clamp(3rem, 6vw, 5rem) 0;
+  }
+  .team-grid { grid-column: 1 / span 12; display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  @media (max-width: 700px) { .team-grid { grid-template-columns: 1fr; } }
+  .person {
+    padding: 1.5rem 1.2rem;
+    border-right: 1px solid var(--rule-thin);
+    border-top: 1px solid var(--ink);
+    display: grid;
+    grid-template-columns: 9rem 1fr;
+    gap: 1.5rem;
+  }
+  .person:last-child { border-right: 0; }
+  @media (max-width: 600px) { .person { grid-template-columns: 1fr; } }
+  .person-photo {
+    aspect-ratio: 4/5;
+    background:
+      linear-gradient(135deg, #c8c2b3 0%, #9c9587 100%);
+    position: relative; overflow: hidden;
+  }
+  .person-photo::after {
+    content:''; position: absolute; inset:0;
+    background: linear-gradient(180deg, transparent 60%, rgba(73,35,244,0.18));
+  }
+  .person .info { display: flex; flex-direction: column; gap: 0.4rem; }
+  .person .meta { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; }
+  .person .meta .id { color: var(--bravo); font-weight: 700; }
+  .person h4 { font-weight: 800; font-size: clamp(1.4rem, 2.4vw, 2rem); letter-spacing: -0.025em; line-height: 1; }
+  .person .role { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; margin-bottom: 0.6rem; }
+  .person p { font-size: 0.92rem; line-height: 1.55; opacity: 0.78; max-width: 38ch; }
+  .person .links { margin-top: auto; display: flex; gap: 1rem; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .person .links a { border-bottom: 1px solid var(--ink); padding-bottom: 2px; }
+  .person .links a:hover { color: var(--bravo); border-color: var(--bravo); }
+
+  /* CONTACT */
+  .contact {
+    border-bottom: 2px solid var(--ink);
+    padding: clamp(4rem, 8vw, 7rem) 0;
+    background: var(--ink); color: var(--paper);
+  }
+  .contact .section-head { color: var(--paper); border-color: var(--paper); }
+  .contact .section-head .index .num { color: var(--bravo); }
+  .contact h2 {
+    grid-column: 1 / span 12;
+    font-weight: 900;
+    font-size: clamp(3rem, 9vw, 9rem);
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+  }
+  .contact h2 .accent { color: var(--bravo); }
+  .contact h2 .stroke { -webkit-text-stroke: 2px var(--paper); color: transparent; }
+  .contact-block { grid-column: 1 / span 6; margin-top: 2rem; display: grid; gap: 1rem; }
+  @media (max-width: 800px) { .contact-block { grid-column: 1 / span 12; } }
+  .contact-email {
+    font-family: var(--sans); font-weight: 800;
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    letter-spacing: -0.02em;
+    border-bottom: 2px solid var(--paper); padding-bottom: 0.4rem;
+    display: inline-block;
+    transition: color .25s, border-color .25s;
+  }
+  .contact-email:hover { color: var(--bravo); border-bottom-color: var(--bravo); }
+  .contact-meta {
+    grid-column: 8 / span 5; margin-top: 2rem;
+    font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase;
+    display: grid; gap: 0.5rem;
+  }
+  @media (max-width: 800px) { .contact-meta { grid-column: 1 / span 12; } }
+  .contact-meta .row { display: grid; grid-template-columns: 8rem 1fr; gap: 1rem; padding: 0.5rem 0; border-top: 1px solid rgba(239,235,226,0.18); }
+  .contact-meta .row .k { opacity: 0.55; }
+  .contact-meta .row a { border-bottom: 1px solid transparent; padding-bottom: 1px; }
+  .contact-meta .row a:hover { border-bottom-color: var(--bravo); color: var(--bravo); }
+
+  /* FOOTER */
+  .footer {
+    padding: 1rem clamp(1rem, 1.5vw, 1.5rem);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    font-family: var(--mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  @media (max-width: 700px) { .footer { grid-template-columns: 1fr 1fr; } }
+  .footer .col { display: flex; flex-direction: column; gap: 0.3rem; }
+  .footer .col .label { font-weight: 700; }
+  .footer .col a { opacity: 0.7; }
+  .footer .col a:hover { color: var(--bravo); opacity: 1; }
+
+  /* Reveal */
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity .9s ease-out, transform .9s ease-out; }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* Back pin */
+  .back-pin {
+    position: fixed; left: 1rem; bottom: 1rem; z-index: 1000;
+    font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+    background: var(--ink); color: var(--paper);
+    padding: 0.55rem 0.9rem; border-radius: 0;
+    transition: background .25s, color .25s;
+    font-weight: 700;
+  }
+  .back-pin:hover { background: var(--bravo); }
+</style>
+</head>
+<body>
+
+<a class="back-pin" href="./index.html">← Comparer les 3 directions</a>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div><span class="pulse"></span>Bruxelles · Lu., 25.05.2026 · 19:21 CET</div>
+  <div class="right">
+    <span>FR</span><span style="opacity:0.4">NL</span><span style="opacity:0.4">EN</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<header class="nav">
+  <a href="#" class="logo">BRAVO<span class="bang">!</span></a>
+  <nav class="nav-links">
+    <a href="#manifesto">Manifesto</a>
+    <a href="#travaux">Travaux</a>
+    <a href="#services">Services</a>
+    <a href="#equipe">Équipe</a>
+    <a href="#nouvelles">News</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <div class="right">
+    <span>v.2026.01</span>
+    <a href="#contact">Démarrer →</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="grid">
+    <aside class="col-3 col-md-6 col-meta">
+      <div class="group">
+        <div class="group-label">Établissement</div>
+        <dl>
+          <dt>Statut</dt><dd class="bravo">Active</dd>
+          <dt>Depuis</dt><dd>2018</dd>
+          <dt>Lieu</dt><dd>Bruxelles · BE</dd>
+          <dt>Effectif</dt><dd>2 + Réseau</dd>
+        </dl>
+      </div>
+      <div class="group">
+        <div class="group-label">Spécialités</div>
+        <dl>
+          <dt>01</dt><dd>Stratégie</dd>
+          <dt>02</dt><dd>Création</dd>
+          <dt>03</dt><dd>Activation</dd>
+          <dt>04</dt><dd>Édition</dd>
+        </dl>
+      </div>
+      <div class="group">
+        <div class="group-label">Index</div>
+        <dl style="grid-template-columns:1fr;">
+          <dd>→ Manifesto · §02</dd>
+          <dd>→ Travaux · §03</dd>
+          <dd>→ Services · §04</dd>
+          <dd>→ Nouvelles · §05</dd>
+          <dd>→ Équipe · §06</dd>
+          <dd>→ Contact · §07</dd>
+        </dl>
+      </div>
+    </aside>
+    <div class="col-9 col-md-6">
+      <h1 class="hero-headline reveal">
+        Les idées<br />en <span class="accent">actions</span>.
+      </h1>
+      <p class="hero-statement reveal">
+        Bravo<strong>!</strong> est une <strong>agence de communication multidisciplinaire</strong> qui accompagne l'engagement des marques et génère pour elles des expériences positives avec le public. Une goutte d'eau dans l'océan — heureusement, nous ne sommes pas seuls.
+      </p>
+    </div>
+  </div>
+
+  <div class="hero-footer">
+    <div><span class="label">Projets livrés</span><span class="val bravo">38+</span></div>
+    <div><span class="label">Clients récurrents</span><span class="val">12</span></div>
+    <div><span class="label">Secteurs couverts</span><span class="val">7</span></div>
+    <div><span class="label">Bonnes nouvelles publiées</span><span class="val">26</span></div>
+  </div>
+</section>
+
+<!-- MANIFESTO -->
+<section class="manifesto" id="manifesto">
+  <div class="grid">
+    <div class="section-head">
+      <div class="index"><span class="num">§02</span> · Manifesto</div>
+      <div>Ce que nous faisons / pourquoi</div>
+    </div>
+    <h2 class="reveal">
+      Porteurs<br />de sens.<br />
+      <span class="accent">Déclencheurs</span><br />d'actions.
+    </h2>
+    <div class="manifesto-body reveal">
+      <p>
+        Chez Bravo<strong>!</strong>, nous travaillons activement et pro-activement avec nos idées, notre savoir-faire et nos tripes.
+      </p>
+      <p>
+        Nous accompagnons nos clients et partenaires, ou nous lançons nos propres projets pour agir sur le monde. Pas pour faire joli — pour faire bouger.
+      </p>
+      <p>
+        Nous ne savons pas tout faire. Et c'est tant mieux : autour de nous gravite un écosystème de partenaires précis et fidèles, choisis pour ce qu'ils font de mieux.
+      </p>
+      <p>
+        La communication n'est pas un emballage. C'est une infrastructure d'attention, de confiance et d'engagement.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="projects" id="travaux">
+  <div class="grid">
+    <div class="section-head">
+      <div class="index"><span class="num">§03</span> · Travaux</div>
+      <div>Index chronologique · 38 projets · Affichage 03</div>
+    </div>
+  </div>
+
+  <a href="#" class="project-row reveal">
+    <div class="num">01</div>
+    <div class="client">WWF<small>Together for tomorrow · Campagne</small></div>
+    <div class="meta">2024 · Belgium</div>
+    <div class="tags"><span>Campagne</span><span>Identité</span><span>Film</span></div>
+    <div class="meta">Engagement · ONG</div>
+    <div class="arrow">→</div>
+  </a>
+
+  <a href="#" class="project-row reveal">
+    <div class="num">02</div>
+    <div class="client">Eletheo<small>Marque engagée · Repositionnement</small></div>
+    <div class="meta">2024 · Belgium</div>
+    <div class="tags"><span>Stratégie</span><span>Identité</span><span>Web</span></div>
+    <div class="meta">Produit · Engagement</div>
+    <div class="arrow">→</div>
+  </a>
+
+  <a href="#" class="project-row reveal">
+    <div class="num">03</div>
+    <div class="client">Spark OH!<small>Centre de découverte des sciences · Identité</small></div>
+    <div class="meta">2023 · Frameries</div>
+    <div class="tags"><span>Identité</span><span>Campagne</span><span>Édition</span></div>
+    <div class="meta">Culture · Public</div>
+    <div class="arrow">→</div>
+  </a>
+
+  <a href="#" class="project-row reveal">
+    <div class="num">04</div>
+    <div class="client">Le jardin<small>Projet auto-initié · 3 saisons</small></div>
+    <div class="meta">2023 · Bruxelles</div>
+    <div class="tags"><span>Initiative</span><span>Édition</span></div>
+    <div class="meta">Interne · Recherche</div>
+    <div class="arrow">→</div>
+  </a>
+
+  <a href="#" class="project-row reveal">
+    <div class="num">05</div>
+    <div class="client">Machao<small>Podcast d'enquête · Année II</small></div>
+    <div class="meta">2024 · Bruxelles</div>
+    <div class="tags"><span>Initiative</span><span>Audio</span></div>
+    <div class="meta">Interne · Édition</div>
+    <div class="arrow">→</div>
+  </a>
+
+  <div class="strip" aria-hidden="true">
+    <div class="wwf" data-label="WWF · 01/2024"></div>
+    <div class="eletheo" data-label="Eletheo · 02/2024"></div>
+    <div class="sparkoh" data-label="Spark OH! · 03/2023"></div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="grid">
+    <div class="section-head">
+      <div class="index"><span class="num">§04</span> · Services</div>
+      <div>Capacités internes · Réseau externe par activation</div>
+    </div>
+    <div class="services-list">
+      <div class="service reveal">
+        <div class="num">01</div>
+        <div>
+          <h3>Stratégie de marque</h3>
+          <p>Positionnement, plateforme, narrative. La fondation invisible que tout le reste rend visible.</p>
+        </div>
+        <div class="price">Engagement · 6–12s</div>
+      </div>
+      <div class="service reveal">
+        <div class="num">02</div>
+        <div>
+          <h3>Identité visuelle</h3>
+          <p>Logo, système, déclinaisons. Une marque qui se tient debout sur tous les supports.</p>
+        </div>
+        <div class="price">Projet · 8–14s</div>
+      </div>
+      <div class="service reveal">
+        <div class="num">03</div>
+        <div>
+          <h3>Campagne</h3>
+          <p>Concept, production, déploiement. On déclenche, on mesure, on ajuste.</p>
+        </div>
+        <div class="price">Projet · 4–10s</div>
+      </div>
+      <div class="service reveal">
+        <div class="num">04</div>
+        <div>
+          <h3>Site &amp; produit digital</h3>
+          <p>UX/UI, intégration, CMS. Des interfaces qu'on assume de signer.</p>
+        </div>
+        <div class="price">Projet · 6–16s</div>
+      </div>
+      <div class="service reveal">
+        <div class="num">05</div>
+        <div>
+          <h3>Édition &amp; print</h3>
+          <p>Rapports, magazines, books. La matière, le grammage, l'ennoblissement.</p>
+        </div>
+        <div class="price">Projet · 4–10s</div>
+      </div>
+      <div class="service reveal" style="border-right:0;">
+        <div class="num">06</div>
+        <div>
+          <h3>Conseil</h3>
+          <p>Pour les marques qui ont une équipe interne et qui ont besoin d'un cap.</p>
+        </div>
+        <div class="price">Récurrent</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWS -->
+<section class="news" id="nouvelles">
+  <div class="grid">
+    <div class="section-head">
+      <div class="index"><span class="num">§05</span> · Bonnes nouvelles</div>
+      <div>Trois dernières publications · Voir toutes →</div>
+    </div>
+    <div class="news-grid">
+      <article class="news-item reveal">
+        <div class="date"><span>14.03.2026</span><span class="cat">Édito</span></div>
+        <h4>Arrêter de vendre des deliverables.</h4>
+        <p>Un édito sur ce que devient le métier d'agence quand on remet la transformation au centre, plutôt que la production.</p>
+        <a href="#" class="read">Lire l'article →</a>
+      </article>
+      <article class="news-item reveal">
+        <div class="date"><span>28.02.2026</span><span class="cat">Projet interne</span></div>
+        <h4>Le jardin continue de pousser.</h4>
+        <p>Trois saisons après le lancement, retour sur les apprentissages d'un projet auto-initié et sur ce qu'il a déclenché chez nous.</p>
+        <a href="#" class="read">Lire l'article →</a>
+      </article>
+      <article class="news-item reveal">
+        <div class="date"><span>07.02.2026</span><span class="cat">Podcast</span></div>
+        <h4>Machao, année II.</h4>
+        <p>Bilan d'étape de notre podcast d'enquête sur les communications militantes — six épisodes, six déclics.</p>
+        <a href="#" class="read">Lire l'article →</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="team" id="equipe">
+  <div class="grid">
+    <div class="section-head">
+      <div class="index"><span class="num">§06</span> · Équipe</div>
+      <div>Effectif : 2 · Réseau actif : 24 · Mis à jour 05/2026</div>
+    </div>
+    <div class="team-grid">
+      <article class="person reveal">
+        <div class="person-photo"></div>
+        <div class="info">
+          <div class="meta"><span class="id">01</span> · Co-fondateur</div>
+          <h4>Stephan Marly</h4>
+          <div class="role">Concept &amp; Activation</div>
+          <p>20 ans à transformer des briefs en idées qui survivent au premier comité de marque. Spécialités : stratégie, écriture, direction de campagne.</p>
+          <div class="links"><a href="#">LinkedIn</a><a href="mailto:stephan@bravo-agency.be">Email</a></div>
+        </div>
+      </article>
+      <article class="person reveal" style="border-right:0;">
+        <div class="person-photo"></div>
+        <div class="info">
+          <div class="meta"><span class="id">02</span> · Co-fondateur</div>
+          <h4>Michael Vargiakakis</h4>
+          <div class="role">Création &amp; UX/UI Design</div>
+          <p>Direction artistique, identité, design d'interfaces. Toujours du côté de la simplicité utile. Engagé sur la qualité d'exécution.</p>
+          <div class="links"><a href="#">LinkedIn</a><a href="mailto:michael@bravo-agency.be">Email</a></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="grid">
+    <div class="section-head">
+      <div class="index"><span class="num">§07</span> · Contact</div>
+      <div>Premier pas · Délai de réponse 48h ouvrées</div>
+    </div>
+    <h2 class="reveal">
+      Venez<br /><span class="stroke">travailler</span> avec <span class="accent">nous</span>.
+    </h2>
+    <div class="contact-block reveal">
+      <a href="mailto:hello@bravo-agency.be" class="contact-email">hello@bravo-agency.be</a>
+      <p style="opacity:0.7; max-width:38ch;">Un message, un brief, une intuition — on vous répond sous 48h.</p>
+    </div>
+    <div class="contact-meta reveal">
+      <div class="row"><span class="k">Adresse</span><a href="#">Rue exemple 12, 1000 Bruxelles</a></div>
+      <div class="row"><span class="k">Téléphone</span><a href="tel:+3220000000">+32 2 000 00 00</a></div>
+      <div class="row"><span class="k">LinkedIn</span><a href="#">/company/bravo-agency</a></div>
+      <div class="row"><span class="k">Instagram</span><a href="#">@bravo.agency</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="col">
+    <span class="label">BRAVO!</span>
+    <span>Agence créative</span>
+    <span>Bruxelles · Belgique</span>
+  </div>
+  <div class="col">
+    <span class="label">Index</span>
+    <a href="#manifesto">Manifesto</a>
+    <a href="#travaux">Travaux</a>
+    <a href="#services">Services</a>
+  </div>
+  <div class="col">
+    <span class="label">Studio</span>
+    <a href="#equipe">Équipe</a>
+    <a href="#nouvelles">Bonnes nouvelles</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="col">
+    <span class="label">© 2026</span>
+    <a href="#">Mentions</a>
+    <a href="#">Cookies</a>
+    <a href="#">Crédits</a>
+  </div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+</script>
+
+</body>
+</html>
