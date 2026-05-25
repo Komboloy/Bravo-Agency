@@ -186,12 +186,12 @@ export default async function Home() {
             </span>
             <span className="font-light">?</span>
           </h2>
-          <a
-            href="mailto:hello@bravo-agency.be"
+          <Link
+            href="/contact"
             className="inline-flex items-center gap-3 px-8 py-5 rounded-full bg-[var(--color-ink)] text-[var(--color-paper)] font-sans font-bold text-[1rem] hover:bg-[var(--color-bravo)] hover:gap-5 transition-[background,gap,transform] hover:-translate-y-0.5"
           >
-            hello@bravo-agency.be <span>→</span>
-          </a>
+            Démarrer la conversation <span>→</span>
+          </Link>
         </div>
       </section>
     </main>

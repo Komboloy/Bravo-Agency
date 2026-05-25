@@ -14,7 +14,7 @@ const FALLBACK_MENU = [
   { label: 'Travaux', href: '/projets' },
   { label: 'Studio', href: '/studio' },
   { label: 'News', href: '/posts' },
-  { label: 'Contact', href: '/#contact' },
+  { label: 'Contact', href: '/contact' },
 ] as const
 
 const LOCALES = ['fr', 'nl', 'en'] as const
@@ -51,6 +51,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
   const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
 
   // Build the menu from Payload's `header` global. Fall back to defaults if empty.
   const cmsMenu: NavLink[] = (data?.navItems || [])
@@ -63,12 +64,49 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
     setMenuOpen(false)
   }, [pathname])
 
-  // Scroll detection for the liquid glass morph
+  // Scroll detection + probe of section under the nav to adapt liquid-glass theme
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    const update = () => {
+      const y = window.scrollY
+      setScrolled(y > 60)
+
+      // Probe the underlying section below the nav pill (y ≈ 90)
+      const probeX = window.innerWidth / 2
+      const probeY = 90
+      // Temporarily ignore the nav itself by using elementsFromPoint and skipping our element
+      const stack = (document.elementsFromPoint
+        ? document.elementsFromPoint(probeX, probeY)
+        : [document.elementFromPoint(probeX, probeY)]).filter(Boolean) as HTMLElement[]
+      // Find first element that's NOT inside our fixed nav / mobile menu
+      const underlying = stack.find(
+        (el) => !el.closest('[data-bravo-nav]') && !el.closest('[data-bravo-mobile-menu]'),
+      )
+      if (!underlying) return
+
+      // Walk up to find a meaningful background color
+      let cur: HTMLElement | null = underlying
+      while (cur) {
+        const bg = window.getComputedStyle(cur).backgroundColor
+        const m = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/)
+        const alpha = m && m[4] !== undefined ? parseFloat(m[4]) : 1
+        if (m && alpha > 0.5) {
+          const r = +m[1], g = +m[2], b = +m[3]
+          const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+          setTheme(lum > 0.55 ? 'light' : 'dark')
+          return
+        }
+        cur = cur.parentElement
+      }
+      // Default to dark
+      setTheme('dark')
+    }
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    return () => {
+      window.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+    }
   }, [])
 
   // Lock body scroll when mobile menu is open
@@ -98,38 +136,48 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
   return (
     <>
       <nav
+        data-bravo-nav
         aria-label="Navigation principale"
         className={[
           'fixed top-0 left-1/2 -translate-x-1/2 z-50 w-full',
           'grid grid-cols-[auto_1fr_auto] items-center gap-6',
           'font-mono text-[0.72rem] tracking-[0.08em] uppercase font-medium',
-          'transition-[background,border-color,max-width,width,box-shadow,padding,border-radius,top,backdrop-filter]',
-          'duration-500',
+          'transition-all duration-500',
+          'text-[var(--color-paper)]',
           scrolled
-            ? // Liquid glass scrolled pill
-              [
-                'top-4 max-w-[1100px] w-[calc(100%-2rem)]',
-                'rounded-full',
-                'px-5 py-2.5 sm:px-6 sm:py-3',
-                'border border-[rgba(244,237,225,0.22)]',
-                'backdrop-blur-[28px] saturate-[1.7]',
-                'shadow-[0_22px_56px_-10px_rgba(73,35,244,0.55),0_6px_18px_-6px_rgba(5,5,7,0.4),0_1px_0_rgba(255,255,255,0.22)_inset,0_0_0_1px_rgba(255,255,255,0.05)_inset]',
-                'text-[var(--color-paper)]',
-              ].join(' ')
-            : // Initial transparent full-width state
-              [
-                'max-w-full',
-                'px-6 sm:px-10 py-5',
-                'border border-transparent',
-                'rounded-none',
-                'text-[var(--color-paper)]',
-              ].join(' '),
-          // Background tinted gradient ONLY when scrolled (the BRAVO liquid glass)
-          scrolled &&
-            'bg-[linear-gradient(180deg,rgba(255,255,255,0.10)_0%,rgba(255,255,255,0)_55%),rgba(73,35,244,0.55)]',
-        ]
-          .filter(Boolean)
-          .join(' ')}
+            ? 'top-4 max-w-[1100px] w-[calc(100%-2rem)] rounded-full px-5 py-2.5 sm:px-6 sm:py-3 border'
+            : 'max-w-full top-0 px-6 sm:px-10 py-5 border border-transparent rounded-none',
+        ].join(' ')}
+        style={
+          scrolled
+            ? {
+                // Liquid glass — translucent tint adapts to the section underneath
+                background:
+                  theme === 'light'
+                    ? // DARK glass over light sections — translucent ink, cream text readable, background blurs through
+                      'linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.02) 40%, transparent 70%), rgba(5,5,7,0.58)'
+                    : // BRAVO glass over dark sections — original liquid glass effect
+                      'linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.04) 35%, transparent 70%), rgba(73,35,244,0.55)',
+                borderColor:
+                  theme === 'light'
+                    ? 'rgba(244,237,225,0.18)'
+                    : 'rgba(244,237,225,0.22)',
+                boxShadow:
+                  theme === 'light'
+                    ? '0 22px 56px -10px rgba(5,5,7,0.5), 0 6px 18px -6px rgba(5,5,7,0.35), 0 1px 0 rgba(255,255,255,0.20) inset, 0 0 0 1px rgba(255,255,255,0.04) inset'
+                    : '0 22px 56px -10px rgba(73,35,244,0.55), 0 6px 18px -6px rgba(5,5,7,0.4), 0 1px 0 rgba(255,255,255,0.22) inset, 0 0 0 1px rgba(255,255,255,0.05) inset',
+                backdropFilter: 'blur(28px) saturate(170%)',
+                WebkitBackdropFilter: 'blur(28px) saturate(170%)',
+                textShadow:
+                  theme === 'light'
+                    ? '0 1px 2px rgba(5,5,7,0.65)'
+                    : '0 1px 2px rgba(5,5,7,0.45)',
+              }
+            : {
+                // Initial transparent over hero — text-shadow for readability
+                textShadow: '0 1px 4px rgba(5,5,7,0.55)',
+              }
+        }
       >
         {/* Logo */}
         <Link
@@ -168,7 +216,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
             ))}
           </div>
           <Link
-            href="/#contact"
+            href="/contact"
             className="hidden xs:inline-block px-4 py-2 rounded-full border border-current font-sans font-semibold whitespace-nowrap transition-colors hover:bg-[var(--color-paper)] hover:text-[var(--color-ink)] max-[460px]:hidden max-[640px]:text-[0.68rem] max-[640px]:px-3.5 max-[640px]:py-1.5"
           >
             On en parle
@@ -211,6 +259,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
       {/* MOBILE MENU OVERLAY — liquid glass BRAVO color full-screen */}
       <div
         id="mobileMenu"
+        data-bravo-mobile-menu
         aria-hidden={!menuOpen}
         className={[
           'fixed inset-0 z-40 overflow-hidden transition-opacity duration-500',
@@ -288,7 +337,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
               ))}
             </div>
             <Link
-              href="/#contact"
+              href="/contact"
               onClick={() => setMenuOpen(false)}
               className="px-5 py-3 rounded-full bg-[var(--color-paper)] text-[var(--color-ink)] font-sans font-bold text-sm transition-[background,color,transform] hover:bg-[var(--color-ink)] hover:text-[var(--color-paper)] hover:-translate-y-0.5"
             >

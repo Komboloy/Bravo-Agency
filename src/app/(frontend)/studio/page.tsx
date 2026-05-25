@@ -223,12 +223,12 @@ export default async function StudioPage() {
             Pour chaque projet, on assemble l'équipe qu'il mérite — pas celle qu'on a sous la
             main. C'est ce qui fait que nos livrables ne se ressemblent pas tous.
           </p>
-          <a
-            href="mailto:hello@bravo-agency.be"
+          <Link
+            href="/contact"
             className="inline-flex items-center gap-3 mt-10 px-8 py-5 rounded-full bg-[var(--color-ink)] text-[var(--color-paper)] font-sans font-bold text-[1rem] hover:bg-[var(--color-bravo)] hover:gap-5 transition-[background,gap,transform] hover:-translate-y-0.5"
           >
             Discutons d'un projet <span>→</span>
-          </a>
+          </Link>
         </div>
       </section>
     </main>
