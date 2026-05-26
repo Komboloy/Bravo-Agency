@@ -1,0 +1,26 @@
+{
+  "name": "BRAVO! Agency",
+  "short_name": "BRAVO!",
+  "description": "Agence de communication multidisciplinaire à Bruxelles. Les idées en actions.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#050507",
+  "theme_color": "#4923F4",
+  "orientation": "portrait-primary",
+  "lang": "fr-BE",
+  "categories": ["business", "design", "marketing"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
+    }
+  ]
+}

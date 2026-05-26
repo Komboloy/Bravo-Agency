@@ -70,8 +70,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     >
       <head>
         <InitTheme />
-        <link href="/favicon.ico" rel="icon" sizes="32x32" />
-        <link href="/favicon.svg" rel="image/svg+xml" type="image/svg+xml" />
+        <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+        <link href="/favicon.ico" rel="alternate icon" sizes="32x32" />
+        <link href="/favicon.svg" rel="apple-touch-icon" />
+        <link href="/manifest.webmanifest" rel="manifest" />
+        <meta name="theme-color" content="#4923F4" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#050507" media="(prefers-color-scheme: dark)" />
+        <meta name="apple-mobile-web-app-title" content="BRAVO!" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         {/* Schema.org Organization — sitewide */}
         <JsonLd
           data={{
