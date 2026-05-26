@@ -25,7 +25,7 @@ import {
   OverviewField,
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
-import { slugField } from 'payload'
+import { bravoSlug } from '@/fields/bravoSlug'
 
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
@@ -218,7 +218,7 @@ export const Posts: CollectionConfig<'posts'> = {
         },
       ],
     },
-    slugField(),
+    bravoSlug(),
   ],
   hooks: {
     afterChange: [revalidatePost],

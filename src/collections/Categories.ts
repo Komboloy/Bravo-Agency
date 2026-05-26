@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
-import { slugField } from 'payload'
+import { bravoSlug } from '@/fields/bravoSlug'
 
 export const Categories: CollectionConfig = {
   slug: 'categories',
@@ -25,8 +25,6 @@ export const Categories: CollectionConfig = {
       type: 'text',
       required: true,
     },
-    slugField({
-      position: undefined,
-    }),
+    bravoSlug({ position: undefined }),
   ],
 }

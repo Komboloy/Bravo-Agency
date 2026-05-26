@@ -8,7 +8,7 @@ import {
   InlineToolbarFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
-import { slugField } from 'payload'
+import { bravoSlug } from '@/fields/bravoSlug'
 
 import {
   MetaDescriptionField,
@@ -586,7 +586,7 @@ export const Projects: CollectionConfig<'projects'> = {
         ],
       },
     },
-    slugField(),
+    bravoSlug(),
   ],
   hooks: {
     beforeChange: [populatePublishedAt],

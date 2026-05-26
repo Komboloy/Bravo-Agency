@@ -14,7 +14,7 @@ import { StatsGrid } from '../../blocks/StatsGrid/config'
 import { ImageOverlayCard } from '../../blocks/ImageOverlayCard/config'
 import { ProjectShowcase } from '../../blocks/ProjectShowcase/config'
 import { hero } from '@/heros/config'
-import { slugField } from 'payload'
+import { bravoSlug } from '@/fields/bravoSlug'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { revalidateDelete, revalidatePage } from './hooks/revalidatePage'
@@ -140,7 +140,7 @@ export const Pages: CollectionConfig<'pages'> = {
         position: 'sidebar',
       },
     },
-    slugField(),
+    bravoSlug(),
   ],
   hooks: {
     afterChange: [revalidatePage],

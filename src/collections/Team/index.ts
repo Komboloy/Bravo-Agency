@@ -5,7 +5,7 @@ import {
   InlineToolbarFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
-import { slugField } from 'payload'
+import { bravoSlug } from '@/fields/bravoSlug'
 
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
@@ -123,7 +123,7 @@ export const Team: CollectionConfig<'team'> = {
       type: 'email',
       admin: { description: 'Optionnel — pour un lien de contact direct.' },
     },
-    slugField({ useAsSlug: 'name' }),
+    bravoSlug({ useAsSlug: 'name' }),
   ],
   versions: {
     drafts: {
