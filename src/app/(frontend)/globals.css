@@ -685,3 +685,55 @@ html[data-theme='light'] {
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
+
+/* =============================================================
+   Home sections — display rich text mapping (V7 reference)
+   Different from case-study editorial : ici on veut du display monumental partout.
+   - *italique* → Big Shoulders font-light (300), pas Fraunces
+   - **gras**   → couleur d'accent (BRAVO ou BRAVO bright) via --display-accent
+   - Chaque heading reste sur une ligne (`white-space: nowrap`). Pour faire un titre
+     multi-ligne, met chaque phrase sur sa propre ligne dans Lexical (Enter normal).
+   - Le size par section se règle via la var `--display-size` (inline style).
+   ============================================================= */
+.prose-home-display,
+.prose-home-display h1,
+.prose-home-display h2,
+.prose-home-display h3 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.015em;
+  line-height: 0.92;
+  font-size: var(--display-size, clamp(2.8rem, 8vw, 8.5rem));
+  color: var(--display-color, currentColor);
+  margin: 0;
+  white-space: nowrap;
+}
+.prose-home-display em {
+  font-style: normal;
+  font-weight: 300;
+  font-family: inherit;
+}
+.prose-home-display strong {
+  font-weight: 800;
+  color: var(--display-accent, currentColor);
+}
+
+/* Hero variant — tighter line-height for the larger sizes used by HeroCarousel */
+.prose-home-display.hero h1,
+.prose-home-display.hero h2 {
+  line-height: 0.82;
+  font-size: var(--display-size, clamp(4rem, 15vw, 18rem));
+}
+
+/* Wrap variant — allows natural wrapping (e.g. manifeste where V7 has the poem-like
+   narrow column with phrases wrapping, or project tagline that can run multi-line). */
+.prose-home-display.wrap,
+.prose-home-display.wrap h1,
+.prose-home-display.wrap h2,
+.prose-home-display.wrap h3 {
+  white-space: normal;
+}
+
+/* Legacy alias kept until all callers migrate */
+.prose-bravo-hero { /* deprecated — use .prose-home-display.hero */ }

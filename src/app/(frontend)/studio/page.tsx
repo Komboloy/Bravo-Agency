@@ -87,15 +87,21 @@ export default async function StudioPage() {
               <span className="opacity-40">/</span>
               <span>Studio</span>
             </div>
-            <h1 className="font-display font-extrabold uppercase leading-[0.84] tracking-[-0.015em] text-[clamp(5rem,16vw,18rem)] text-[var(--color-paper)]">
-              Studio<br />
-              <span
-                className="font-editorial italic font-normal normal-case tracking-[-0.02em]"
-                style={{ color: 'var(--color-bravo-soft)' }}
-              >
-                — deux têtes, un écosystème.
-              </span>
-            </h1>
+            <div
+              className="prose-home-display wrap"
+              style={
+                {
+                  '--display-size': 'clamp(5rem,16vw,18rem)',
+                  '--display-color': 'var(--color-paper)',
+                  '--display-accent': 'var(--color-bravo-bright)',
+                } as React.CSSProperties
+              }
+            >
+              <h1>Studio</h1>
+              <h1>
+                — <em>deux têtes</em>, <strong>un écosystème</strong>.
+              </h1>
+            </div>
           </div>
           <p className="font-editorial italic text-[1.2rem] leading-[1.5] max-w-[38ch] opacity-92 text-[var(--color-paper)]">
             <strong
@@ -120,17 +126,23 @@ export default async function StudioPage() {
             §01 · Manifesto
           </span>
           <div className="text-[var(--color-paper)]">
-            <h2 className="font-display font-extrabold uppercase leading-[0.92] tracking-[-0.005em] text-[clamp(2.4rem,6vw,6rem)]">
-              Porteurs <span className="font-light">de</span> sens.
-              <br />
-              <span
-                className="font-editorial italic font-normal normal-case tracking-[-0.02em]"
-                style={{ opacity: 0.92 }}
-              >
-                Déclencheurs
-              </span>{' '}
-              <span className="font-light">d'actions.</span>
-            </h2>
+            <div
+              className="prose-home-display wrap"
+              style={
+                {
+                  '--display-size': 'clamp(2.4rem,6vw,6rem)',
+                  '--display-color': 'var(--color-paper)',
+                  '--display-accent': 'var(--color-paper)',
+                } as React.CSSProperties
+              }
+            >
+              <h2>
+                <strong>Porteurs</strong> <em>de</em> <strong>sens.</strong>
+              </h2>
+              <h2>
+                <strong>Déclencheurs</strong> <em>d&apos;actions.</em>
+              </h2>
+            </div>
             <p className="mt-8 font-sans text-[1.05rem] leading-[1.65] max-w-[56ch] opacity-94">
               On ne sait pas tout faire — et c'est tant mieux. Notre force, c'est de tracer
               une intention claire, puis d'orchestrer les meilleurs partenaires autour d'elle :
@@ -155,16 +167,20 @@ export default async function StudioPage() {
               <span className="section-label" style={{ color: 'var(--color-bravo-soft)' }}>
                 §02 · Équipe · Effectif
               </span>
-              <h2 className="mt-4 font-display font-extrabold uppercase leading-[0.95] tracking-[-0.005em] text-[clamp(2.4rem,5.5vw,5rem)] text-[var(--color-paper)]">
-                Les{' '}
-                <span
-                  className="font-editorial italic font-normal normal-case tracking-[-0.02em]"
-                  style={{ color: 'var(--color-bravo-soft)' }}
-                >
-                  visages
-                </span>{' '}
-                derrière le travail.
-              </h2>
+              <div
+                className="mt-4 prose-home-display wrap"
+                style={
+                  {
+                    '--display-size': 'clamp(2.4rem,5.5vw,5rem)',
+                    '--display-color': 'var(--color-paper)',
+                    '--display-accent': 'var(--color-bravo-bright)',
+                  } as React.CSSProperties
+                }
+              >
+                <h2>
+                  Les <em>visages</em> derrière le <strong>travail</strong>.
+                </h2>
+              </div>
             </div>
             <span
               className="font-mono text-[0.78rem] tracking-[0.14em] uppercase font-semibold"
@@ -207,18 +223,24 @@ export default async function StudioPage() {
             Notre réseau
             <span className="inline-block w-10 h-px bg-current" />
           </span>
-          <h2 className="font-display font-light uppercase leading-[0.92] tracking-[-0.005em] text-[clamp(2.8rem,8vw,8rem)] max-w-[16ch] mx-auto">
-            On <span className="font-extrabold">orchestre</span>,
-            <br />
-            on ne{' '}
-            <span
-              className="font-editorial italic font-normal normal-case tracking-[-0.02em]"
-              style={{ color: 'var(--color-bravo)' }}
-            >
-              sous-traite
-            </span>{' '}
-            pas.
-          </h2>
+          <div
+            className="prose-home-display wrap mx-auto text-center"
+            style={
+              {
+                maxWidth: '880px',
+                '--display-size': 'clamp(2.8rem,8vw,8rem)',
+                '--display-color': 'var(--color-ink)',
+                '--display-accent': 'var(--color-bravo)',
+              } as React.CSSProperties
+            }
+          >
+            <h2>
+              <em>On</em> <strong>orchestre</strong>,
+            </h2>
+            <h2>
+              <em>on ne</em> <strong>sous-traite</strong> <em>pas</em>.
+            </h2>
+          </div>
           <p className="mt-8 font-editorial italic text-[1.15rem] leading-[1.55] opacity-85 max-w-[52ch] mx-auto">
             Pour chaque projet, on assemble l'équipe qu'il mérite — pas celle qu'on a sous la
             main. C'est ce qui fait que nos livrables ne se ressemblent pas tous.

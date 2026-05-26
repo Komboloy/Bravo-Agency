@@ -20,7 +20,10 @@ const collections: CollectionSlug[] = [
   'search',
 ]
 
-const globals: GlobalSlug[] = ['header', 'footer']
+// Narrowed slug union so updateGlobal's data type checks against globals that share
+// the `navItems` shape (header + footer). The new `home` global lives outside this
+// legacy seeding flow; it gets reset via npm run seed:bravo instead.
+const globals: ('header' | 'footer')[] = ['header', 'footer']
 
 const categories = ['Technology', 'News', 'Finance', 'Design', 'Software', 'Engineering']
 

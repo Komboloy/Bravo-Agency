@@ -4,8 +4,9 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
 
-import type { Media, Project } from '@/payload-types'
+import type { Home as HomeGlobal, Media, Project, Team } from '@/payload-types'
 import { HeroCarousel, type HeroSlide } from '@/components/HeroCarousel'
+import RichText from '@/components/RichText'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -47,6 +48,25 @@ export default async function Home() {
     overrideAccess: false,
   })
 
+  // Team members for the home Studio teaser (max 2 — design matches V7)
+  const teamResult = await payload.find({
+    collection: 'team',
+    depth: 1,
+    limit: 2,
+    sort: 'order',
+    overrideAccess: false,
+    where: { _status: { equals: 'published' } },
+  })
+  const members = teamResult.docs as Team[]
+
+  // Home Global — all editorial text. Falls back to hardcoded defaults if the global
+  // hasn't been populated yet (fresh DB or never opened in admin).
+  const home = (await payload.findGlobal({
+    slug: 'home',
+    depth: 1,
+    overrideAccess: false,
+  })) as HomeGlobal
+
   const heroSlides: HeroSlide[] = featured.docs.length > 0
     ? (featured.docs as Project[]).map((p) => ({
         imageUrl: imageUrl(p.heroImage) || imageUrl(p.thumbnail),
@@ -62,24 +82,36 @@ export default async function Home() {
     ? (featured.docs as Project[])
     : null
 
+  const marqueeItems = (home?.marquee && home.marquee.length > 0
+    ? home.marquee
+    : [
+        { text: 'Together for tomorrow' },
+        { text: 'Porteurs de sens' },
+        { text: "Déclencheurs d'actions" },
+        { text: "Une goutte d'eau" },
+      ]) as { text: string; id?: string | null }[]
+
   return (
     <main className="surface-ink">
-      {/* HERO carousel */}
-      <HeroCarousel slides={heroSlides} />
+      {/* HERO carousel — title/badge/year from Home Global */}
+      <HeroCarousel
+        slides={heroSlides}
+        title={home?.hero?.title ? <RichText data={home.hero.title} enableGutter={false} /> : undefined}
+        badge={home?.hero?.badge || undefined}
+        yearRange={home?.hero?.yearRange || undefined}
+      />
 
       {/* MARQUEE — BRAVO color band */}
       <div className="surface-bravo overflow-hidden py-3.5 border-y" style={{ borderColor: 'var(--color-bravo-bright)' }}>
         <div className="flex gap-12 whitespace-nowrap font-mono font-medium text-[0.78rem] tracking-[0.18em] uppercase animate-[marquee_38s_linear_infinite]">
           {Array.from({ length: 2 }).map((_, k) => (
             <React.Fragment key={k}>
-              <span>Together for tomorrow</span>
-              <span style={{ color: 'var(--color-bravo-soft)' }}>✦</span>
-              <span>Porteurs de sens</span>
-              <span style={{ color: 'var(--color-bravo-soft)' }}>✦</span>
-              <span>Déclencheurs d'actions</span>
-              <span style={{ color: 'var(--color-bravo-soft)' }}>✦</span>
-              <span>Une goutte d'eau</span>
-              <span style={{ color: 'var(--color-bravo-soft)' }}>✦</span>
+              {marqueeItems.map((item, j) => (
+                <React.Fragment key={`${k}-${j}`}>
+                  <span>{item.text}</span>
+                  <span style={{ color: 'var(--color-bravo-soft)' }}>✦</span>
+                </React.Fragment>
+              ))}
             </React.Fragment>
           ))}
         </div>
@@ -93,16 +125,29 @@ export default async function Home() {
           style={{ maxWidth: '1640px' }}
         >
           <span className="section-label" style={{ color: 'var(--color-bravo)' }}>
-            À propos · 01
+            {home?.intro?.label || 'À propos · 01'}
           </span>
-          <h2 className="font-display font-extrabold uppercase leading-[0.92] tracking-[-0.01em] text-[clamp(2.8rem,8vw,8.5rem)] max-w-[16ch]">
-            On accompagne<br />
-            <span className="font-light">l'engagement</span>
-            <br />
-            des marques.
-            <br />
-            <span style={{ color: 'var(--color-bravo)' }}>Pas leurs slogans.</span>
-          </h2>
+          <div
+            className="prose-home-display"
+            style={
+              {
+                '--display-size': 'clamp(2.8rem,8vw,8.5rem)',
+                '--display-color': 'var(--color-ink)',
+                '--display-accent': 'var(--color-bravo)',
+              } as React.CSSProperties
+            }
+          >
+            {home?.intro?.title ? (
+              <RichText data={home.intro.title} enableGutter={false} />
+            ) : (
+              <>
+                <h2>On accompagne</h2>
+                <h2><em>l&apos;engagement</em></h2>
+                <h2>des marques.</h2>
+                <h2><strong>Pas leurs slogans.</strong></h2>
+              </>
+            )}
+          </div>
         </div>
       </section>
 
@@ -111,22 +156,33 @@ export default async function Home() {
         <div className="px-6 sm:px-10 grid grid-cols-1 md:grid-cols-[1fr_auto] items-end gap-8 mb-12 sm:mb-20 mx-auto" style={{ maxWidth: '1640px' }}>
           <div>
             <span className="section-label" style={{ color: 'var(--color-bravo-bright)' }}>
-              Travaux · Sélection 2026
+              {home?.projectsSection?.label || 'Travaux · Sélection 2026'}
             </span>
-            <h2 className="mt-5 font-display font-extrabold uppercase leading-[0.92] tracking-[-0.01em] text-[clamp(2.8rem,7vw,7rem)] max-w-[14ch] text-[var(--color-paper)]">
-              Quelques <span className="font-light">projets</span>
-              <br />
-              <span className="font-editorial italic font-normal normal-case tracking-[-0.02em]" style={{ color: 'var(--color-bravo-bright)' }}>
-                qui nous représentent
-              </span>
-              .
-            </h2>
+            <div
+              className="mt-5 prose-home-display"
+              style={
+                {
+                  '--display-size': 'clamp(2.8rem,7vw,7rem)',
+                  '--display-color': 'var(--color-paper)',
+                  '--display-accent': 'var(--color-bravo-bright)',
+                } as React.CSSProperties
+              }
+            >
+              {home?.projectsSection?.title ? (
+                <RichText data={home.projectsSection.title} enableGutter={false} />
+              ) : (
+                <>
+                  <h2>Quelques <em>projets</em></h2>
+                  <h2><strong>qui nous représentent</strong>.</h2>
+                </>
+              )}
+            </div>
           </div>
           <Link
             href="/projets"
             className="inline-flex items-center gap-2 font-mono text-[0.78rem] tracking-[0.14em] uppercase font-semibold border-b border-current pb-1 text-[var(--color-paper)] hover:text-[var(--color-bravo-bright)] transition-colors"
           >
-            Voir tous les projets <span>→</span>
+            {home?.projectsSection?.cta || 'Voir tous les projets'} <span>→</span>
           </Link>
         </div>
 
@@ -140,22 +196,43 @@ export default async function Home() {
       {/* BRAVO BREATH — manifesto full bleed */}
       <section className="surface-bravo bravo-atmosphere px-6 sm:px-10 py-32 sm:py-56 text-center">
         <div className="relative z-10 mx-auto" style={{ maxWidth: '1100px' }}>
-          <span
-            className="inline-block font-mono text-[0.72rem] tracking-[0.32em] uppercase font-semibold mb-8 opacity-85"
-          >
-            Manifeste
+          <span className="inline-block font-mono text-[0.72rem] tracking-[0.32em] uppercase font-semibold mb-8 opacity-85">
+            {home?.manifesto?.label || 'Manifeste'}
           </span>
-          <h2 className="font-display font-light uppercase leading-[0.92] tracking-[-0.005em] text-[clamp(2.8rem,9vw,9rem)] max-w-[16ch] mx-auto text-[var(--color-paper)]">
-            Une <span className="font-extrabold">goutte d'eau</span>
-            <br />
-            peut-être.
-            <br />
-            Heureusement,
-            <br />
-            <span className="font-extrabold">on n'est pas seuls</span>.
-          </h2>
+          <div
+            className="prose-home-display wrap mx-auto text-center"
+            style={
+              {
+                maxWidth: '720px',
+                '--display-size': 'clamp(2.6rem,7vw,6.4rem)',
+                '--display-color': 'var(--color-paper)',
+                '--display-accent': 'var(--color-paper)',
+              } as React.CSSProperties
+            }
+          >
+            {home?.manifesto?.title ? (
+              <RichText data={home.manifesto.title} enableGutter={false} />
+            ) : (
+              <>
+                <h2><em>Une</em> <strong>goutte d&apos;eau</strong></h2>
+                <h2><em>peut-être.</em></h2>
+                <h2><em>Heureusement,</em></h2>
+                <h2><strong>on n&apos;est pas seuls</strong>.</h2>
+              </>
+            )}
+          </div>
         </div>
       </section>
+
+      {/* STUDIO TEASER — 2 members preview, deep link to /studio (matches V7 ordering: after BREATH, before CTA) */}
+      {members.length > 0 && (
+        <StudioTeaser
+          members={members}
+          label={home?.studioSection?.label || 'Studio · Effectif'}
+          titleRich={home?.studioSection?.title}
+          ctaLabel={home?.studioSection?.cta || 'Notre réseau'}
+        />
+      )}
 
       {/* CTA */}
       <section className="surface-paper relative overflow-hidden px-6 sm:px-10 py-32 sm:py-56 text-center" id="contact">
@@ -174,23 +251,33 @@ export default async function Home() {
             style={{ color: 'var(--color-bravo)' }}
           >
             <span className="inline-block w-10 h-px bg-current" />
-            Premier pas
+            {home?.cta?.label || 'Premier pas'}
             <span className="inline-block w-10 h-px bg-current" />
           </span>
-          <h2 className="font-display font-extrabold uppercase leading-[0.88] tracking-[-0.015em] text-[clamp(3.5rem,12vw,14rem)] max-w-[12ch] mx-auto mb-12">
-            Allez,
-            <br />
-            <span className="font-light">on en</span>{' '}
-            <span className="font-editorial italic font-normal normal-case tracking-[-0.02em]" style={{ color: 'var(--color-bravo)' }}>
-              parle
-            </span>
-            <span className="font-light">?</span>
-          </h2>
+          <div
+            className="prose-home-display mx-auto text-center mb-12"
+            style={
+              {
+                '--display-size': 'clamp(3.5rem,12vw,14rem)',
+                '--display-color': 'var(--color-ink)',
+                '--display-accent': 'var(--color-bravo)',
+              } as React.CSSProperties
+            }
+          >
+            {home?.cta?.title ? (
+              <RichText data={home.cta.title} enableGutter={false} />
+            ) : (
+              <>
+                <h2>Allez,</h2>
+                <h2><em>on en</em> <strong>parle</strong>?</h2>
+              </>
+            )}
+          </div>
           <Link
-            href="/contact"
+            href={home?.cta?.buttonHref || '/contact'}
             className="inline-flex items-center gap-3 px-8 py-5 rounded-full bg-[var(--color-ink)] text-[var(--color-paper)] font-sans font-bold text-[1rem] hover:bg-[var(--color-bravo)] hover:gap-5 transition-[background,gap,transform] hover:-translate-y-0.5"
           >
-            Démarrer la conversation <span>→</span>
+            {home?.cta?.buttonLabel || 'Démarrer la conversation'} <span>→</span>
           </Link>
         </div>
       </section>
@@ -198,12 +285,50 @@ export default async function Home() {
   )
 }
 
+/**
+ * Render a single-line string with light markdown :
+ *   - `*italic*` → `<em>` (mapped to font-light via prose-home-display)
+ *   - `**bold**` → `<strong>` (mapped to BRAVO accent via prose-home-display)
+ * Used for project tagline so a non-tech user can type "Together *for* tomorrow"
+ * in the admin and get the V7 weight-mix.
+ */
+function FormattedInline({ text }: { text: string }) {
+  const parts: React.ReactNode[] = []
+  let i = 0
+  let key = 0
+  while (i < text.length) {
+    if (text.startsWith('**', i)) {
+      const end = text.indexOf('**', i + 2)
+      if (end !== -1) {
+        parts.push(<strong key={key++}>{text.slice(i + 2, end)}</strong>)
+        i = end + 2
+        continue
+      }
+    }
+    if (text[i] === '*') {
+      const end = text.indexOf('*', i + 1)
+      if (end !== -1) {
+        parts.push(<em key={key++}>{text.slice(i + 1, end)}</em>)
+        i = end + 1
+        continue
+      }
+    }
+    // plain run — find next marker
+    let j = i + 1
+    while (j < text.length && text[j] !== '*') j++
+    parts.push(<React.Fragment key={key++}>{text.slice(i, j)}</React.Fragment>)
+    i = j
+  }
+  return <>{parts}</>
+}
+
 function ProjectBand({ project, num }: { project: Project; num: number }) {
   const img = imageUrl(project.heroImage) || imageUrl(project.thumbnail)
+  const tags = (project.services || []).slice(0, 3).map((s) => SERVICE_LABELS[s] || s)
   return (
     <Link
       href={`/projets/${project.slug}`}
-      className="group relative block h-[80vh] min-h-[500px] overflow-hidden"
+      className="group relative block h-[90vh] min-h-[600px] overflow-hidden"
     >
       {img && (
         <div
@@ -219,27 +344,166 @@ function ProjectBand({ project, num }: { project: Project; num: number }) {
         }}
       />
       <div
-        className="relative z-10 h-full px-6 sm:px-10 pb-10 sm:pb-16 flex flex-col justify-end gap-6 mx-auto text-[var(--color-paper)]"
+        className="relative z-10 h-full px-6 sm:px-10 pb-10 sm:pb-16 flex flex-col justify-end mx-auto text-[var(--color-paper)]"
         style={{ maxWidth: '1640px' }}
       >
-        <div
-          className="font-mono text-[0.75rem] tracking-[0.18em] uppercase font-semibold"
-          style={{ color: 'var(--color-bravo-soft)' }}
-        >
-          {String(num).padStart(2, '0')}
-          {project.year && ` — ${project.year}`} · {project.client}
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 md:gap-12 items-end">
+          {/* Left: num + h3 (tagline with light/heavy markdown). The tagline can
+              contain `*em*` (→ font-light) and `**strong**` (→ BRAVO accent) for
+              the V7 weight-mix effect (e.g. "Together *for* tomorrow"). */}
+          <div className="max-w-[56ch]">
+            <div
+              className="font-mono text-[0.75rem] tracking-[0.18em] uppercase font-semibold mb-4"
+              style={{ color: 'var(--color-bravo-bright)' }}
+            >
+              {String(num).padStart(2, '0')}
+              {project.year && ` — ${project.year}`} · {project.client}
+            </div>
+            <div
+              className="prose-home-display wrap"
+              style={
+                {
+                  '--display-size': 'clamp(2.6rem,6vw,5.5rem)',
+                  '--display-color': 'var(--color-paper)',
+                  '--display-accent': 'var(--color-bravo-bright)',
+                } as React.CSSProperties
+              }
+            >
+              <h3>
+                <FormattedInline text={project.tagline || project.title} />
+              </h3>
+            </div>
+          </div>
+
+          {/* Right: tags + pill button */}
+          <div className="flex flex-col gap-3 items-start md:items-end">
+            {tags.length > 0 && (
+              <div className="flex gap-3 font-mono text-[0.7rem] tracking-[0.12em] uppercase opacity-85">
+                {tags.map((t, i) => (
+                  <React.Fragment key={t}>
+                    {i > 0 && <span>·</span>}
+                    <span>{t}</span>
+                  </React.Fragment>
+                ))}
+              </div>
+            )}
+            <span
+              className="inline-flex items-center gap-2.5 px-5 py-3 rounded-full bg-[var(--color-paper)] text-[var(--color-ink)] font-sans font-bold text-[0.85rem] tracking-[0.02em] transition-[background,color,transform,gap] duration-[300ms] group-hover:bg-[var(--color-bravo)] group-hover:text-[var(--color-paper)] group-hover:gap-4 group-hover:-translate-y-0.5"
+            >
+              Voir le projet <span>→</span>
+            </span>
+          </div>
         </div>
-        <h3 className="font-display font-extrabold uppercase leading-[0.9] tracking-[-0.01em] text-[clamp(2.8rem,7vw,6.5rem)] max-w-[20ch]">
-          {project.title}
-          {project.tagline && (
-            <>
-              {' '}
-              <span className="font-editorial italic font-normal normal-case tracking-[-0.02em]">{project.tagline}</span>
-            </>
-          )}
-        </h3>
       </div>
     </Link>
+  )
+}
+
+type StudioSection = NonNullable<HomeGlobal['studioSection']>
+type StudioTitle = StudioSection['title']
+
+function StudioTeaser({
+  members,
+  label,
+  titleRich,
+  ctaLabel,
+}: {
+  members: Team[]
+  label: string
+  titleRich?: StudioTitle | null
+  ctaLabel: string
+}) {
+  return (
+    <section className="surface-ink px-6 sm:px-10 py-20 sm:py-36" id="studio">
+      <div className="mx-auto" style={{ maxWidth: '1640px' }}>
+        {/* Head */}
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 items-end mb-12 sm:mb-20">
+          <div className="flex flex-col gap-5">
+            <span
+              className="font-mono text-[0.7rem] tracking-[0.16em] uppercase font-bold inline-flex items-center gap-3"
+              style={{ color: 'var(--color-bravo-bright)' }}
+            >
+              <span className="inline-block w-10 h-px bg-current" />
+              {label}
+            </span>
+            <div
+              className="prose-home-display"
+              style={
+                {
+                  '--display-size': 'clamp(2.8rem,6vw,6rem)',
+                  '--display-color': 'var(--color-paper)',
+                  '--display-accent': 'var(--color-bravo-bright)',
+                } as React.CSSProperties
+              }
+            >
+              {titleRich ? (
+                <RichText data={titleRich} enableGutter={false} />
+              ) : (
+                <>
+                  <h2>Deux <em>têtes</em>,</h2>
+                  <h2><strong>un écosystème</strong>.</h2>
+                </>
+              )}
+            </div>
+          </div>
+          <Link
+            href="/studio"
+            className="inline-flex items-center gap-2 font-mono text-[0.78rem] tracking-[0.14em] uppercase font-semibold pb-1 border-b border-current text-[var(--color-paper)] hover:text-[var(--color-bravo-bright)] transition-colors"
+          >
+            {ctaLabel} <span>→</span>
+          </Link>
+        </div>
+
+        {/* Member grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+          {members.map((m, i) => {
+            const photo = imageUrl(m.photo)
+            return (
+              <Link
+                key={m.id}
+                href="/studio"
+                className="group relative block h-[70vh] min-h-[480px] overflow-hidden rounded-[24px]"
+              >
+                {photo && (
+                  <div
+                    className="absolute inset-0 bg-center bg-cover transition-transform duration-[1.2s] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.04]"
+                    style={{ backgroundImage: `url(${photo})` }}
+                  />
+                )}
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background:
+                      'linear-gradient(180deg, rgba(5,5,7,0.18) 0%, transparent 30%, transparent 55%, rgba(5,5,7,0.85) 100%)',
+                  }}
+                />
+                <div className="relative z-10 h-full p-7 sm:p-9 flex flex-col justify-end text-[var(--color-paper)]">
+                  <div className="flex items-end justify-between gap-6">
+                    <div>
+                      <h3 className="font-display font-extrabold uppercase leading-[0.95] tracking-[-0.005em] text-[clamp(1.8rem,3vw,2.6rem)] mb-2">
+                        {m.name}
+                      </h3>
+                      <div
+                        className="font-mono text-[0.72rem] tracking-[0.16em] uppercase font-semibold"
+                        style={{ color: 'var(--color-bravo-soft)' }}
+                      >
+                        {m.role}
+                      </div>
+                    </div>
+                    <div
+                      className="font-display font-light text-[clamp(2.2rem,4vw,3.4rem)] leading-none opacity-65"
+                      style={{ color: 'var(--color-bravo-soft)' }}
+                    >
+                      {String(i + 1).padStart(2, '0')}
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+      </div>
+    </section>
   )
 }
 

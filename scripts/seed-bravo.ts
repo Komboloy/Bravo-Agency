@@ -51,6 +51,7 @@ function richText(paragraphs: string[]): RichDoc {
       indent: 0,
       version: 1,
       children: paragraphs.map((line) => {
+        if (line.startsWith('# ')) return heading('h1', parseInlines(line.slice(2)))
         if (line.startsWith('## ')) return heading('h2', parseInlines(line.slice(3)))
         if (line.startsWith('### ')) return heading('h3', parseInlines(line.slice(4)))
         return paragraph(parseInlines(line))
@@ -147,7 +148,7 @@ function paragraph(inlines: Inline[]) {
   }
 }
 
-function heading(tag: 'h2' | 'h3', inlines: Inline[]) {
+function heading(tag: 'h1' | 'h2' | 'h3', inlines: Inline[]) {
   return {
     type: 'heading',
     tag,
@@ -894,10 +895,79 @@ async function seedBravo() {
     payload.logger.info(`✓ ${p.title}`)
   }
 
+  // --- Home global ---
+  // Populates the editorial copy used by the home page. Idempotent: re-running
+  // overrides the global with these defaults (matches the previous hardcoded copy).
+  payload.logger.info('+ home global — updating editorial copy…')
+  await payload.updateGlobal({
+    slug: 'home',
+    data: {
+      hero: {
+        badge: 'Active · Bruxelles',
+        yearRange: '2018 — 2026',
+        title: richText([
+          '# Les *idées*',
+          '# en **actions**.',
+        ]) as never,
+      },
+      marquee: [
+        { text: 'Together for tomorrow' },
+        { text: 'Porteurs de sens' },
+        { text: "Déclencheurs d'actions" },
+        { text: "Une goutte d'eau" },
+      ],
+      intro: {
+        label: 'À propos · 01',
+        title: richText([
+          '## On accompagne',
+          "## *l'engagement*",
+          '## des marques.',
+          '## **Pas leurs slogans.**',
+        ]) as never,
+      },
+      projectsSection: {
+        label: 'Travaux · Sélection 2026',
+        title: richText([
+          '## Quelques *projets*',
+          '## **qui nous représentent**.',
+        ]) as never,
+        cta: 'Voir tous les projets',
+      },
+      manifesto: {
+        label: 'Manifeste',
+        title: richText([
+          "## *Une* **goutte d'eau**",
+          "## *peut-être.*",
+          "## *Heureusement,*",
+          "## **on n'est pas seuls**.",
+        ]) as never,
+      },
+      studioSection: {
+        label: 'Studio · Effectif',
+        title: richText([
+          '## Deux *têtes*,',
+          '## **un écosystème**.',
+        ]) as never,
+        cta: 'Notre réseau',
+      },
+      cta: {
+        label: 'Premier pas',
+        title: richText([
+          '## Allez,',
+          '## *on en* **parle** ?',
+        ]) as never,
+        buttonLabel: 'Démarrer la conversation',
+        buttonHref: '/contact',
+      },
+    },
+  })
+  payload.logger.info('✓ home global')
+
   payload.logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
   payload.logger.info(`  Done.`)
   payload.logger.info(`  Team   : ${teamCreated} created, ${teamSkipped} skipped`)
   payload.logger.info(`  Projects: ${projectsCreated} created, ${projectsSkipped} skipped`)
+  payload.logger.info(`  Home   : global updated`)
   payload.logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 }
 

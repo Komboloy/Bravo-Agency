@@ -80,15 +80,19 @@ export default async function PostsPage() {
               <span className="opacity-40">/</span>
               <span>News</span>
             </div>
-            <h1 className="font-display font-extrabold uppercase leading-[0.84] tracking-[-0.015em] text-[clamp(4.5rem,15vw,16rem)] text-[var(--color-paper)]">
-              Bonnes<br />
-              <span
-                className="font-editorial italic font-normal normal-case tracking-[-0.02em]"
-                style={{ color: 'var(--color-bravo-soft)' }}
-              >
-                nouvelles.
-              </span>
-            </h1>
+            <div
+              className="prose-home-display wrap"
+              style={
+                {
+                  '--display-size': 'clamp(4.5rem,15vw,16rem)',
+                  '--display-color': 'var(--color-paper)',
+                  '--display-accent': 'var(--color-bravo-bright)',
+                } as React.CSSProperties
+              }
+            >
+              <h1>Bonnes</h1>
+              <h1><strong>nouvelles</strong>.</h1>
+            </div>
           </div>
           <p className="font-editorial italic text-[1.2rem] leading-[1.5] max-w-[38ch] opacity-92 text-[var(--color-paper)]">
             Quelques{' '}

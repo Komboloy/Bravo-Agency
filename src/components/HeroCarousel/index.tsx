@@ -16,7 +16,15 @@ const FALLBACK_URLS = [
   'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=2400&q=85&auto=format',
 ]
 
-export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
+type HeroCarouselProps = {
+  slides: HeroSlide[]
+  /** Pre-rendered h1 — pass `<RichText data={home.hero.title} />` from a server component. */
+  title?: React.ReactNode
+  badge?: string
+  yearRange?: string
+}
+
+export function HeroCarousel({ slides, title, badge, yearRange }: HeroCarouselProps) {
   const [idx, setIdx] = useState(0)
   const count = slides.length || 1
 
@@ -70,23 +78,34 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
               className="w-2 h-2 rounded-full animate-pulse"
               style={{ background: 'var(--color-bravo-bright)' }}
             />
-            Active · Bruxelles
+            {badge || 'Active · Bruxelles'}
           </span>
-          <span className="opacity-70">2018 — 2026</span>
+          <span className="opacity-70">{yearRange || '2018 — 2026'}</span>
         </div>
 
-        {/* Title */}
-        <div className="self-end max-w-[12ch]">
-          <h1 className="font-display font-extrabold uppercase leading-[0.82] tracking-[-0.015em] text-[clamp(5rem,18vw,22rem)]">
-            Les <span className="font-light">idées</span><br />
-            en{' '}
-            <span style={{ color: 'var(--color-bravo-bright)' }}>actions</span>.
-          </h1>
+        {/* Title — supplied by parent (server component) as pre-rendered RichText,
+            mapped through `.prose-home-display.hero`. Fallback hardcoded if global
+            content is empty. The display-* CSS vars drive size + accent color. */}
+        <div
+          className="self-end prose-home-display hero"
+          style={
+            {
+              '--display-color': 'var(--color-paper)',
+              '--display-accent': 'var(--color-bravo-bright)',
+            } as React.CSSProperties
+          }
+        >
+          {title || (
+            <>
+              <h1>Les <em>idées</em></h1>
+              <h1>en <strong>actions</strong>.</h1>
+            </>
+          )}
         </div>
 
         {/* Bottom: annotation + pagination */}
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 items-end">
-          {slides[idx] && (
+          {slides[idx] && slides[idx].client && (
             <div className="max-w-[36ch]">
               <div className="font-mono text-[0.7rem] tracking-[0.12em] uppercase opacity-65 mb-2">
                 Featured · {String(idx + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}
