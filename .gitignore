@@ -27,6 +27,12 @@ yarn-error.log*
 # Payload uploads (local)
 public/media/
 
+# Payload SQLite database (local data, never commit)
+payload.db
+payload.db-journal
+payload.db-shm
+payload.db-wal
+
 # Generated SEO files
 public/robots.txt
 public/sitemap*.xml

@@ -14,6 +14,26 @@ import { authenticated } from '../access/authenticated'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+/**
+ * Rewrite media URLs from `/api/media/file/<filename>` → `/media/<filename>`.
+ * Files live in `public/media/` (see `upload.staticDir`), so Next.js can serve them
+ * directly as static assets — no Payload middleware, no DB hit, full HTTP caching.
+ * Avoids 30s cold-start latency on Neon when serving public images.
+ */
+function rewriteMediaUrls(doc: Record<string, unknown>): Record<string, unknown> {
+  if (typeof doc?.filename === 'string') {
+    doc.url = `/media/${doc.filename}`
+  }
+  const sizes = doc?.sizes as Record<string, { filename?: string; url?: string }> | undefined
+  if (sizes) {
+    for (const key of Object.keys(sizes)) {
+      const size = sizes[key]
+      if (size?.filename) size.url = `/media/${size.filename}`
+    }
+  }
+  return doc
+}
+
 export const Media: CollectionConfig = {
   slug: 'media',
   access: {
@@ -21,6 +41,9 @@ export const Media: CollectionConfig = {
     delete: authenticated,
     read: anyone,
     update: authenticated,
+  },
+  hooks: {
+    afterRead: [({ doc }) => rewriteMediaUrls(doc)],
   },
   fields: [
     {
