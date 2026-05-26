@@ -41,21 +41,22 @@ export function bravoSlug(options: Options = {}): Field {
 
   const hook: FieldHook = ({ data, value, originalDoc }) => {
     const currentSource = data?.[useAsSlug]
+    if (!currentSource) return value
+
+    // No slug yet → derive from current source value
+    if (!value) return slugifyString(currentSource)
+
     const originalSource = originalDoc?.[useAsSlug]
 
-    if (!currentSource) return value
-    const expectedFromCurrent = slugifyString(currentSource)
+    // First save of a new doc (no previous source) → respect any explicit value
+    // that was passed in (e.g. from a seed script or programmatic create).
+    // Subsequent saves will resync the slug to the title as the user keeps typing.
+    if (!originalSource) return value
 
-    // No existing slug yet → start from the current source
-    if (!value) return expectedFromCurrent
-
-    // No previous source (very first save of a new doc) → keep following the source
-    if (!originalSource) return expectedFromCurrent
-
-    // The slug currently in the DB was generated from the OLD source value.
-    // If it matches that auto-derived form, the user has NOT customised it → keep following.
+    // Subsequent saves: if the current slug equals the auto-derived form of the
+    // PREVIOUS source value, the user hasn't customised it → keep following.
     const expectedFromPrevious = slugifyString(originalSource)
-    if (value === expectedFromPrevious) return expectedFromCurrent
+    if (value === expectedFromPrevious) return slugifyString(currentSource)
 
     // Otherwise, user has customised the slug — keep their value untouched.
     return value
