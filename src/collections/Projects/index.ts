@@ -282,7 +282,8 @@ export const Projects: CollectionConfig<'projects'> = {
               type: 'array',
               labels: { singular: 'Visuel', plural: 'Visuels' },
               admin: {
-                description: 'Galerie d’images projet. L’option layout par item permet de varier l’affichage.',
+                description:
+                  'Galerie d’images projet. L’option layout par item permet de varier l’affichage. Pour mettre deux images côte à côte : choisis « Deux colonnes » sur 2 items consécutifs — ils s’apparient automatiquement.',
               },
               fields: [
                 {
@@ -297,15 +298,35 @@ export const Projects: CollectionConfig<'projects'> = {
                   localized: true,
                 },
                 {
-                  name: 'layout',
-                  type: 'select',
-                  defaultValue: 'full',
-                  options: [
-                    { label: 'Pleine largeur', value: 'full' },
-                    { label: 'Largeur contenue (avec marges)', value: 'contained' },
-                    { label: 'Demi-largeur gauche', value: 'half-left' },
-                    { label: 'Demi-largeur droite', value: 'half-right' },
-                    { label: 'Deux colonnes (avec l’item suivant)', value: 'two-col' },
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'layout',
+                      type: 'select',
+                      defaultValue: 'contained',
+                      admin: { width: '60%', description: 'Où / comment placer l\'image' },
+                      options: [
+                        { label: 'Pleine largeur', value: 'full' },
+                        { label: 'Largeur contenue (avec marges)', value: 'contained' },
+                        { label: 'Demi-largeur gauche', value: 'half-left' },
+                        { label: 'Demi-largeur droite', value: 'half-right' },
+                        { label: 'Deux colonnes (paire automatique)', value: 'two-col' },
+                      ],
+                    },
+                    {
+                      name: 'fit',
+                      type: 'select',
+                      defaultValue: 'natural',
+                      admin: {
+                        width: '40%',
+                        description: 'Comment afficher l\'image dans son cadre.',
+                      },
+                      options: [
+                        { label: 'Naturel (pas de crop) ✓', value: 'natural' },
+                        { label: 'Cover (rempli, crop si besoin)', value: 'cover' },
+                        { label: 'Contain (entière + marges si besoin)', value: 'contain' },
+                      ],
+                    },
                   ],
                 },
               ],
@@ -336,43 +357,92 @@ export const Projects: CollectionConfig<'projects'> = {
               label: 'Contexte / Challenge / Solution',
               fields: [
                 {
-                  name: 'context',
-                  type: 'richText',
-                  localized: true,
-                  label: 'Le contexte',
-                  editor: lexicalEditor({
-                    features: ({ rootFeatures }) => [
-                      ...rootFeatures,
-                      HeadingFeature({ enabledHeadingSizes: ['h3'] }),
-                      InlineToolbarFeature(),
-                    ],
-                  }),
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'context',
+                      type: 'richText',
+                      localized: true,
+                      label: '§02 · Le contexte',
+                      admin: { width: '60%' },
+                      editor: lexicalEditor({
+                        features: ({ rootFeatures }) => [
+                          ...rootFeatures,
+                          HeadingFeature({ enabledHeadingSizes: ['h3'] }),
+                          InlineToolbarFeature(),
+                        ],
+                      }),
+                    },
+                    {
+                      name: 'contextImage',
+                      type: 'upload',
+                      relationTo: 'media',
+                      label: 'Image du contexte',
+                      admin: {
+                        width: '40%',
+                        description: 'Visuel à côté du contexte (split layout).',
+                      },
+                    },
+                  ],
                 },
                 {
-                  name: 'challenge',
-                  type: 'richText',
-                  localized: true,
-                  label: 'Le défi',
-                  editor: lexicalEditor({
-                    features: ({ rootFeatures }) => [
-                      ...rootFeatures,
-                      HeadingFeature({ enabledHeadingSizes: ['h3'] }),
-                      InlineToolbarFeature(),
-                    ],
-                  }),
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'challenge',
+                      type: 'richText',
+                      localized: true,
+                      label: '§03 · Le défi (sur image full-bleed)',
+                      admin: { width: '60%' },
+                      editor: lexicalEditor({
+                        features: ({ rootFeatures }) => [
+                          ...rootFeatures,
+                          HeadingFeature({ enabledHeadingSizes: ['h3'] }),
+                          InlineToolbarFeature(),
+                        ],
+                      }),
+                    },
+                    {
+                      name: 'challengeImage',
+                      type: 'upload',
+                      relationTo: 'media',
+                      label: 'Image plein-écran',
+                      admin: {
+                        width: '40%',
+                        description:
+                          'Image en background du §03. Le texte du défi apparaît dans une glass card par-dessus. Utiliser une image dramatique.',
+                      },
+                    },
+                  ],
                 },
                 {
-                  name: 'solution',
-                  type: 'richText',
-                  localized: true,
-                  label: 'Notre approche / La solution',
-                  editor: lexicalEditor({
-                    features: ({ rootFeatures }) => [
-                      ...rootFeatures,
-                      HeadingFeature({ enabledHeadingSizes: ['h3'] }),
-                      InlineToolbarFeature(),
-                    ],
-                  }),
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'solution',
+                      type: 'richText',
+                      localized: true,
+                      label: '§04 · Notre approche / La solution',
+                      admin: { width: '60%' },
+                      editor: lexicalEditor({
+                        features: ({ rootFeatures }) => [
+                          ...rootFeatures,
+                          HeadingFeature({ enabledHeadingSizes: ['h3'] }),
+                          InlineToolbarFeature(),
+                        ],
+                      }),
+                    },
+                    {
+                      name: 'solutionImage',
+                      type: 'upload',
+                      relationTo: 'media',
+                      label: 'Image de la solution',
+                      admin: {
+                        width: '40%',
+                        description: 'Visuel à côté de la solution (split layout, image à droite).',
+                      },
+                    },
+                  ],
                 },
               ],
             },

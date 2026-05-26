@@ -268,19 +268,32 @@ export default async function ProjectPage({ params: paramsPromise }: Args) {
         </section>
       )}
 
-      {/* §02 Le contexte — standard split */}
+      {/* §02 Le contexte — standard split (image left, text right) */}
       {project.context && (
-        <Block num="§02 · Le contexte" content={project.context} reverse={false} side="left" />
+        <Block
+          num="§02 · Le contexte"
+          content={project.context}
+          imageUrl={imageUrl(project.contextImage)}
+          reverse={false}
+        />
       )}
 
       {/* §03 Le défi — full bleed image + glass card overlay */}
-      {project.challenge && heroUrl && (
-        <ChallengeOverlay challenge={project.challenge} imageUrl={heroUrl} />
+      {project.challenge && (
+        <ChallengeOverlay
+          challenge={project.challenge}
+          imageUrl={imageUrl(project.challengeImage) || heroUrl}
+        />
       )}
 
-      {/* §04 Notre approche — standard split */}
+      {/* §04 Notre approche — standard split (image right, text left) */}
       {project.solution && (
-        <Block num="§04 · Notre approche" content={project.solution} reverse={false} side="right" />
+        <Block
+          num="§04 · Notre approche"
+          content={project.solution}
+          imageUrl={imageUrl(project.solutionImage)}
+          reverse={true}
+        />
       )}
 
       {/* §05 Gallery — varied layouts */}
@@ -402,12 +415,13 @@ function CreationField({ creation }: { creation: NonNullable<Project['creation']
 function Block({
   num,
   content,
+  imageUrl,
   reverse,
 }: {
   num: string
   content: Project['context']
+  imageUrl: string | null
   reverse: boolean
-  side: 'left' | 'right'
 }) {
   if (!content) return null
   return (
@@ -419,8 +433,24 @@ function Block({
         ].join(' ')}
         style={{ maxWidth: '1640px' }}
       >
-        <div className="aspect-[4/5] bg-[var(--color-ink-2)] overflow-hidden" />
-        <div className="text-[var(--color-paper)]">
+        <div style={{ direction: 'ltr' }}>
+          {imageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={imageUrl}
+              alt=""
+              className="w-full h-auto block"
+              loading="lazy"
+            />
+          ) : (
+            <div className="aspect-[4/5] bg-[var(--color-ink-2)] flex items-center justify-center">
+              <span className="font-mono text-[0.7rem] tracking-[0.12em] uppercase opacity-40 text-[var(--color-paper)]">
+                Image à uploader
+              </span>
+            </div>
+          )}
+        </div>
+        <div className="md:[direction:ltr] text-[var(--color-paper)]">
           <span
             className="font-mono text-[0.72rem] tracking-[0.16em] uppercase font-semibold mb-4 block"
             style={{ color: 'var(--color-bravo-soft)' }}
@@ -441,9 +471,9 @@ function ChallengeOverlay({
   imageUrl,
 }: {
   challenge: Project['challenge']
-  imageUrl: string
+  imageUrl: string | null
 }) {
-  if (!challenge) return null
+  if (!challenge || !imageUrl) return null
   return (
     <section className="relative min-h-screen overflow-hidden section-rule-bravo flex items-end">
       <div
@@ -479,7 +509,27 @@ function ChallengeOverlay({
    §05 Gallery — varied layouts (full / contained / half-left / half-right / two-col)
    =========================================================== */
 
+type GalleryItemType = NonNullable<Project['gallery']>[number]
+
+/** Group consecutive `two-col` items into pairs of 2 so they render side-by-side. */
+function groupGalleryItems(items: GalleryItemType[]): Array<GalleryItemType | GalleryItemType[]> {
+  const groups: Array<GalleryItemType | GalleryItemType[]> = []
+  let i = 0
+  while (i < items.length) {
+    const item = items[i]
+    if (item.layout === 'two-col' && items[i + 1]?.layout === 'two-col') {
+      groups.push([item, items[i + 1]])
+      i += 2
+    } else {
+      groups.push(item)
+      i += 1
+    }
+  }
+  return groups
+}
+
 function Gallery({ items }: { items: NonNullable<Project['gallery']> }) {
+  const groups = groupGalleryItems(items)
   return (
     <section className="surface-paper section-rule-bravo py-20 sm:py-32">
       <div
@@ -500,11 +550,66 @@ function Gallery({ items }: { items: NonNullable<Project['gallery']> }) {
       </div>
 
       <div className="flex flex-col gap-6 sm:gap-10">
-        {items.map((item, i) => (
-          <GalleryItem key={item.id || i} item={item} />
-        ))}
+        {groups.map((g, i) =>
+          Array.isArray(g) ? (
+            <TwoColPair key={`pair-${i}`} left={g[0]} right={g[1]} />
+          ) : (
+            <GalleryItem key={g.id || `g-${i}`} item={g} />
+          ),
+        )}
       </div>
     </section>
+  )
+}
+
+function TwoColPair({ left, right }: { left: GalleryItemType; right: GalleryItemType }) {
+  return (
+    <div
+      className="mx-auto px-6 sm:px-10 grid grid-cols-1 md:grid-cols-2 gap-6"
+      style={{ maxWidth: '1640px' }}
+    >
+      <TwoColFigure item={left} />
+      <TwoColFigure item={right} />
+    </div>
+  )
+}
+
+function TwoColFigure({ item }: { item: GalleryItemType }) {
+  const url = imageUrl(item.image)
+  if (!url) return null
+  const fit = (item as { fit?: 'natural' | 'cover' | 'contain' }).fit || 'natural'
+  const media = typeof item.image === 'object' && item.image !== null ? item.image : null
+  const alt = media?.alt || item.caption || ''
+  const w = media?.width
+  const h = media?.height
+  return (
+    <figure>
+      {fit === 'natural' ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={url} alt={alt} width={w || undefined} height={h || undefined} className="block w-full h-auto" loading="lazy" />
+      ) : (
+        <div
+          className={fit === 'contain' ? 'bg-[var(--color-paper-2)] w-full' : 'w-full'}
+          style={{ aspectRatio: '4 / 5' }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={url}
+            alt={alt}
+            className={[
+              'w-full h-full',
+              fit === 'cover' ? 'object-cover' : 'object-contain',
+            ].join(' ')}
+            loading="lazy"
+          />
+        </div>
+      )}
+      {item.caption && (
+        <figcaption className="mt-2 font-mono text-[0.7rem] tracking-[0.1em] uppercase opacity-55">
+          {item.caption}
+        </figcaption>
+      )}
+    </figure>
   )
 }
 
@@ -512,17 +617,59 @@ function GalleryItem({ item }: { item: NonNullable<Project['gallery']>[number] }
   const url = imageUrl(item.image)
   if (!url) return null
   const layout = item.layout || 'contained'
+  const fit = (item as { fit?: 'natural' | 'cover' | 'contain' }).fit || 'natural'
+  const media = typeof item.image === 'object' && item.image !== null ? item.image : null
+  const alt = media?.alt || item.caption || ''
+  const w = media?.width || undefined
+  const h = media?.height || undefined
+
+  /** Image renderer — respects `fit`. Natural = no crop, browser uses intrinsic ratio. */
+  const Img = ({ ratio }: { ratio?: string }) => {
+    if (fit === 'natural') {
+      return (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={url}
+          alt={alt}
+          width={w}
+          height={h}
+          className="block w-full h-auto"
+          loading="lazy"
+        />
+      )
+    }
+    return (
+      <div
+        className={[
+          'w-full',
+          fit === 'contain' ? 'bg-[var(--color-ink-2)]' : '',
+        ].join(' ')}
+        style={ratio ? { aspectRatio: ratio } : { aspectRatio: w && h ? `${w} / ${h}` : '16 / 9' }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={url}
+          alt={alt}
+          className={[
+            'w-full h-full',
+            fit === 'cover' ? 'object-cover' : 'object-contain',
+          ].join(' ')}
+          loading="lazy"
+        />
+      </div>
+    )
+  }
 
   // Full bleed — escape any container
   if (layout === 'full') {
     return (
       <figure className="w-full">
-        <div
-          className="w-full aspect-[21/9] bg-center bg-cover"
-          style={{ backgroundImage: `url(${url})` }}
-        />
+        <Img ratio={fit === 'cover' ? '21 / 9' : undefined} />
         {item.caption && (
-          <figcaption className="mx-auto px-6 sm:px-10 mt-3 font-mono text-[0.72rem] tracking-[0.1em] uppercase opacity-55" style={{ maxWidth: '1640px' }}>
+          <figcaption
+            className="mx-auto px-6 sm:px-10 mt-3 font-mono text-[0.72rem] tracking-[0.1em] uppercase opacity-55"
+            style={{ maxWidth: '1640px' }}
+          >
             {item.caption}
           </figcaption>
         )}
@@ -534,10 +681,7 @@ function GalleryItem({ item }: { item: NonNullable<Project['gallery']>[number] }
   if (layout === 'contained') {
     return (
       <figure className="mx-auto px-6 sm:px-10 w-full" style={{ maxWidth: '1640px' }}>
-        <div
-          className="w-full aspect-[16/9] bg-center bg-cover"
-          style={{ backgroundImage: `url(${url})` }}
-        />
+        <Img ratio={fit === 'cover' ? '16 / 9' : undefined} />
         {item.caption && (
           <figcaption className="mt-3 font-mono text-[0.72rem] tracking-[0.1em] uppercase opacity-55">
             {item.caption}
@@ -547,7 +691,7 @@ function GalleryItem({ item }: { item: NonNullable<Project['gallery']>[number] }
     )
   }
 
-  // Half-left — image left + caption on the right
+  // Half-left / Half-right — image one side + caption other side
   if (layout === 'half-left' || layout === 'half-right') {
     const reverse = layout === 'half-right'
     return (
@@ -558,10 +702,9 @@ function GalleryItem({ item }: { item: NonNullable<Project['gallery']>[number] }
         ].join(' ')}
         style={{ maxWidth: '1640px' }}
       >
-        <div
-          className="aspect-[5/6] bg-center bg-cover"
-          style={{ backgroundImage: `url(${url})`, direction: 'ltr' }}
-        />
+        <div style={{ direction: 'ltr' }}>
+          <Img ratio={fit === 'cover' ? '5 / 6' : undefined} />
+        </div>
         <div className="md:[direction:ltr] max-w-[40ch]">
           {item.caption ? (
             <p className="font-editorial italic text-[1.1rem] leading-[1.55] opacity-85">
@@ -573,18 +716,14 @@ function GalleryItem({ item }: { item: NonNullable<Project['gallery']>[number] }
     )
   }
 
-  // Two-col — placed in a flex row with the next item if also two-col (CSS handles via grid)
-  // For now: render as half-width centered card
+  // Two-col — half-width centered card
   return (
     <div
       className="mx-auto px-6 sm:px-10 grid grid-cols-1 md:grid-cols-2 gap-6"
       style={{ maxWidth: '1640px' }}
     >
       <figure>
-        <div
-          className="w-full aspect-[4/5] bg-center bg-cover"
-          style={{ backgroundImage: `url(${url})` }}
-        />
+        <Img ratio={fit === 'cover' ? '4 / 5' : undefined} />
         {item.caption && (
           <figcaption className="mt-2 font-mono text-[0.7rem] tracking-[0.1em] uppercase opacity-55">
             {item.caption}

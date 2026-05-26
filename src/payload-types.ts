@@ -559,13 +559,20 @@ export interface Project {
    */
   heroLayout?: ('high' | 'medium' | 'low') | null;
   /**
-   * Galerie d’images projet. L’option layout par item permet de varier l’affichage.
+   * Galerie d’images projet. L’option layout par item permet de varier l’affichage. Pour mettre deux images côte à côte : choisis « Deux colonnes » sur 2 items consécutifs — ils s’apparient automatiquement.
    */
   gallery?:
     | {
         image: number | Media;
         caption?: string | null;
+        /**
+         * Où / comment placer l'image
+         */
         layout?: ('full' | 'contained' | 'half-left' | 'half-right' | 'two-col') | null;
+        /**
+         * Comment afficher l'image dans son cadre.
+         */
+        fit?: ('natural' | 'cover' | 'contain') | null;
         id?: string | null;
       }[]
     | null;
@@ -602,6 +609,10 @@ export interface Project {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Visuel à côté du contexte (split layout).
+   */
+  contextImage?: (number | null) | Media;
   challenge?: {
     root: {
       type: string;
@@ -617,6 +628,10 @@ export interface Project {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Image en background du §03. Le texte du défi apparaît dans une glass card par-dessus. Utiliser une image dramatique.
+   */
+  challengeImage?: (number | null) | Media;
   solution?: {
     root: {
       type: string;
@@ -632,6 +647,10 @@ export interface Project {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Visuel à côté de la solution (split layout, image à droite).
+   */
+  solutionImage?: (number | null) | Media;
   /**
    * Mets en avant les chiffres clés. Ex : "+38% engagement", "120k vues".
    */
@@ -1841,12 +1860,16 @@ export interface ProjectsSelect<T extends boolean = true> {
         image?: T;
         caption?: T;
         layout?: T;
+        fit?: T;
         id?: T;
       };
   introduction?: T;
   context?: T;
+  contextImage?: T;
   challenge?: T;
+  challengeImage?: T;
   solution?: T;
+  solutionImage?: T;
   results?:
     | T
     | {
