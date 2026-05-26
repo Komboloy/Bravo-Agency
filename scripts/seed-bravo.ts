@@ -34,6 +34,14 @@ type RichDoc = {
   }
 }
 
+/**
+ * richText() — accepts a list of strings, each line can use light markdown:
+ *   - "## Title" → h2 heading
+ *   - "### Subtitle" → h3 heading
+ *   - "**word**" → bold (strong)
+ *   - "*word*" → italic (em)
+ * Otherwise rendered as a paragraph.
+ */
 function richText(paragraphs: string[]): RichDoc {
   return {
     root: {
@@ -42,16 +50,129 @@ function richText(paragraphs: string[]): RichDoc {
       format: '',
       indent: 0,
       version: 1,
-      children: paragraphs.map((p) => ({
-        type: 'paragraph',
-        direction: 'ltr',
-        format: '',
-        indent: 0,
-        version: 1,
-        children: [
-          { type: 'text', version: 1, text: p, format: 0, mode: 'normal', style: '', detail: 0 },
-        ],
-      })),
+      children: paragraphs.map((line) => {
+        if (line.startsWith('## ')) return heading('h2', parseInlines(line.slice(3)))
+        if (line.startsWith('### ')) return heading('h3', parseInlines(line.slice(4)))
+        return paragraph(parseInlines(line))
+      }),
+    },
+  }
+}
+
+// Inline parser — splits text into {plain | strong | em} runs.
+// Strong is **...**, em is *...* (single star). No nesting, no escapes.
+function parseInlines(text: string): Inline[] {
+  const out: Inline[] = []
+  let i = 0
+  while (i < text.length) {
+    // strong: **...**
+    if (text.startsWith('**', i)) {
+      const end = text.indexOf('**', i + 2)
+      if (end > i + 2) {
+        out.push({ strong: text.slice(i + 2, end) })
+        i = end + 2
+        continue
+      }
+    }
+    // em: *...* (but not **)
+    if (text[i] === '*' && text[i + 1] !== '*') {
+      const end = (() => {
+        let j = i + 1
+        while (j < text.length) {
+          if (text[j] === '*' && text[j + 1] !== '*') return j
+          j++
+        }
+        return -1
+      })()
+      if (end > i + 1) {
+        out.push({ em: text.slice(i + 1, end) })
+        i = end + 1
+        continue
+      }
+    }
+    // Plain run — to the next ** or single *
+    const idxStrong = text.indexOf('**', i)
+    const idxEm = (() => {
+      let j = i
+      while (j < text.length) {
+        if (text[j] === '*' && text[j + 1] !== '*' && (j === 0 || text[j - 1] !== '*')) return j
+        j++
+      }
+      return -1
+    })()
+    let next = text.length
+    if (idxStrong >= 0) next = Math.min(next, idxStrong)
+    if (idxEm >= 0) next = Math.min(next, idxEm)
+    const slice = text.slice(i, next)
+    if (slice) out.push(slice)
+    i = next
+  }
+  return out.length > 0 ? out : [text]
+}
+
+// -- Rich content DSL (rt) ---------------------------------------------------
+// Build Lexical state with headings, strong, em.
+//
+//   rt([
+//     { h2: ['Une marque qui ', { em: 'respire' }, '.'] },
+//     ['Eletheo voulait ', { strong: 'tout reposer' }, '.'],
+//     ['On a passé ', { em: 'six semaines' }, ' à écouter.'],
+//   ])
+
+type Inline = string | { em: string } | { strong: string }
+type Block =
+  | string
+  | Inline[]
+  | { h2: Inline | Inline[] }
+  | { h3: Inline | Inline[] }
+
+function inlineToText(i: Inline) {
+  if (typeof i === 'string') {
+    return { type: 'text', version: 1, text: i, format: 0, mode: 'normal', style: '', detail: 0 }
+  }
+  if ('em' in i) {
+    return { type: 'text', version: 1, text: i.em, format: 2, mode: 'normal', style: '', detail: 0 }
+  }
+  return { type: 'text', version: 1, text: i.strong, format: 1, mode: 'normal', style: '', detail: 0 }
+}
+
+function paragraph(inlines: Inline[]) {
+  return {
+    type: 'paragraph',
+    direction: 'ltr',
+    format: '',
+    indent: 0,
+    version: 1,
+    children: inlines.map(inlineToText),
+  }
+}
+
+function heading(tag: 'h2' | 'h3', inlines: Inline[]) {
+  return {
+    type: 'heading',
+    tag,
+    direction: 'ltr',
+    format: '',
+    indent: 0,
+    version: 1,
+    children: inlines.map(inlineToText),
+  }
+}
+
+function rt(blocks: Block[]): RichDoc {
+  return {
+    root: {
+      type: 'root',
+      direction: 'ltr',
+      format: '',
+      indent: 0,
+      version: 1,
+      children: blocks.map((b) => {
+        if (typeof b === 'string') return paragraph([b])
+        if (Array.isArray(b)) return paragraph(b)
+        if ('h2' in b) return heading('h2', Array.isArray(b.h2) ? b.h2 : [b.h2])
+        return heading('h3', Array.isArray(b.h3) ? b.h3 : [b.h3])
+      }),
     },
   }
 }
@@ -141,6 +262,8 @@ type ProjectSeed = {
   challengeImg?: string
   solutionImg?: string
   gallery?: string[]
+  // Rich content — each string is a paragraph; supports light markdown:
+  //   "## h2"  /  "### h3"  /  "**strong**"  /  "*em*"
   intro: string[]
   context: string[]
   challenge: string[]
@@ -172,19 +295,23 @@ const PROJECTS_DATA: ProjectSeed[] = [
     solutionImg: U('1531482615713-2afd69097998'),
     gallery: [U('1524178232363-1fb2b075b655'), U('1497486751825-1233686d5d80'), U('1531482615713-2afd69097998')],
     intro: [
-      "Bruxelles Formation accompagne chaque année des milliers de demandeurs d'emploi dans leur réorientation professionnelle. Notre mission : refaire de l'organisme un repère évident, parlant, désirable.",
-      "Une refonte qui devait parler aussi bien à un ancien soudeur en reconversion qu'à une responsable formation d'institution. Pari : un seul ton.",
+      "## Refaire de l'organisme *un repère évident*.",
+      "Bruxelles Formation accompagne chaque année **des milliers de demandeurs d'emploi** dans leur réorientation professionnelle. Notre mission : rendre l'organisme *parlant, désirable*, sans renier sa rigueur de service public.",
+      "Une refonte qui devait parler aussi bien à un ancien soudeur en reconversion qu'à une responsable formation. Pari : *un seul ton*.",
     ],
     context: [
-      "Avant notre intervention, la marque souffrait d'un défaut classique du public — trop d'informations, trop peu d'âme. Les supports d'inscription, les annonces, les réseaux : chacun racontait sa version.",
-      "L'enjeu n'était pas cosmétique. La perception de l'organisme conditionne le taux de conversion vers l'inscription. Plus la marque inspire, plus les gens passent à l'acte.",
+      "### Trop d'infos, *pas assez d'âme*.",
+      "Avant notre intervention, la marque souffrait d'un défaut classique du public — **trop d'informations, trop peu d'âme**. Les supports d'inscription, les annonces, les réseaux : chacun racontait sa version.",
+      "L'enjeu n'était pas cosmétique. *La perception conditionne la conversion*. Plus la marque inspire, plus les gens passent à l'acte.",
     ],
     challenge: [
-      "Réconcilier l'institutionnel et l'humain. Donner envie sans survendre. Maintenir la rigueur d'un service public tout en injectant l'énergie d'une promesse personnelle.",
+      "### Donner envie *sans survendre*.",
+      "Réconcilier l'institutionnel et l'humain. **Maintenir la rigueur** d'un service public tout en injectant l'énergie d'une promesse personnelle.",
     ],
     solution: [
-      "Une plateforme de marque articulée autour d'une seule phrase : « Apprendre un métier, retrouver un horizon ». Une identité visuelle plus chaude, un système éditorial qui met les apprenants au centre, une refonte du site avec un parcours d'inscription divisé par deux en nombre de clics.",
-      "Déploiement : campagne d'affichage métro, supports inscription, kit RH partenaires.",
+      "### Une plateforme, *une phrase*.",
+      "On a tout articulé autour d'une seule promesse : « **Apprendre un métier, retrouver un horizon** ». Une identité visuelle plus chaude, un système éditorial qui met les apprenants au centre, une refonte du site avec un parcours d'inscription *divisé par deux* en nombre de clics.",
+      "Déploiement : campagne d'affichage métro, supports inscription, **kit RH partenaires**.",
     ],
     results: [
       { value: '+34%', label: 'inscriptions', description: 'Vs. année précédente, 6 mois après lancement.' },
@@ -217,18 +344,22 @@ const PROJECTS_DATA: ProjectSeed[] = [
     solutionImg: U('1559339352-11d035aa65de'),
     gallery: [U('1559329007-40df8a9345d8'), U('1555396273-367ea4eb4db5'), U('1559339352-11d035aa65de')],
     intro: [
-      "La fédération Horeca de Bruxelles voulait réhabiliter un secteur fatigué par le COVID, les pénuries de main-d'œuvre, le bashing récurrent. Pari : reformuler ce que veut dire « être accueillant » en 2024.",
+      "## Le métier de l'accueil, *raconté autrement*.",
+      "La fédération Horeca de Bruxelles voulait **réhabiliter un secteur fatigué** par le COVID, les pénuries de main-d'œuvre, le bashing récurrent. Pari : reformuler ce que veut dire *« être accueillant »* en 2024.",
     ],
     context: [
-      'Après deux ans de crise, les jeunes désertent l\'horeca. Les images d\'Épinal — patron qui hurle en cuisine, service de minuit, salaires misérables — ont fini par recouvrir tout le reste.',
-      'Or l\'horeca bruxellois embauche, forme, paie correctement, et permet de monter vite. Le travail à faire : remettre cette réalité en lumière.',
+      "### Une image *figée*.",
+      "Après deux ans de crise, **les jeunes désertent l'horeca**. Les images d'Épinal — patron qui hurle en cuisine, service de minuit, salaires misérables — ont fini par recouvrir tout le reste.",
+      "Or l'horeca bruxellois *embauche, forme, paie correctement*, et permet de monter vite. Le travail à faire : remettre cette réalité en lumière.",
     ],
     challenge: [
-      "Renverser l'image sans avoir l'air défensif. Ne pas \"vendre\" l'horeca comme une marque, mais faire entendre la voix de ceux qui y travaillent depuis dix ans et n'iraient nulle part ailleurs.",
+      "### Renverser, *sans défense*.",
+      "Renverser l'image sans avoir l'air défensif. Ne pas « vendre » l'horeca comme une marque, mais **faire entendre la voix de ceux qui y travaillent** depuis dix ans et n'iraient nulle part ailleurs.",
     ],
     solution: [
-      "Une série de portraits documentaires — vingt professionnels, vingt parcours. Pas d\'acteurs, pas de mise en scène. Une campagne d\'affichage + vidéos pour les réseaux qui circule autant chez les jeunes que dans les écoles hôtelières.",
-      'Un micro-site avec annuaire des établissements partenaires et calendrier des journées découvertes.',
+      "### Vingt portraits, *vingt parcours*.",
+      "Une série de portraits documentaires — **vingt professionnels, vingt parcours**. Pas d'acteurs, pas de mise en scène. Une campagne d'affichage + vidéos pour les réseaux qui circule autant chez les jeunes que dans les écoles hôtelières.",
+      "Un micro-site avec annuaire des établissements partenaires et *calendrier des journées découvertes*.",
     ],
     results: [
       { value: '2,1M', label: 'vues vidéos' },
@@ -256,18 +387,22 @@ const PROJECTS_DATA: ProjectSeed[] = [
     solutionImg: U('1517022812141-23620dba5c23'),
     gallery: [U('1469571486292-0ba58a3f068b'), U('1532629345422-7515f3d16bb6'), U('1517022812141-23620dba5c23')],
     intro: [
-      "Pour la campagne de fin d'année d'Oxfam Belgique, on a refusé le levier de la culpabilité. La solidarité n'est pas une faveur — c'est une infrastructure qui rend tout le reste possible.",
+      "## La solidarité comme *infrastructure*.",
+      "Pour la campagne de fin d'année d'Oxfam Belgique, on a **refusé le levier de la culpabilité**. La solidarité n'est pas une faveur — c'est une *infrastructure qui rend tout le reste possible*.",
     ],
     context: [
-      'Les campagnes ONG saturent les mêmes registres : urgence, peur, témoignage poignant. Les taux de don ont chuté de 18% en trois ans sur le marché belge.',
-      'Oxfam voulait une voix qui ne ressemble à aucune autre ONG.',
+      "### L'urgence, *saturée*.",
+      "Les campagnes ONG saturent les mêmes registres : urgence, peur, témoignage poignant. **Les taux de don ont chuté de 18%** en trois ans sur le marché belge.",
+      "Oxfam voulait une voix qui *ne ressemble à aucune autre ONG*.",
     ],
     challenge: [
-      'Rendre désirable un acte ingrat. Faire comprendre que le don n\'achète pas une bonne conscience, mais une part d\'un système qui tient.',
+      "### Désirable, *pas ingrat*.",
+      "Rendre désirable un acte ingrat. Faire comprendre que le don n'achète pas une bonne conscience, mais **une part d'un système qui tient**.",
     ],
     solution: [
-      "Une plateforme « La solidarité comme infrastructure » qui montre concrètement les chaînes logistiques, humaines, économiques qu'Oxfam fait tourner. Pas de larmes, des engrenages.",
-      'Films, social, OOH gare centrale, kit donateurs.',
+      "### Pas de larmes, *des engrenages*.",
+      "Une plateforme « **La solidarité comme infrastructure** » qui montre concrètement les chaînes logistiques, humaines, économiques qu'Oxfam fait tourner. *Pas de larmes, des engrenages*.",
+      "Films, social, OOH gare centrale, **kit donateurs**.",
     ],
     results: [
       { value: '+27%', label: 'dons récurrents' },
@@ -295,17 +430,21 @@ const PROJECTS_DATA: ProjectSeed[] = [
     solutionImg: U('1500382017468-9049fed747ef'),
     gallery: [U('1465056836041-7f43ac27dcb5'), U('1494172961521-33799ddd43a5'), U('1500382017468-9049fed747ef')],
     intro: [
-      "Avant la COP21 de Paris, l'ONU voulait que la voix citoyenne pèse autant que les déclarations officielles. Notre rôle : capter cette parole, la mettre en forme, l'amplifier.",
+      "## Un sommet, une promesse *écrite par les citoyens*.",
+      "Avant la COP21 de Paris, l'ONU voulait que **la voix citoyenne pèse autant** que les déclarations officielles. Notre rôle : *capter cette parole, la mettre en forme, l'amplifier*.",
     ],
     context: [
-      "À l'approche du sommet, le discours officiel monopolisait les médias. Les milliers d'initiatives locales — citoyennes, ONG, entreprises — restaient invisibles.",
+      "### Une parole *éparpillée*.",
+      "À l'approche du sommet, **le discours officiel monopolisait les médias**. Les milliers d'initiatives locales — citoyennes, ONG, entreprises — *restaient invisibles*.",
     ],
     challenge: [
-      "Faire entrer dans la salle de négociation une parole décentralisée. Choisir un format qui résiste à l'institutionnalisation.",
+      "### Faire entrer la rue *dans la salle*.",
+      "Faire entrer dans la salle de négociation une **parole décentralisée**. Choisir un format qui *résiste à l'institutionnalisation*.",
     ],
     solution: [
-      "Une plateforme participative : chaque citoyen peut écrire sa promesse climatique en une phrase. Les promesses sont compilées, animées, diffusées sur les écrans du sommet.",
-      'Au total : 240 000 promesses recueillies. Une fresque éditoriale diffusée en streaming pendant les 11 jours du sommet.',
+      "### 240 000 *promesses*.",
+      "Une plateforme participative : chaque citoyen peut écrire **sa promesse climatique en une phrase**. Les promesses sont compilées, animées, diffusées sur les écrans du sommet.",
+      "Au total : **240 000 promesses recueillies**. Une fresque éditoriale diffusée en streaming pendant les *11 jours du sommet*.",
     ],
     results: [
       { value: '240k', label: 'promesses', description: 'Recueillies en 6 semaines.' },
@@ -334,16 +473,20 @@ const PROJECTS_DATA: ProjectSeed[] = [
     solutionImg: U('1581092334651-ddf26d9a09d0'),
     gallery: [U('1581092334651-ddf26d9a09d0'), U('1487014679447-9f8336841d58')],
     intro: [
-      'Tomco, équipementier industriel installé en Belgique depuis 40 ans, voulait moderniser sa marque sans renier son ADN technique. Refonte complète — du logo au catalogue PDF.',
+      "## Une marque industrielle *qui respire à nouveau*.",
+      "Tomco, équipementier industriel installé en Belgique **depuis 40 ans**, voulait moderniser sa marque sans renier son ADN technique. *Refonte complète* — du logo au catalogue PDF.",
     ],
     context: [
-      "L'entreprise n'avait pas touché à son identité depuis 1998. Le logo, fonctionnel, ne projetait plus l'expertise R&D acquise sur deux décennies.",
+      "### Une identité *figée en 1998*.",
+      "L'entreprise n'avait pas touché à son identité **depuis 1998**. Le logo, fonctionnel, ne projetait plus *l'expertise R&D* acquise sur deux décennies.",
     ],
     challenge: [
-      'Rester crédible auprès des ingénieurs et des donneurs d\'ordre tout en parlant aux nouvelles générations de techniciens qu\'il faut recruter.',
+      "### Deux publics, *un seul ton*.",
+      "Rester crédible auprès des ingénieurs et des donneurs d'ordre tout en **parlant aux nouvelles générations** de techniciens qu'il faut *recruter*.",
     ],
     solution: [
-      'Identité visuelle resserrée autour d\'un wordmark robuste et d\'un système éditorial typographié. Site B2B refait avec catalogue produits filtrable. Plaquette commerciale grand format.',
+      "### Un système, *pas un logo*.",
+      "Identité visuelle resserrée autour d'un **wordmark robuste** et d'un système éditorial typographié. Site B2B refait avec *catalogue produits filtrable*. Plaquette commerciale grand format.",
     ],
     results: [
       { value: '+89%', label: 'leads qualifiés', description: 'Via le formulaire commercial.' },
@@ -366,17 +509,21 @@ const PROJECTS_DATA: ProjectSeed[] = [
     solutionImg: U('1462331940025-496dfbfc7564'),
     gallery: [U('1509869175650-a1d97972541a'), U('1451187580459-43490279c0fa'), U('1462331940025-496dfbfc7564')],
     intro: [
-      'Spark OH! ouvre à Frameries comme nouvelle référence des centres de science en Wallonie. Notre mission : faire d\'un samedi famille au musée des sciences un événement aussi désirable qu\'un concert.',
+      "## Faire briller *la science*.",
+      "Spark OH! ouvre à Frameries comme **nouvelle référence des centres de science** en Wallonie. Notre mission : faire d'un samedi famille au musée des sciences *un événement aussi désirable qu'un concert*.",
     ],
     context: [
-      'Les musées scientifiques cumulent les handicaps : image scolaire, parcours linéaire, communication institutionnelle. Spark OH! voulait casser ce cliché dès le lancement.',
+      "### Trois handicaps *en un seul lieu*.",
+      "Les musées scientifiques cumulent les handicaps : **image scolaire, parcours linéaire, communication institutionnelle**. Spark OH! voulait *casser ce cliché* dès le lancement.",
     ],
     challenge: [
-      'Donner envie à des familles, des couples, des étudiants, des seniors — bref, tout le monde sauf "les enfants en sortie scolaire" — de venir un dimanche.',
+      "### Pas *la sortie scolaire*.",
+      "Donner envie à des familles, des couples, des étudiants, des seniors — bref, **tout le monde sauf « les enfants en sortie scolaire »** — de venir *un dimanche*.",
     ],
     solution: [
-      'Identité visuelle volontairement pop, presque festivalière. Campagne d\'affichage régionale. Système de signalétique intérieur. Édition d\'un guide collector.',
-      'Stratégie social : reels de coulisses des manips, focus sur les médiateurs, calendrier événementiel hebdo.',
+      "### Pop, *presque festivalier*.",
+      "Identité visuelle volontairement **pop, presque festivalière**. Campagne d'affichage régionale. Système de signalétique intérieur. *Édition d'un guide collector*.",
+      "Stratégie social : reels de coulisses des manips, focus sur les médiateurs, **calendrier événementiel hebdo**.",
     ],
     results: [
       { value: '+38%', label: 'visiteurs', description: 'Vs. objectif première année.' },
@@ -406,17 +553,21 @@ const PROJECTS_DATA: ProjectSeed[] = [
     solutionImg: U('1481833761820-0509d3217039'),
     gallery: [U('1504674900247-0877df9cc836'), U('1546069901-ba9599a7e63c'), U('1481833761820-0509d3217039')],
     intro: [
-      'Noon est une jeune marque de cuisine du midi à emporter, à Bruxelles. Notre rôle : poser une voix unique au milieu d\'une catégorie ultra-saturée.',
+      "## La cuisine du midi, *sérieusement*.",
+      "Noon est une jeune marque de **cuisine du midi à emporter**, à Bruxelles. Notre rôle : poser *une voix unique* au milieu d'une catégorie ultra-saturée.",
     ],
     context: [
-      'Le segment "lunch sain à emporter" est devenu surpopulé. Salade-bowl-poke-buddha-flatbread. Toutes les marques disent la même chose : "fait maison, frais, local". Difficile de distinguer.',
+      "### Une catégorie *surpopulée*.",
+      "Le segment « lunch sain à emporter » est devenu **surpopulé**. Salade-bowl-poke-buddha-flatbread. Toutes les marques disent la même chose : *« fait maison, frais, local »*. Difficile de distinguer.",
     ],
     challenge: [
-      'Faire de Noon une marque que les bureaux mentionnent par leur nom — pas "le truc à côté" ou "celui avec les bols".',
+      "### Un nom, *pas une description*.",
+      "Faire de Noon une marque que **les bureaux mentionnent par leur nom** — pas « le truc à côté » ou *« celui avec les bols »*.",
     ],
     solution: [
-      'Plateforme de marque "La cuisine du midi, sérieusement" : on revendique le sérieux culinaire (pas le sérieux ennuyeux). Identité épurée, typographie éditoriale forte, packaging modulaire qui devient signature.',
-      'Site click-and-collect avec menu hebdo, fidélité simple, paiement express.',
+      "### Le sérieux culinaire, *pas l'ennui*.",
+      "Plateforme de marque **« La cuisine du midi, sérieusement »** : on revendique le sérieux culinaire (pas le sérieux ennuyeux). Identité épurée, typographie éditoriale forte, *packaging modulaire* qui devient signature.",
+      "Site click-and-collect avec **menu hebdo**, fidélité simple, *paiement express*.",
     ],
     results: [
       { value: '+54%', label: 'paniers moyens' },
@@ -438,17 +589,21 @@ const PROJECTS_DATA: ProjectSeed[] = [
     solutionImg: U('1571805529673-0f56b922b359'),
     gallery: [U('1551538827-9c037cb4f32a'), U('1543007630-9710e4a00a20'), U('1571805529673-0f56b922b359')],
     intro: [
-      "Pour la sortie d'une édition limitée Beefeater en Belgique, on a écrit une campagne qui rappelle que l'histoire d'un gin n'est pas un argument à recopier — c'est un point de départ.",
+      "## Un gin qui *assume son siècle*.",
+      "Pour la sortie d'une édition limitée Beefeater en Belgique, on a écrit une campagne qui rappelle que **l'histoire d'un gin n'est pas un argument à recopier** — c'est *un point de départ*.",
     ],
     context: [
-      'Le marché du gin premium est devenu chaotique : micro-distilleries, éditions limitées, gimmicks. Les grandes marques historiques perdent du terrain face à des inconnus.',
+      "### Le premium *en mode chaos*.",
+      "Le marché du gin premium est devenu **chaotique** : micro-distilleries, éditions limitées, gimmicks. *Les grandes marques historiques perdent du terrain* face à des inconnus.",
     ],
     challenge: [
-      "Faire valoir un siècle d'histoire sans tomber dans le piège du discours patrimonial poussiéreux.",
+      "### Un siècle, *sans poussière*.",
+      "Faire valoir **un siècle d'histoire** sans tomber dans le piège du *discours patrimonial poussiéreux*.",
     ],
     solution: [
-      "Direction artistique inspirée du Londres documentaire — pas la carte postale. Des images de bars de quartier, de barmen qui parlent vrai, de cocktails sans tablier blanc.",
-      'Activation bar à Bruxelles + social organique. Pas un seul euro en média payant.',
+      "### Londres documentaire, *pas la carte postale*.",
+      "Direction artistique inspirée du **Londres documentaire** — pas la carte postale. Des images de bars de quartier, de *barmen qui parlent vrai*, de cocktails sans tablier blanc.",
+      "Activation bar à Bruxelles + social organique. **Pas un seul euro** en média payant.",
     ],
     results: [
       { value: '+22%', label: 'volume', description: 'Sur 3 mois post-activation.' },
@@ -475,16 +630,20 @@ const PROJECTS_DATA: ProjectSeed[] = [
     solutionImg: U('1518531933037-91b2f5f229cc'),
     gallery: [U('1466692476868-aef1dfb1e735'), U('1417325384643-aac51acc9e5d'), U('1518531933037-91b2f5f229cc')],
     intro: [
-      "Le jardin est un projet personnel du studio. On y teste des écritures, des photos, des hypothèses qui n'ont pas leur place chez un client. Trois saisons plus tard, on en récolte.",
+      "## Un projet auto-initié, *trois saisons plus tard*.",
+      "Le jardin est un **projet personnel** du studio. On y teste des écritures, des photos, des hypothèses qui *n'ont pas leur place chez un client*. Trois saisons plus tard, on en récolte.",
     ],
     context: [
-      "Beaucoup d'agences ont leur \"side project\" qu'on retrouve trois mois plus tard sur l'About page. Pour nous, ça devait être un vrai engagement éditorial.",
+      "### Pas un *side project*.",
+      "Beaucoup d'agences ont leur « side project » qu'on retrouve trois mois plus tard *sur l'About page*. Pour nous, ça devait être **un vrai engagement éditorial**.",
     ],
     challenge: [
-      "Maintenir un rythme de publication régulier alors qu'aucun client ne nous attend. Tenir la qualité sans la pression d'un brief.",
+      "### Tenir, *sans brief*.",
+      "Maintenir un **rythme de publication régulier** alors qu'aucun client ne nous attend. *Tenir la qualité* sans la pression d'un brief.",
     ],
     solution: [
-      'Une publication trimestrielle imprimée + un journal hebdo en ligne. Chaque édition explore un thème — la lenteur, le geste, l\'attention.',
+      "### Trimestriel imprimé, *hebdo en ligne*.",
+      "Une **publication trimestrielle imprimée** + un journal hebdo en ligne. Chaque édition explore un thème — *la lenteur, le geste, l'attention*.",
     ],
     results: [
       { value: 'III', label: 'éditions imprimées' },
@@ -506,16 +665,20 @@ const PROJECTS_DATA: ProjectSeed[] = [
     solutionImg: U('1590602847861-f357a9332bbc'),
     gallery: [U('1493225457124-a3eb161ffa5f'), U('1485579149621-3123dd979885'), U('1590602847861-f357a9332bbc')],
     intro: [
-      'Machao est notre podcast d\'enquête. Six épisodes par saison sur les campagnes militantes qui ont marqué le siècle — réussites, ratés, machineries.',
+      "## Le podcast d'enquête *sur les communications militantes*.",
+      "Machao est **notre podcast d'enquête**. Six épisodes par saison sur les campagnes militantes qui ont marqué le siècle — *réussites, ratés, machineries*.",
     ],
     context: [
-      "Le métier de la com militante est rarement raconté de l'intérieur. La parole, ce sont toujours les marques ou les médias.",
+      "### Une parole *jamais donnée*.",
+      "Le métier de la com militante est **rarement raconté de l'intérieur**. La parole, ce sont toujours *les marques ou les médias*.",
     ],
     challenge: [
-      'Obtenir la parole de ceux qui ont conçu les campagnes — souvent liés à des clauses de confidentialité ou des positions politiques sensibles.',
+      "### Faire parler *les muets*.",
+      "Obtenir la parole de ceux qui ont conçu les campagnes — souvent liés à des **clauses de confidentialité** ou des *positions politiques sensibles*.",
     ],
     solution: [
-      'Un format documentaire sonore d\'1h par épisode, monté serré. Interviews + archives audio. Disponible sur toutes les plateformes podcast + transcripts sur notre site.',
+      "### Un format, *monté serré*.",
+      "Un **format documentaire sonore d'1h** par épisode, monté serré. *Interviews + archives audio*. Disponible sur toutes les plateformes podcast + transcripts sur notre site.",
     ],
     results: [
       { value: '12', label: 'épisodes' },
@@ -537,16 +700,20 @@ const PROJECTS_DATA: ProjectSeed[] = [
     solutionImg: U('1485827404703-89b55fcc595e'),
     gallery: [U('1503454537195-1dcabb73ffb9'), U('1488521787991-ed7bbaae773c'), U('1485827404703-89b55fcc595e')],
     intro: [
-      "L'enfant sauvage est une exposition itinérante qu'on a portée avec l'UMons. Trois ans de recherche éditoriale autour d'une question : que devient le commun quand on grandit ?",
+      "## Une exposition itinérante *sur l'éducation et le commun*.",
+      "L'enfant sauvage est une exposition itinérante qu'on a portée **avec l'UMons**. Trois ans de recherche éditoriale autour d'une question : *que devient le commun quand on grandit ?*",
     ],
     context: [
-      'À l\'origine, un essai de Michael paru dans Le jardin. Le sujet — l\'éducation, le sauvage qui survit en nous — a appelé un format plus grand.',
+      "### D'un essai, *à une expo*.",
+      "À l'origine, un essai de Michael paru dans **Le jardin**. Le sujet — *l'éducation, le sauvage qui survit en nous* — a appelé un format plus grand.",
     ],
     challenge: [
-      "Tenir un propos d'auteur dans un format institutionnel (musée, université) sans renoncer à l'écriture libre.",
+      "### Un propos d'auteur, *dans un cadre institutionnel*.",
+      "Tenir un **propos d'auteur** dans un format institutionnel (musée, université) sans renoncer à *l'écriture libre*.",
     ],
     solution: [
-      "Une scénographie en quatre actes, conçue avec le studio Pluit. Un catalogue d'exposition (192 pages, deux langues). Trois conférences publiques à Mons, Bruxelles, Liège.",
+      "### Quatre actes, *trois villes*.",
+      "Une **scénographie en quatre actes**, conçue avec le studio Pluit. Un catalogue d'exposition (*192 pages, deux langues*). Trois conférences publiques à Mons, Bruxelles, Liège.",
     ],
     results: [
       { value: '18k', label: 'visiteurs' },

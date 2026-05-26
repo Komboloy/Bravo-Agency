@@ -353,6 +353,21 @@ export const Projects: CollectionConfig<'projects'> = {
               },
             },
             {
+              name: 'introBackground',
+              type: 'select',
+              label: 'Fond de l\'introduction',
+              defaultValue: 'bravo',
+              options: [
+                { label: 'BRAVO (violet signature)', value: 'bravo' },
+                { label: 'BRAVO bright (violet plus clair)', value: 'bravo-bright' },
+                { label: 'Ink (sombre)', value: 'ink' },
+                { label: 'Paper (crème)', value: 'paper' },
+              ],
+              admin: {
+                description: 'Couleur de fond de la section §01.',
+              },
+            },
+            {
               type: 'collapsible',
               label: 'Contexte / Challenge / Solution',
               fields: [
@@ -386,6 +401,18 @@ export const Projects: CollectionConfig<'projects'> = {
                   ],
                 },
                 {
+                  name: 'contextBackground',
+                  type: 'select',
+                  label: 'Fond du contexte (§02)',
+                  defaultValue: 'ink',
+                  options: [
+                    { label: 'Ink (sombre)', value: 'ink' },
+                    { label: 'Paper (crème)', value: 'paper' },
+                    { label: 'BRAVO (violet signature)', value: 'bravo' },
+                    { label: 'BRAVO bright (violet plus clair)', value: 'bravo-bright' },
+                  ],
+                },
+                {
                   type: 'row',
                   fields: [
                     {
@@ -416,6 +443,21 @@ export const Projects: CollectionConfig<'projects'> = {
                   ],
                 },
                 {
+                  name: 'challengeBackground',
+                  type: 'select',
+                  label: 'Teinte de la glass card (§03)',
+                  defaultValue: 'ink',
+                  options: [
+                    { label: 'Ink (glass sombre)', value: 'ink' },
+                    { label: 'Paper (glass clair)', value: 'paper' },
+                    { label: 'BRAVO (glass violet signature)', value: 'bravo' },
+                    { label: 'BRAVO bright (glass violet clair)', value: 'bravo-bright' },
+                  ],
+                  admin: {
+                    description: 'Ne change pas l\'image — change la teinte de la carte glass posée par-dessus.',
+                  },
+                },
+                {
                   type: 'row',
                   fields: [
                     {
@@ -442,6 +484,18 @@ export const Projects: CollectionConfig<'projects'> = {
                         description: 'Visuel à côté de la solution (split layout, image à droite).',
                       },
                     },
+                  ],
+                },
+                {
+                  name: 'solutionBackground',
+                  type: 'select',
+                  label: 'Fond de la solution (§04)',
+                  defaultValue: 'ink',
+                  options: [
+                    { label: 'Ink (sombre)', value: 'ink' },
+                    { label: 'Paper (crème)', value: 'paper' },
+                    { label: 'BRAVO (violet signature)', value: 'bravo' },
+                    { label: 'BRAVO bright (violet plus clair)', value: 'bravo-bright' },
                   ],
                 },
               ],

@@ -47,6 +47,70 @@ function resolveNavItem(item: NonNullable<HeaderType['navItems']>[number]): NavL
   return null
 }
 
+/** Hover/focus dropdown showing the active locale + the others on reveal. */
+function LangSwitcher() {
+  const [open, setOpen] = useState(false)
+  const current = LOCALES[0] // FR until real i18n routing is wired
+  const others = LOCALES.filter((l) => l !== current)
+
+  return (
+    <div
+      className="hidden sm:flex relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <button
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onFocus={() => setOpen(true)}
+        onBlur={(e) => {
+          // keep open while focus stays within
+          if (!e.currentTarget.parentElement?.contains(e.relatedTarget as Node)) setOpen(false)
+        }}
+        className="flex items-center gap-1 font-mono text-xs tracking-[0.16em] uppercase font-semibold cursor-pointer"
+      >
+        {current.toUpperCase()}
+        <span
+          aria-hidden
+          className={`inline-block text-[0.6rem] transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+        >
+          ▾
+        </span>
+      </button>
+      <ul
+        role="listbox"
+        className={[
+          'absolute right-0 top-full mt-2 list-none rounded-lg overflow-hidden',
+          'bg-[linear-gradient(180deg,rgba(255,255,255,0.10)_0%,rgba(255,255,255,0)_55%),rgba(73,35,244,0.92)]',
+          'backdrop-blur-[18px] saturate-[1.5]',
+          'border border-[rgba(244,237,225,0.22)]',
+          'shadow-[0_18px_48px_-12px_rgba(73,35,244,0.55)]',
+          'min-w-[64px] transition-[opacity,transform] duration-200 origin-top-right',
+          open ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none',
+        ].join(' ')}
+      >
+        {others.map((loc) => (
+          <li key={loc}>
+            <button
+              type="button"
+              role="option"
+              onBlur={(e) => {
+                if (!e.currentTarget.closest('ul')?.parentElement?.contains(e.relatedTarget as Node)) {
+                  setOpen(false)
+                }
+              }}
+              className="w-full px-4 py-2 text-left font-mono text-xs tracking-[0.16em] uppercase font-semibold text-[var(--color-paper)] hover:bg-[rgba(255,255,255,0.10)] cursor-pointer"
+            >
+              {loc.toUpperCase()}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
   const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
@@ -205,19 +269,10 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
 
         {/* Right side: lang + CTA + hamburger */}
         <div className="flex items-center gap-3 sm:gap-5 justify-end">
-          <div className="hidden sm:flex gap-2">
-            {LOCALES.map((loc) => (
-              <span
-                key={loc}
-                className={loc === 'fr' ? '' : 'opacity-45'}
-              >
-                {loc.toUpperCase()}
-              </span>
-            ))}
-          </div>
+          <LangSwitcher />
           <Link
             href="/contact"
-            className="hidden xs:inline-block px-4 py-2 rounded-full border border-current font-sans font-semibold whitespace-nowrap transition-colors hover:bg-[var(--color-paper)] hover:text-[var(--color-ink)] max-[460px]:hidden max-[640px]:text-[0.68rem] max-[640px]:px-3.5 max-[640px]:py-1.5"
+            className="inline-block px-4 py-2 rounded-full border border-current font-sans font-semibold whitespace-nowrap transition-colors hover:bg-[var(--color-paper)] hover:text-[var(--color-ink)] max-[460px]:hidden max-[640px]:text-[0.68rem] max-[640px]:px-3.5 max-[640px]:py-1.5"
           >
             On en parle
           </Link>

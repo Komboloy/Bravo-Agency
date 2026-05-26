@@ -254,14 +254,21 @@ export default async function ProjectPage({ params: paramsPromise }: Args) {
         )}
       </section>
 
-      {/* §01 Introduction — BRAVO color full bleed */}
+      {/* §01 Introduction — full bleed, choose your background */}
       {project.introduction && (
-        <section className="surface-bravo bravo-atmosphere px-6 sm:px-10 py-24 sm:py-36">
-          <div className="relative z-10 mx-auto grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-8 md:gap-20 items-end" style={{ maxWidth: '1640px' }}>
-            <span className="section-label" style={{ color: 'var(--color-paper)' }}>
+        <section
+          className={`${surfaceClass(project.introBackground, 'bravo')} ${
+            isBravoSurface(project.introBackground ?? 'bravo') ? 'bravo-atmosphere' : ''
+          } px-6 sm:px-10 py-24 sm:py-36`}
+        >
+          <div
+            className="relative z-10 mx-auto grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-8 md:gap-20 items-start"
+            style={{ maxWidth: '1640px' }}
+          >
+            <span className="section-label" style={{ color: 'var(--prose-label-color)' }}>
               §01 · Introduction
             </span>
-            <div className="text-[var(--color-paper)]">
+            <div className="prose-bravo-intro">
               <RichText data={project.introduction} enableGutter={false} />
             </div>
           </div>
@@ -275,6 +282,7 @@ export default async function ProjectPage({ params: paramsPromise }: Args) {
           content={project.context}
           imageUrl={imageUrl(project.contextImage)}
           reverse={false}
+          background={project.contextBackground}
         />
       )}
 
@@ -283,6 +291,7 @@ export default async function ProjectPage({ params: paramsPromise }: Args) {
         <ChallengeOverlay
           challenge={project.challenge}
           imageUrl={imageUrl(project.challengeImage) || heroUrl}
+          background={project.challengeBackground}
         />
       )}
 
@@ -293,6 +302,7 @@ export default async function ProjectPage({ params: paramsPromise }: Args) {
           content={project.solution}
           imageUrl={imageUrl(project.solutionImage)}
           reverse={true}
+          background={project.solutionBackground}
         />
       )}
 
@@ -344,6 +354,40 @@ export default async function ProjectPage({ params: paramsPromise }: Args) {
 /* ===========================================================
    Helpers — small render functions used above
    =========================================================== */
+
+type BackgroundChoice = 'ink' | 'paper' | 'bravo' | 'bravo-bright' | null | undefined
+
+/** Map background choice to surface-* class. Falls back to `fallback` when nullish. */
+function surfaceClass(bg: BackgroundChoice, fallback: 'ink' | 'paper' | 'bravo' | 'bravo-bright'): string {
+  const key = bg ?? fallback
+  return `surface-${key}`
+}
+
+/** Map background choice to theme-* class — sets prose color vars without overriding background.
+ *  Use on translucent surfaces (glass cards). */
+function themeClass(bg: BackgroundChoice, fallback: 'ink' | 'paper' | 'bravo' | 'bravo-bright'): string {
+  const key = bg ?? fallback
+  return `theme-${key}`
+}
+
+function isBravoSurface(bg: BackgroundChoice): boolean {
+  return bg === 'bravo' || bg === 'bravo-bright'
+}
+
+/** Map background choice to glass card class (used in §03 overlay). */
+function glassClass(bg: BackgroundChoice): string {
+  switch (bg) {
+    case 'paper':
+      return 'paper-glass'
+    case 'bravo':
+      return 'bravo-glass'
+    case 'bravo-bright':
+      return 'bravo-bright-glass'
+    case 'ink':
+    default:
+      return 'dark-glass'
+  }
+}
 
 function Field({
   k,
@@ -417,15 +461,17 @@ function Block({
   content,
   imageUrl,
   reverse,
+  background,
 }: {
   num: string
   content: Project['context']
   imageUrl: string | null
   reverse: boolean
+  background?: BackgroundChoice
 }) {
   if (!content) return null
   return (
-    <section className="surface-ink section-rule-bravo py-24 sm:py-36">
+    <section className={`${surfaceClass(background, 'ink')} section-rule-bravo py-24 sm:py-36`}>
       <div
         className={[
           'mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 items-center px-6 sm:px-10',
@@ -450,14 +496,14 @@ function Block({
             </div>
           )}
         </div>
-        <div className="md:[direction:ltr] text-[var(--color-paper)]">
+        <div className="md:[direction:ltr]">
           <span
             className="font-mono text-[0.72rem] tracking-[0.16em] uppercase font-semibold mb-4 block"
-            style={{ color: 'var(--color-bravo-soft)' }}
+            style={{ color: 'var(--prose-label-color)' }}
           >
             {num}
           </span>
-          <div className="prose-bravo">
+          <div className="prose-bravo-block">
             <RichText data={content} enableGutter={false} />
           </div>
         </div>
@@ -469,11 +515,15 @@ function Block({
 function ChallengeOverlay({
   challenge,
   imageUrl,
+  background,
 }: {
   challenge: Project['challenge']
   imageUrl: string | null
+  background?: BackgroundChoice
 }) {
   if (!challenge || !imageUrl) return null
+  const glass = glassClass(background)
+  const theme = themeClass(background, 'ink')
   return (
     <section className="relative min-h-screen overflow-hidden section-rule-bravo flex items-end">
       <div
@@ -491,14 +541,16 @@ function ChallengeOverlay({
         className="relative z-10 w-full mx-auto px-6 sm:px-10 pb-12 sm:pb-20 flex"
         style={{ maxWidth: '1640px' }}
       >
-        <div className="dark-glass max-w-[620px] w-full p-8 sm:p-12 rounded-[28px] text-[var(--color-paper)]">
+        <div className={`${glass} ${theme} max-w-[620px] w-full p-8 sm:p-12 rounded-[28px]`}>
           <div
             className="font-mono text-[0.72rem] tracking-[0.16em] uppercase font-semibold mb-4"
-            style={{ color: 'var(--color-bravo-soft)' }}
+            style={{ color: 'var(--prose-label-color)' }}
           >
             §03 · Le défi
           </div>
-          <RichText data={challenge} enableGutter={false} />
+          <div className="prose-bravo-overlay">
+            <RichText data={challenge} enableGutter={false} />
+          </div>
         </div>
       </div>
     </section>

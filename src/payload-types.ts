@@ -591,6 +591,10 @@ export interface Project {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Couleur de fond de la section §01.
+   */
+  introBackground?: ('bravo' | 'bravo-bright' | 'ink' | 'paper') | null;
   context?: {
     root: {
       type: string;
@@ -610,6 +614,7 @@ export interface Project {
    * Visuel à côté du contexte (split layout).
    */
   contextImage?: (number | null) | Media;
+  contextBackground?: ('ink' | 'paper' | 'bravo' | 'bravo-bright') | null;
   challenge?: {
     root: {
       type: string;
@@ -629,6 +634,10 @@ export interface Project {
    * Image en background du §03. Le texte du défi apparaît dans une glass card par-dessus. Utiliser une image dramatique.
    */
   challengeImage?: (number | null) | Media;
+  /**
+   * Ne change pas l'image — change la teinte de la carte glass posée par-dessus.
+   */
+  challengeBackground?: ('ink' | 'paper' | 'bravo' | 'bravo-bright') | null;
   solution?: {
     root: {
       type: string;
@@ -648,6 +657,7 @@ export interface Project {
    * Visuel à côté de la solution (split layout, image à droite).
    */
   solutionImage?: (number | null) | Media;
+  solutionBackground?: ('ink' | 'paper' | 'bravo' | 'bravo-bright') | null;
   /**
    * Mets en avant les chiffres clés. Ex : "+38% engagement", "120k vues".
    */
@@ -1858,12 +1868,16 @@ export interface ProjectsSelect<T extends boolean = true> {
         id?: T;
       };
   introduction?: T;
+  introBackground?: T;
   context?: T;
   contextImage?: T;
+  contextBackground?: T;
   challenge?: T;
   challengeImage?: T;
+  challengeBackground?: T;
   solution?: T;
   solutionImage?: T;
+  solutionBackground?: T;
   results?:
     | T
     | {
