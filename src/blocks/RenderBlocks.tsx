@@ -8,13 +8,35 @@ import { ContentBlock } from '@/blocks/Content/Component'
 import { FormBlock } from '@/blocks/Form/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 
+// BRAVO! custom blocks
+import { BravoBreathBlock } from '@/blocks/BravoBreath/Component'
+import { EditorialQuoteBlock } from '@/blocks/EditorialQuote/Component'
+import { StatsGridBlock } from '@/blocks/StatsGrid/Component'
+import { ImageOverlayCardBlock } from '@/blocks/ImageOverlayCard/Component'
+import { ProjectShowcaseBlock } from '@/blocks/ProjectShowcase/Component'
+
 const blockComponents = {
   archive: ArchiveBlock,
   content: ContentBlock,
   cta: CallToActionBlock,
   formBlock: FormBlock,
   mediaBlock: MediaBlock,
+  // BRAVO!
+  bravoBreath: BravoBreathBlock,
+  editorialQuote: EditorialQuoteBlock,
+  statsGrid: StatsGridBlock,
+  imageOverlayCard: ImageOverlayCardBlock,
+  projectShowcase: ProjectShowcaseBlock,
 }
+
+// BRAVO! blocks render their own full-bleed sections — no wrapper margin
+const FULL_BLEED_BLOCKS = new Set([
+  'bravoBreath',
+  'editorialQuote',
+  'statsGrid',
+  'imageOverlayCard',
+  'projectShowcase',
+])
 
 export const RenderBlocks: React.FC<{
   blocks: Page['layout'][0][]
@@ -30,9 +52,15 @@ export const RenderBlocks: React.FC<{
           const { blockType } = block
 
           if (blockType && blockType in blockComponents) {
-            const Block = blockComponents[blockType]
+            const Block = blockComponents[blockType as keyof typeof blockComponents]
 
             if (Block) {
+              if (FULL_BLEED_BLOCKS.has(blockType)) {
+                return (
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  <Block key={index} {...(block as any)} />
+                )
+              }
               return (
                 <div className="my-16" key={index}>
                   {/* @ts-expect-error there may be some mismatch between the expected types here */}

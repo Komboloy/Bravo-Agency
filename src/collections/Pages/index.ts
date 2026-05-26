@@ -7,6 +7,12 @@ import { CallToAction } from '../../blocks/CallToAction/config'
 import { Content } from '../../blocks/Content/config'
 import { FormBlock } from '../../blocks/Form/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
+// BRAVO! custom blocks
+import { BravoBreath } from '../../blocks/BravoBreath/config'
+import { EditorialQuote } from '../../blocks/EditorialQuote/config'
+import { StatsGrid } from '../../blocks/StatsGrid/config'
+import { ImageOverlayCard } from '../../blocks/ImageOverlayCard/config'
+import { ProjectShowcase } from '../../blocks/ProjectShowcase/config'
 import { hero } from '@/heros/config'
 import { slugField } from 'payload'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
@@ -76,7 +82,20 @@ export const Pages: CollectionConfig<'pages'> = {
             {
               name: 'layout',
               type: 'blocks',
-              blocks: [CallToAction, Content, MediaBlock, Archive, FormBlock],
+              blocks: [
+                // BRAVO! custom — appear first under "BRAVO!" group in the picker
+                BravoBreath,
+                EditorialQuote,
+                StatsGrid,
+                ImageOverlayCard,
+                ProjectShowcase,
+                // Template defaults
+                CallToAction,
+                Content,
+                MediaBlock,
+                Archive,
+                FormBlock,
+              ],
               required: true,
               admin: {
                 initCollapsed: true,

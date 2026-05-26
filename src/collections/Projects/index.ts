@@ -23,6 +23,12 @@ import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { Banner } from '../../blocks/Banner/config'
 import { CallToAction } from '../../blocks/CallToAction/config'
 import { Content } from '../../blocks/Content/config'
+// BRAVO! custom blocks
+import { BravoBreath } from '../../blocks/BravoBreath/config'
+import { EditorialQuote } from '../../blocks/EditorialQuote/config'
+import { StatsGrid } from '../../blocks/StatsGrid/config'
+import { ImageOverlayCard } from '../../blocks/ImageOverlayCard/config'
+import { ProjectShowcase } from '../../blocks/ProjectShowcase/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
@@ -449,7 +455,17 @@ export const Projects: CollectionConfig<'projects'> = {
                 description:
                   'Blocs libres pour enrichir la page avec du contenu sur mesure (CTA, galerie média, texte enrichi, etc.).',
               },
-              blocks: [Banner, CallToAction, Content, MediaBlock],
+              blocks: [
+                BravoBreath,
+                EditorialQuote,
+                StatsGrid,
+                ImageOverlayCard,
+                ProjectShowcase,
+                Banner,
+                CallToAction,
+                Content,
+                MediaBlock,
+              ],
             },
           ],
         },

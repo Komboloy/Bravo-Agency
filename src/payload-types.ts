@@ -248,7 +248,18 @@ export interface Page {
       | null;
     media?: (number | null) | Media;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
+  layout: (
+    | BravoBreathBlock
+    | EditorialQuoteBlock
+    | StatsGridBlock
+    | ImageOverlayCardBlock
+    | ProjectShowcaseBlock
+    | CallToActionBlock
+    | ContentBlock
+    | MediaBlock
+    | ArchiveBlock
+    | FormBlock
+  )[];
   meta?: {
     title?: string | null;
     /**
@@ -653,7 +664,19 @@ export interface Project {
   /**
    * Blocs libres pour enrichir la page avec du contenu sur mesure (CTA, galerie média, texte enrichi, etc.).
    */
-  layout?: (BannerBlock | CallToActionBlock | ContentBlock | MediaBlock)[] | null;
+  layout?:
+    | (
+        | BravoBreathBlock
+        | EditorialQuoteBlock
+        | StatsGridBlock
+        | ImageOverlayCardBlock
+        | ProjectShowcaseBlock
+        | BannerBlock
+        | CallToActionBlock
+        | ContentBlock
+        | MediaBlock
+      )[]
+    | null;
   meta?: {
     title?: string | null;
     /**
@@ -672,6 +695,167 @@ export interface Project {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BravoBreathBlock".
+ */
+export interface BravoBreathBlock {
+  /**
+   * Petit kicker en mono au-dessus du titre (optionnel). Ex: "Manifeste".
+   */
+  label?: string | null;
+  /**
+   * Phrase manifeste. Utilise gras + italique pour les moments forts. Le rendu est en huge Big Shoulders avec light/bold variants.
+   */
+  heading: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'bravoBreath';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EditorialQuoteBlock".
+ */
+export interface EditorialQuoteBlock {
+  /**
+   * Choisis l'arrière-plan. BRAVO = bookend pour testimonials.
+   */
+  background?: ('bravo' | 'ink' | 'paper') | null;
+  /**
+   * La citation en italique Fraunces. Mets *des étoiles* autour d'un mot pour le passer en accent éditorial.
+   */
+  quote: string;
+  /**
+   * Nom de l'auteur (optionnel).
+   */
+  author?: string | null;
+  /**
+   * Ex: "Directrice communication, WWF Belgium"
+   */
+  role?: string | null;
+  /**
+   * Photo de profil ronde à côté du nom (optionnel).
+   */
+  photo?: (number | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'editorialQuote';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StatsGridBlock".
+ */
+export interface StatsGridBlock {
+  /**
+   * Petit kicker en mono (ex: "§06 · Résultats chiffrés").
+   */
+  label?: string | null;
+  /**
+   * Titre de la section. Ex: "Ce que ça a déclenché."
+   */
+  heading: string;
+  /**
+   * De 1 à 4 par ligne. La grille s'adapte.
+   */
+  stats?:
+    | {
+        /**
+         * Ex: "+38%", "120k", "2,4M"
+         */
+        value: string;
+        /**
+         * Ex: "engagement", "vues organiques"
+         */
+        label: string;
+        /**
+         * Précision optionnelle.
+         */
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'statsGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageOverlayCardBlock".
+ */
+export interface ImageOverlayCardBlock {
+  /**
+   * Image plein-écran en arrière-plan (paysage idéalement, 2400x1600 minimum).
+   */
+  image: number | Media;
+  cardPosition?: ('bottom-left' | 'bottom-right' | 'center' | 'top-left') | null;
+  cardWidth?: ('compact' | 'medium' | 'large') | null;
+  /**
+   * Kicker mono au-dessus du titre. Ex: "§03 · Le défi"
+   */
+  label?: string | null;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'imageOverlayCard';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProjectShowcaseBlock".
+ */
+export interface ProjectShowcaseBlock {
+  /**
+   * Kicker mono. Ex: "Travaux · Sélection 2026"
+   */
+  label?: string | null;
+  /**
+   * Titre de la section. Ex: "Quelques projets qui nous représentent."
+   */
+  heading: string;
+  /**
+   * Comment sélectionner les projets à afficher.
+   */
+  mode?: ('manual' | 'featured' | 'latest') | null;
+  /**
+   * Sélection manuelle. Ordre = ordre d'affichage.
+   */
+  projects?: (number | Project)[] | null;
+  /**
+   * Nombre de projets à afficher (1-6).
+   */
+  limit?: number | null;
+  showViewAll?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'projectShowcase';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1442,6 +1626,11 @@ export interface PagesSelect<T extends boolean = true> {
   layout?:
     | T
     | {
+        bravoBreath?: T | BravoBreathBlockSelect<T>;
+        editorialQuote?: T | EditorialQuoteBlockSelect<T>;
+        statsGrid?: T | StatsGridBlockSelect<T>;
+        imageOverlayCard?: T | ImageOverlayCardBlockSelect<T>;
+        projectShowcase?: T | ProjectShowcaseBlockSelect<T>;
         cta?: T | CallToActionBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
         mediaBlock?: T | MediaBlockSelect<T>;
@@ -1461,6 +1650,74 @@ export interface PagesSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BravoBreathBlock_select".
+ */
+export interface BravoBreathBlockSelect<T extends boolean = true> {
+  label?: T;
+  heading?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EditorialQuoteBlock_select".
+ */
+export interface EditorialQuoteBlockSelect<T extends boolean = true> {
+  background?: T;
+  quote?: T;
+  author?: T;
+  role?: T;
+  photo?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StatsGridBlock_select".
+ */
+export interface StatsGridBlockSelect<T extends boolean = true> {
+  label?: T;
+  heading?: T;
+  stats?:
+    | T
+    | {
+        value?: T;
+        label?: T;
+        description?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageOverlayCardBlock_select".
+ */
+export interface ImageOverlayCardBlockSelect<T extends boolean = true> {
+  image?: T;
+  cardPosition?: T;
+  cardWidth?: T;
+  label?: T;
+  content?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProjectShowcaseBlock_select".
+ */
+export interface ProjectShowcaseBlockSelect<T extends boolean = true> {
+  label?: T;
+  heading?: T;
+  mode?: T;
+  projects?: T;
+  limit?: T;
+  showViewAll?: T;
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1609,6 +1866,11 @@ export interface ProjectsSelect<T extends boolean = true> {
   layout?:
     | T
     | {
+        bravoBreath?: T | BravoBreathBlockSelect<T>;
+        editorialQuote?: T | EditorialQuoteBlockSelect<T>;
+        statsGrid?: T | StatsGridBlockSelect<T>;
+        imageOverlayCard?: T | ImageOverlayCardBlockSelect<T>;
+        projectShowcase?: T | ProjectShowcaseBlockSelect<T>;
         banner?: T | BannerBlockSelect<T>;
         cta?: T | CallToActionBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
@@ -2145,6 +2407,87 @@ export interface Header {
  */
 export interface Footer {
   id: number;
+  /**
+   * Phrase qui apparaît sous le wordmark BRAVO! dans le footer.
+   */
+  tagline?: string | null;
+  /**
+   * Jusqu’à 3 colonnes (ex: Studio · Suivez). Laisser vide pour utiliser les colonnes par défaut.
+   */
+  columns?:
+    | {
+        /**
+         * Titre de la colonne (ex: "Studio", "Suivez").
+         */
+        title: string;
+        links?:
+          | {
+              link: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null)
+                  | ({
+                      relationTo: 'projects';
+                      value: number | Project;
+                    } | null);
+                url?: string | null;
+                label: string;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Infos affichées dans la colonne Contact du footer.
+   */
+  contact?: {
+    email?: string | null;
+    /**
+     * Format libre. Ex: "+32 2 000 00 00"
+     */
+    phone?: string | null;
+    /**
+     * Une ligne par ligne (sauts de ligne respectés).
+     */
+    address?: string | null;
+  };
+  /**
+   * Ex: Mentions, Cookies, Crédits.
+   */
+  legalLinks?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'projects';
+                value: number | Project;
+              } | null);
+          url?: string | null;
+          label: string;
+        };
+        id?: string | null;
+      }[]
+    | null;
   navItems?:
     | {
         link: {
@@ -2200,6 +2543,48 @@ export interface HeaderSelect<T extends boolean = true> {
  * via the `definition` "footer_select".
  */
 export interface FooterSelect<T extends boolean = true> {
+  tagline?: T;
+  columns?:
+    | T
+    | {
+        title?: T;
+        links?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  contact?:
+    | T
+    | {
+        email?: T;
+        phone?: T;
+        address?: T;
+      };
+  legalLinks?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
+        id?: T;
+      };
   navItems?:
     | T
     | {
