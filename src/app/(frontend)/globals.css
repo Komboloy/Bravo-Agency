@@ -731,6 +731,120 @@ html[data-theme='light'] {
 }
 
 /* =============================================================
+   Article body — used on /posts/[slug] over paper bg.
+   Editorial reading typography : drop cap, display h2/h3, BRAVO em accents.
+   ============================================================= */
+.prose-article {
+  font-family: var(--font-sans);
+  font-size: 1.08rem;
+  line-height: 1.75;
+  color: var(--color-ink);
+}
+/* Drop cap on the first paragraph */
+.prose-article > p:first-of-type::first-letter {
+  font-family: var(--font-display);
+  font-weight: 900;
+  float: left;
+  font-size: 5.2em;
+  line-height: 0.85;
+  margin: 0.05em 0.12em 0 -0.05em;
+  color: var(--color-bravo);
+  text-transform: uppercase;
+}
+.prose-article p {
+  margin: 0 0 1.35rem;
+  color: var(--color-ink);
+}
+.prose-article p em {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-weight: 500;
+  color: var(--color-bravo);
+}
+.prose-article p strong {
+  font-weight: 700;
+  color: var(--color-ink);
+  background: linear-gradient(transparent 60%, rgba(73, 35, 244, 0.18) 60%);
+  padding: 0 0.1em;
+}
+/* Display H2 — section header */
+.prose-article h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  line-height: 0.95;
+  margin: 3.5rem 0 1.5rem;
+  color: var(--color-ink);
+  position: relative;
+  padding-top: 2rem;
+}
+.prose-article h2::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3.5rem; height: 2px;
+  background: var(--color-bravo);
+}
+.prose-article h2 em {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-weight: 400;
+  text-transform: none;
+  color: var(--color-bravo);
+  letter-spacing: -0.02em;
+}
+.prose-article h2 strong {
+  color: var(--color-bravo);
+  background: none;
+  padding: 0;
+}
+/* H3 — sub-section */
+.prose-article h3 {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 1.35rem;
+  margin: 2.5rem 0 0.9rem;
+  color: var(--color-ink);
+}
+/* Blockquote — editorial pull-quote */
+.prose-article blockquote {
+  margin: 2.5rem 0;
+  padding: 0.5rem 0 0.5rem 1.5rem;
+  border-left: 3px solid var(--color-bravo);
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: clamp(1.3rem, 2vw, 1.6rem);
+  line-height: 1.45;
+  color: var(--color-ink);
+}
+.prose-article ul, .prose-article ol {
+  margin: 0 0 1.5rem 1.5rem;
+  padding: 0;
+}
+.prose-article li {
+  margin-bottom: 0.5rem;
+}
+.prose-article hr {
+  border: 0;
+  margin: 3rem auto;
+  width: 3.5rem;
+  height: 2px;
+  background: var(--color-bravo);
+}
+.prose-article a {
+  color: var(--color-bravo);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  transition: opacity 0.2s;
+}
+.prose-article a:hover {
+  opacity: 0.7;
+}
+
+/* =============================================================
    Home sections — display rich text mapping (V7 reference)
    Different from case-study editorial : ici on veut du display monumental partout.
    - *italique* → Big Shoulders font-light (300), pas Fraunces

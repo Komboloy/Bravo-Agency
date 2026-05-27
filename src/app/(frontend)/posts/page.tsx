@@ -63,10 +63,10 @@ export default async function PostsPage() {
 
   return (
     <main className="surface-ink min-h-screen">
-      {/* PAGE HERO */}
-      <section className="px-6 sm:px-10 pt-32 sm:pt-44 pb-16 sm:pb-24 section-rule-bravo">
+      {/* PAGE HERO — 100vh full-bleed with animated BRAVO atmosphere blobs */}
+      <section className="relative min-h-screen flex items-end atmosphere-bravo-drift px-6 sm:px-10 pt-32 sm:pt-44 pb-[15vh] sm:pb-[18vh] section-rule-bravo">
         <div
-          className="mx-auto grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-12 items-end"
+          className="relative z-10 mx-auto w-full grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-12 items-end"
           style={{ maxWidth: '1640px' }}
         >
           <div>

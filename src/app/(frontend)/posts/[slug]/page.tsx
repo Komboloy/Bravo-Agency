@@ -131,9 +131,18 @@ export default async function PostPage({ params: paramsPromise }: Args) {
                   </>
                 )}
               </div>
-              <h1 className="font-display font-extrabold uppercase leading-[0.92] tracking-[-0.005em] text-[clamp(2.5rem,7vw,7rem)] text-[var(--color-paper)]">
-                {post.title}
-              </h1>
+              <div
+                className="prose-home-display wrap"
+                style={
+                  {
+                    '--display-size': 'clamp(2.5rem,6vw,6rem)',
+                    '--display-color': 'var(--color-paper)',
+                    '--display-accent': 'var(--color-bravo-bright)',
+                  } as React.CSSProperties
+                }
+              >
+                <h1>{post.title}</h1>
+              </div>
               {post.meta?.description && (
                 <p className="mt-6 font-editorial italic text-[1.2rem] leading-[1.55] opacity-90 max-w-[48ch] text-[var(--color-paper)]">
                   {post.meta.description}
@@ -152,13 +161,28 @@ export default async function PostPage({ params: paramsPromise }: Args) {
         </div>
       </section>
 
-      {/* ARTICLE CONTENT */}
-      <section className="px-6 sm:px-10 py-16 sm:py-24">
-        <div
-          className="mx-auto max-w-[48rem] prose-bravo font-sans text-[1.08rem] leading-[1.7] text-[var(--color-paper)]"
-          style={{ color: 'var(--color-paper)' }}
-        >
-          <RichText data={post.content} enableGutter={false} />
+      {/* ARTICLE CONTENT — paper bg for proper reading mood, after dark cinematic hero */}
+      <section className="surface-paper px-6 sm:px-10 py-20 sm:py-32">
+        <div className="mx-auto max-w-[48rem]">
+          {/* Lede — meta description in editorial italic */}
+          {post.meta?.description && (
+            <p
+              className="font-editorial italic text-[clamp(1.4rem,2.2vw,1.95rem)] leading-[1.45] mb-12 sm:mb-16 pb-10 sm:pb-14 border-b"
+              style={{
+                color: 'var(--color-ink)',
+                borderColor: 'rgba(5,5,7,0.15)',
+              }}
+            >
+              {post.meta.description}
+            </p>
+          )}
+
+          {/* Body — drop cap on the first paragraph + display h2/h3, BRAVO accents.
+              `enableProse={false}` to bypass Tailwind Typography defaults and let
+              `.prose-article` rules drive the typography fully. */}
+          <div className="prose-article">
+            <RichText data={post.content} enableGutter={false} enableProse={false} />
+          </div>
         </div>
       </section>
 

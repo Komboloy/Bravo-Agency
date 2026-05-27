@@ -215,27 +215,18 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
         style={
           scrolled
             ? {
-                // Liquid glass — translucent tint adapts to the section underneath
+                // BRAVO liquid glass everywhere. On light surfaces we just bump the
+                // BRAVO opacity a touch so the cream text stays comfortably readable.
                 background:
                   theme === 'light'
-                    ? // DARK glass over light sections — translucent ink, cream text readable, background blurs through
-                      'linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.02) 40%, transparent 70%), rgba(5,5,7,0.58)'
-                    : // BRAVO glass over dark sections — original liquid glass effect
-                      'linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.04) 35%, transparent 70%), rgba(73,35,244,0.55)',
-                borderColor:
-                  theme === 'light'
-                    ? 'rgba(244,237,225,0.18)'
-                    : 'rgba(244,237,225,0.22)',
+                    ? 'linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.03) 35%, transparent 70%), rgba(73,35,244,0.78)'
+                    : 'linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.04) 35%, transparent 70%), rgba(73,35,244,0.55)',
+                borderColor: 'rgba(244,237,225,0.22)',
                 boxShadow:
-                  theme === 'light'
-                    ? '0 22px 56px -10px rgba(5,5,7,0.5), 0 6px 18px -6px rgba(5,5,7,0.35), 0 1px 0 rgba(255,255,255,0.20) inset, 0 0 0 1px rgba(255,255,255,0.04) inset'
-                    : '0 22px 56px -10px rgba(73,35,244,0.55), 0 6px 18px -6px rgba(5,5,7,0.4), 0 1px 0 rgba(255,255,255,0.22) inset, 0 0 0 1px rgba(255,255,255,0.05) inset',
+                  '0 22px 56px -10px rgba(73,35,244,0.55), 0 6px 18px -6px rgba(5,5,7,0.4), 0 1px 0 rgba(255,255,255,0.22) inset, 0 0 0 1px rgba(255,255,255,0.05) inset',
                 backdropFilter: 'blur(28px) saturate(170%)',
                 WebkitBackdropFilter: 'blur(28px) saturate(170%)',
-                textShadow:
-                  theme === 'light'
-                    ? '0 1px 2px rgba(5,5,7,0.65)'
-                    : '0 1px 2px rgba(5,5,7,0.45)',
+                textShadow: '0 1px 2px rgba(5,5,7,0.45)',
               }
             : {
                 // Initial transparent over hero — text-shadow for readability

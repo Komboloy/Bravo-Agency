@@ -805,6 +805,124 @@ const TEAM_DATA: TeamSeed[] = [
 ]
 
 // ---------------------------------------------------------------------------
+// Posts / "Bonnes nouvelles" — éditoriaux courts du studio
+// ---------------------------------------------------------------------------
+
+type Category = 'edito' | 'carnet' | 'coulisses' | 'methode'
+
+const CATEGORIES_DATA: Array<{ slug: Category; title: string }> = [
+  { slug: 'edito', title: 'Édito' },
+  { slug: 'carnet', title: 'Carnet' },
+  { slug: 'coulisses', title: 'Coulisses' },
+  { slug: 'methode', title: 'Méthode' },
+]
+
+type PostSeed = {
+  slug: string
+  title: string
+  hero: string
+  categories: Category[]
+  publishedAt: string // ISO date
+  excerpt: string // → meta.description
+  paragraphs: string[] // article body, supports light markdown
+}
+
+const POSTS_DATA: PostSeed[] = [
+  {
+    slug: 'fatigue-compassionnelle-ong',
+    title: "La fatigue compassionnelle est une vraie menace pour les ONG",
+    hero: U('1488521787991-ed7bbaae773c'),
+    categories: ['edito'],
+    publishedAt: '2026-04-12',
+    excerpt:
+      "On a comparé trois ans de campagnes WWF, Oxfam et MSF : la culpabilisation comme levier d'engagement s'épuise. Voici ce que les chiffres disent et ce qu'on en fait dans nos briefs.",
+    paragraphs: [
+      "## Trois ans, *un même réflexe*.",
+      "Entre 2022 et 2025, on a regardé **plus de 120 campagnes** d'ONG belges et internationales. Le réflexe : montrer la victime, dramatiser la situation, demander un don. La logique semble évidente — *plus c'est douloureux, plus ça mobilise*.",
+      "Sauf que les taux de réponse s'effondrent. **−18% de dons** chez les <35 ans en trois ans sur le marché belge (source : Donorinfo).",
+      "## Le **donneur** *aussi* est fatigué.",
+      "Ce n'est pas l'engagement qui diminue, c'est la **capacité d'attention émotionnelle**. À force de voir des images de famine, de noyade, d'enfants en pleurs, le cerveau apprend à *détourner le regard*. C'est documenté, c'est mesurable, c'est notre boulot d'en tenir compte.",
+      "Sur le projet Oxfam, on a refusé le levier de la culpabilité. La plateforme **« La solidarité comme infrastructure »** parle de chaînes logistiques, pas de larmes. Les résultats ont confirmé l'intuition.",
+    ],
+  },
+  {
+    slug: 'greenwashing-2026',
+    title: 'Trois minutes pour comprendre le greenwashing en 2026',
+    hero: U('1470770841072-f978cf4d019e'),
+    categories: ['methode'],
+    publishedAt: '2026-03-28',
+    excerpt:
+      "La nouvelle directive européenne Green Claims entre en vigueur. Ce qui change concrètement pour les marques — et les agences qui les conseillent.",
+    paragraphs: [
+      "## La directive *Green Claims*.",
+      "Depuis mars 2026, l'UE encadre strictement les **allégations environnementales** sur les emballages, sites web et campagnes. Plus question d'écrire « éco-responsable » sans pouvoir le **prouver chiffres en main**.",
+      "## Ce que ça change *pour nos clients*.",
+      "Trois niveaux d'impact : (1) les claims vagues (« naturel », « vert », « bon pour la planète ») doivent être **justifiés ou retirés**, (2) les comparaisons (« moins polluant que X ») doivent référencer une méthodologie publique, (3) les logos d'auto-certification non régulés sont *interdits*.",
+      "## Notre position.",
+      "On accompagne nos clients à **substituer le claim vague par le fait vérifiable**. Pas par défensive — par hygiène. Une marque qui dit moins mais le prouve gagne plus en confiance qu'une marque qui pavoise.",
+    ],
+  },
+  {
+    slug: 'machao-saison-2',
+    title: 'Machao saison 2 — ce qu\'on a appris en montant 12 épisodes',
+    hero: U('1478737270239-2f02b77fc618'),
+    categories: ['coulisses', 'carnet'],
+    publishedAt: '2026-02-18',
+    excerpt:
+      "Notre podcast d'enquête sur les campagnes militantes boucle sa deuxième saison. Retour sur la méthode, les refus d'interview, les surprises et le format qu'on garde.",
+    paragraphs: [
+      "## Douze épisodes, *plus de quatre-vingts heures d'interviews*.",
+      "On a interrogé **42 personnes** entre janvier 2025 et janvier 2026. Anciens directeurs de création, militants encartés, sociologues, et trois CEO d'ONG qui ont accepté de parler off-record (et on a respecté l'off-record).",
+      "## Les *refus* ont parlé autant que les acceptations.",
+      "Sept refus formels, dont **deux marques de luxe** qui ont menacé d'une action en référé si leur nom apparaissait à côté du mot « militant ». On a respecté. On en a tiré une conclusion : la frontière entre *com d'engagement* et *com de marque* reste très défendue.",
+      "## Le format qu'on garde.",
+      "**1h par épisode, deux voix montées serré, archives audio**. Pas de musique d'ambiance, pas d'effets. Le silence porte autant que la parole. On reconduit le format en saison 3.",
+    ],
+  },
+  {
+    slug: 'pourquoi-on-a-refuse-un-brief',
+    title: "Pourquoi on a refusé un brief en 2025",
+    hero: U('1517245386807-bb43f82c33c4'),
+    categories: ['edito', 'coulisses'],
+    publishedAt: '2026-01-22',
+    excerpt:
+      "Un brief de campagne pour une banque qu'on ne nommera pas. Refus argumenté. Voici la lettre qu'on leur a envoyée, anonymisée.",
+    paragraphs: [
+      "## Le brief.",
+      "Une banque belge — top 5 du marché — nous demande une campagne de notoriété sur ses **fonds dits responsables**. Budget intéressant. Notoriété pour le studio. Belle équipe en face.",
+      "## Le problème.",
+      "On lit les fiches techniques des fonds en question. **Plusieurs lignes incluent des énergies fossiles** via des holdings intermédiaires (le standard de l'industrie, mais qui ne se voit pas dans la com).",
+      "On demande au client de modifier le claim ou d'élargir la base. Pas de greenwashing, juste de la précision. **Refus** côté client.",
+      "## Le refus.",
+      "On a écrit une lettre de refus argumentée. Pas un grand geste — juste *un alignement avec ce qu'on défend dans Machao depuis deux ans*. La banque a trouvé une autre agence. Le brief existe toujours.",
+      "## Pourquoi on en parle ici.",
+      "Pas pour donner des leçons. Pour **rendre visible un arbitrage** qui se prend tous les ans dans toutes les agences, et qu'on ne raconte jamais. Si vous êtes briefé par un client, posez-vous la question avant de signer.",
+    ],
+  },
+  {
+    slug: 'cent-projets-patterns',
+    title: 'On a relu nos 100 premiers projets — voici les patterns',
+    hero: U('1497032628192-86f99bcd76bc'),
+    categories: ['methode', 'carnet'],
+    publishedAt: '2025-12-08',
+    excerpt:
+      "Sept ans de production, 100 livraisons. On a passé deux jours à les classer par succès, échec, regret. Cinq patterns qui reviennent.",
+    paragraphs: [
+      "## Le pattern n°1 — *les briefs trop précis échouent plus souvent*.",
+      "Contre-intuitif. Quand le client arrive avec **un livrable très défini**, on a moins de marge pour identifier le vrai problème. 60% de nos *échecs commerciaux* (clients pas reconduits) viennent de briefs sur-spécifiés.",
+      "## Pattern n°2 — *les meilleurs projets ont eu une crise au milieu*.",
+      "Sur 100 projets, **23 ont eu une crise majeure entre la mi-temps et la livraison** (changement de direction client, revirement stratégique, désaccord créatif). Ces 23 sont aussi 18 de nos 25 favoris.",
+      "## Pattern n°3 — *les petits clients sont plus exigeants que les gros*.",
+      "Vrai. Et c'est très bien comme ça. On a appris à **facturer au juste prix**, pas à la taille du client.",
+      "## Pattern n°4 — *les projets qu'on a faits pour nous nous rendent meilleurs sur ceux des clients*.",
+      "Le jardin, Machao, L'enfant sauvage — trois projets *auto-initiés* — ont influencé environ **60% de nos décisions créatives** sur les briefs commerciaux qui ont suivi.",
+      "## Pattern n°5 — *on est devenu bons à dire non*.",
+      "Pas par snobisme. Par hygiène méthodologique. Voir l'édito précédent sur le refus.",
+    ],
+  },
+]
+
+// ---------------------------------------------------------------------------
 // The seeder
 // ---------------------------------------------------------------------------
 
@@ -821,6 +939,9 @@ async function seedBravo() {
   let teamSkipped = 0
   let sectorsCreated = 0
   let servicesCreated = 0
+  let categoriesCreated = 0
+  let postsCreated = 0
+  let postsSkipped = 0
 
   // --- Taxonomies: Sectors + Services (idempotent by slug) ---
   // Build slug → id maps so projects can reference these relationships.
@@ -972,6 +1093,64 @@ async function seedBravo() {
   // --- Home global ---
   // Populates the editorial copy used by the home page. Idempotent: re-running
   // overrides the global with these defaults (matches the previous hardcoded copy).
+  // --- Categories + Posts ---
+  const categoryMap = new Map<Category, number>()
+  for (const c of CATEGORIES_DATA) {
+    const existing = await payload.find({
+      collection: 'categories',
+      where: { slug: { equals: c.slug } },
+      limit: 1,
+    })
+    if (existing.docs.length > 0) {
+      categoryMap.set(c.slug, existing.docs[0].id as number)
+    } else {
+      const created = await payload.create({
+        collection: 'categories',
+        data: { title: c.title, slug: c.slug },
+      })
+      categoryMap.set(c.slug, created.id as number)
+      categoriesCreated++
+    }
+  }
+  payload.logger.info(`✓ categories: ${categoriesCreated} created, ${CATEGORIES_DATA.length - categoriesCreated} existed`)
+
+  for (const p of POSTS_DATA) {
+    const exists = await payload.find({
+      collection: 'posts',
+      where: { slug: { equals: p.slug } },
+      limit: 1,
+    })
+    if (exists.docs.length > 0) {
+      payload.logger.info(`◌ skip post: ${p.title} (already exists)`)
+      postsSkipped++
+      continue
+    }
+    payload.logger.info(`+ post: ${p.title} — uploading hero…`)
+    const heroId = await uploadImage(payload, p.hero, `${p.title} — Hero`, `post-${p.slug}-hero`)
+    payload.logger.info(`+ post: ${p.title} — creating doc…`)
+    await payload.create({
+      collection: 'posts',
+      data: {
+        title: p.title,
+        slug: p.slug,
+        heroImage: heroId,
+        content: richText(p.paragraphs) as never,
+        categories: p.categories
+          .map((slug) => categoryMap.get(slug))
+          .filter((id): id is number => typeof id === 'number'),
+        publishedAt: new Date(p.publishedAt).toISOString(),
+        meta: {
+          title: `${p.title} — BRAVO! Agency`,
+          description: p.excerpt,
+        },
+        _status: 'published',
+      },
+      context: { disableRevalidate: true },
+    })
+    postsCreated++
+    payload.logger.info(`✓ ${p.title}`)
+  }
+
   payload.logger.info('+ home global — updating editorial copy…')
   await payload.updateGlobal({
     slug: 'home',
@@ -1039,6 +1218,8 @@ async function seedBravo() {
 
   payload.logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
   payload.logger.info(`  Done.`)
+  payload.logger.info(`  Categories: ${categoriesCreated} created`)
+  payload.logger.info(`  Posts  : ${postsCreated} created, ${postsSkipped} skipped`)
   payload.logger.info(`  Sectors: ${sectorsCreated} created`)
   payload.logger.info(`  Services: ${servicesCreated} created`)
   payload.logger.info(`  Team   : ${teamCreated} created, ${teamSkipped} skipped`)
