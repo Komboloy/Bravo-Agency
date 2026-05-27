@@ -223,7 +223,7 @@ async function uploadImage(payload: Payload, url: string, alt: string, name: str
 }
 
 // ---------------------------------------------------------------------------
-// Project data — every project the seeder will create if missing
+// Taxonomies — Sectors & Services collections (admin-editable)
 // ---------------------------------------------------------------------------
 
 type Sector =
@@ -247,6 +247,34 @@ type Service =
   | 'social'
   | 'events'
   | 'consulting'
+
+const SECTORS_DATA: Array<{ slug: Sector; title: string; order: number }> = [
+  { slug: 'ong', title: 'ONG / Engagement', order: 10 },
+  { slug: 'culture', title: 'Culture', order: 20 },
+  { slug: 'industry', title: 'Industrie', order: 30 },
+  { slug: 'tech', title: 'Tech / Digital', order: 40 },
+  { slug: 'education', title: 'Éducation', order: 50 },
+  { slug: 'health', title: 'Santé', order: 60 },
+  { slug: 'public', title: 'Public', order: 70 },
+  { slug: 'other', title: 'Autre', order: 99 },
+]
+
+const SERVICES_DATA: Array<{ slug: Service; title: string; order: number }> = [
+  { slug: 'brand-strategy', title: 'Stratégie de marque', order: 10 },
+  { slug: 'visual-identity', title: 'Identité visuelle', order: 20 },
+  { slug: 'website', title: 'Site web', order: 30 },
+  { slug: 'campaign', title: 'Campagne', order: 40 },
+  { slug: 'art-direction', title: 'Direction artistique', order: 50 },
+  { slug: 'video', title: 'Production vidéo', order: 60 },
+  { slug: 'print', title: 'Édition / Print', order: 70 },
+  { slug: 'social', title: 'Réseaux sociaux', order: 80 },
+  { slug: 'events', title: 'Événementiel', order: 90 },
+  { slug: 'consulting', title: 'Conseil', order: 100 },
+]
+
+// ---------------------------------------------------------------------------
+// Project data — every project the seeder will create if missing
+// ---------------------------------------------------------------------------
 
 type ProjectSeed = {
   slug: string
@@ -791,6 +819,50 @@ async function seedBravo() {
   let projectsSkipped = 0
   let teamCreated = 0
   let teamSkipped = 0
+  let sectorsCreated = 0
+  let servicesCreated = 0
+
+  // --- Taxonomies: Sectors + Services (idempotent by slug) ---
+  // Build slug → id maps so projects can reference these relationships.
+  const sectorMap = new Map<Sector, number>()
+  for (const s of SECTORS_DATA) {
+    const existing = await payload.find({
+      collection: 'sectors',
+      where: { slug: { equals: s.slug } },
+      limit: 1,
+    })
+    if (existing.docs.length > 0) {
+      sectorMap.set(s.slug, existing.docs[0].id as number)
+    } else {
+      const created = await payload.create({
+        collection: 'sectors',
+        data: { title: s.title, slug: s.slug, order: s.order },
+      })
+      sectorMap.set(s.slug, created.id as number)
+      sectorsCreated++
+    }
+  }
+  payload.logger.info(`✓ sectors: ${sectorsCreated} created, ${SECTORS_DATA.length - sectorsCreated} existed`)
+
+  const serviceMap = new Map<Service, number>()
+  for (const s of SERVICES_DATA) {
+    const existing = await payload.find({
+      collection: 'services',
+      where: { slug: { equals: s.slug } },
+      limit: 1,
+    })
+    if (existing.docs.length > 0) {
+      serviceMap.set(s.slug, existing.docs[0].id as number)
+    } else {
+      const created = await payload.create({
+        collection: 'services',
+        data: { title: s.title, slug: s.slug, order: s.order },
+      })
+      serviceMap.set(s.slug, created.id as number)
+      servicesCreated++
+    }
+  }
+  payload.logger.info(`✓ services: ${servicesCreated} created, ${SERVICES_DATA.length - servicesCreated} existed`)
 
   // --- Team members ---
   for (const m of TEAM_DATA) {
@@ -863,8 +935,10 @@ async function seedBravo() {
         tagline: p.tagline,
         client: p.client,
         year: p.year,
-        sector: p.sector,
-        services: p.services as never,
+        sector: sectorMap.get(p.sector),
+        services: p.services
+          .map((slug) => serviceMap.get(slug))
+          .filter((id): id is number => typeof id === 'number'),
         featured: p.featured || false,
         heroImage: heroId,
         thumbnail: thumbId,
@@ -965,6 +1039,8 @@ async function seedBravo() {
 
   payload.logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
   payload.logger.info(`  Done.`)
+  payload.logger.info(`  Sectors: ${sectorsCreated} created`)
+  payload.logger.info(`  Services: ${servicesCreated} created`)
   payload.logger.info(`  Team   : ${teamCreated} created, ${teamSkipped} skipped`)
   payload.logger.info(`  Projects: ${projectsCreated} created, ${projectsSkipped} skipped`)
   payload.logger.info(`  Home   : global updated`)

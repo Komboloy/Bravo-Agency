@@ -4,29 +4,21 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
 
-import type { Home as HomeGlobal, Media, Project, Team } from '@/payload-types'
+import type { Home as HomeGlobal, Media, Project, Service, Team } from '@/payload-types'
 import { HeroCarousel, type HeroSlide } from '@/components/HeroCarousel'
 import RichText from '@/components/RichText'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
 
-const SERVICE_LABELS: Record<string, string> = {
-  'brand-strategy': 'Stratégie',
-  'visual-identity': 'Identité',
-  website: 'Web',
-  campaign: 'Campagne',
-  'art-direction': 'Direction artistique',
-  video: 'Vidéo',
-  print: 'Print',
-  social: 'Social',
-  events: 'Événementiel',
-  consulting: 'Conseil',
-}
-
 function imageUrl(m: number | Media | null | undefined): string | null {
   if (!m || typeof m === 'number') return null
   return m.url || null
+}
+
+/** Extract a service title from a populated (depth>=1) relationship, ignoring bare IDs. */
+function serviceTitle(s: number | Service | null | undefined): string {
+  return typeof s === 'object' && s !== null ? s.title : ''
 }
 
 export const metadata: Metadata = {
@@ -73,7 +65,7 @@ export default async function Home() {
         title: p.tagline || '',
         client: p.client,
         year: p.year ?? null,
-        tags: (p.services || []).slice(0, 3).map((s) => SERVICE_LABELS[s] || s),
+        tags: (p.services || []).slice(0, 3).map(serviceTitle).filter(Boolean),
         href: `/projets/${p.slug}`,
       }))
     : DEMO_SLIDES
@@ -200,11 +192,10 @@ export default async function Home() {
             {home?.manifesto?.label || 'Manifeste'}
           </span>
           <div
-            className="prose-home-display wrap mx-auto text-center"
+            className="prose-home-display flex flex-col items-center text-center mx-auto"
             style={
               {
-                maxWidth: '720px',
-                '--display-size': 'clamp(2.6rem,7vw,6.4rem)',
+                '--display-size': 'clamp(2.4rem,6vw,5.5rem)',
                 '--display-color': 'var(--color-paper)',
                 '--display-accent': 'var(--color-paper)',
               } as React.CSSProperties
@@ -255,12 +246,14 @@ export default async function Home() {
             <span className="inline-block w-10 h-px bg-current" />
           </span>
           <div
-            className="prose-home-display mx-auto text-center mb-12"
+            className="prose-home-display flex flex-col items-center text-center mx-auto"
             style={
               {
-                '--display-size': 'clamp(3.5rem,12vw,14rem)',
+                '--display-size': 'clamp(3rem,10vw,11rem)',
                 '--display-color': 'var(--color-ink)',
                 '--display-accent': 'var(--color-bravo)',
+                paddingBottom: '1rem',
+                marginBottom: '7.5rem',
               } as React.CSSProperties
             }
           >
@@ -324,7 +317,7 @@ function FormattedInline({ text }: { text: string }) {
 
 function ProjectBand({ project, num }: { project: Project; num: number }) {
   const img = imageUrl(project.heroImage) || imageUrl(project.thumbnail)
-  const tags = (project.services || []).slice(0, 3).map((s) => SERVICE_LABELS[s] || s)
+  const tags = (project.services || []).slice(0, 3).map(serviceTitle).filter(Boolean)
   return (
     <Link
       href={`/projets/${project.slug}`}

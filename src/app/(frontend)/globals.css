@@ -362,6 +362,50 @@ html[data-theme='light'] {
     bottom: -22vw;
   }
 
+  /* Animated BRAVO atmosphere — drifting purple blobs for dark sections.
+     Same idea as .bravo-atmosphere but with motion and tuned for ink backgrounds.
+     Useful on /studio hero where the background was visually empty.
+     Children of the host need z-index > 0 (or position: relative) to sit above blobs. */
+  .atmosphere-bravo-drift {
+    position: relative;
+    overflow: hidden;
+  }
+  .atmosphere-bravo-drift::before,
+  .atmosphere-bravo-drift::after {
+    content: '';
+    position: absolute;
+    width: 60vw;
+    height: 60vw;
+    border-radius: 50%;
+    filter: blur(140px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .atmosphere-bravo-drift::before {
+    background: var(--color-bravo);
+    opacity: 0.55;
+    left: -18vw; top: -18vw;
+    animation: bravo-drift-1 7s ease-in-out infinite alternate;
+  }
+  .atmosphere-bravo-drift::after {
+    background: var(--color-bravo-bright);
+    opacity: 0.45;
+    right: -22vw; bottom: -22vw;
+    animation: bravo-drift-2 9s ease-in-out infinite alternate;
+  }
+  @keyframes bravo-drift-1 {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(28vw, 18vh) scale(1.25); }
+  }
+  @keyframes bravo-drift-2 {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(-24vw, -14vh) scale(0.85); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .atmosphere-bravo-drift::before,
+    .atmosphere-bravo-drift::after { animation: none; }
+  }
+
   /* Grain overlay — applied to <body> via a fixed pseudo */
   .grain-overlay::after {
     content: '';

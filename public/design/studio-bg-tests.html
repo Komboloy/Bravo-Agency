@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Studio — Tests fond hero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800;900&family=Big+Shoulders+Display:wght@300;400;700;800;900&family=Fraunces:ital,wght@1,400;1,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --paper: #f4ede1;
+      --ink: #050507;
+      --ink-2: #0f1014;
+      --bravo: #4923f4;
+      --bravo-bright: #6843ff;
+      --bravo-soft: #c0b6ff;
+      --rule-dark: #1c1d22;
+
+      --sans: 'Raleway', system-ui, sans-serif;
+      --display: 'Big Shoulders Display', sans-serif;
+      --editorial: 'Fraunces', serif;
+      --mono: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--ink); color: var(--paper); font-family: var(--sans); }
+    body { scroll-behavior: smooth; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Top selector bar (fixed, helps jump between options) ─────────── */
+    .picker {
+      position: fixed;
+      top: 1rem;
+      left: 50%; transform: translateX(-50%);
+      z-index: 100;
+      display: flex; gap: 0.5rem;
+      background: rgba(244, 237, 225, 0.04);
+      border: 1px solid rgba(244, 237, 225, 0.16);
+      backdrop-filter: blur(18px);
+      padding: 0.4rem;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .picker a {
+      padding: 0.5rem 0.9rem;
+      border-radius: 999px;
+      opacity: 0.7;
+      transition: background .25s, opacity .25s, color .25s;
+    }
+    .picker a:hover { opacity: 1; background: rgba(244,237,225,0.06); }
+    .picker .active { background: var(--bravo); color: var(--paper); opacity: 1; }
+
+    /* ── Shared hero scaffold ─────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-end;
+      padding: 11rem 2.5rem 15vh;
+      overflow: hidden;
+      border-bottom: 1px solid var(--bravo);
+    }
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 1640px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 3rem;
+      align-items: end;
+    }
+    @media (max-width: 780px) {
+      .hero { padding: 9rem 1.5rem 12vh; }
+      .hero-inner { grid-template-columns: 1fr; gap: 2rem; }
+    }
+    .crumb {
+      font-family: var(--mono);
+      font-size: 0.72rem; letter-spacing: 0.12em;
+      text-transform: uppercase; margin-bottom: 1.5rem;
+      display: flex; gap: 0.5rem; align-items: center;
+      color: var(--bravo-soft);
+    }
+    .crumb .sep { opacity: 0.45; }
+    .crumb a { opacity: 0.65; }
+    .crumb a:hover { opacity: 1; }
+
+    .title h1 {
+      font-family: var(--display); font-weight: 800;
+      font-size: clamp(5rem, 16vw, 18rem); line-height: 0.84;
+      letter-spacing: -0.015em; text-transform: uppercase;
+      color: var(--paper);
+    }
+    .title .sub {
+      display: block;
+      font-size: clamp(2rem, 7vw, 7rem);
+      line-height: 1; margin-top: 0.4rem;
+    }
+    .title .sub em {
+      font-family: var(--display); font-style: normal; font-weight: 300;
+    }
+    .title .sub strong {
+      color: var(--bravo-bright); font-weight: 800;
+    }
+
+    .lede {
+      font-family: var(--editorial); font-style: italic;
+      font-size: 1.2rem; line-height: 1.5;
+      max-width: 38ch; opacity: 0.92;
+    }
+    .lede strong {
+      font-style: normal; font-family: var(--sans); font-weight: 700;
+      color: var(--bravo-soft);
+    }
+
+    .option-tag {
+      position: absolute; top: 1.5rem; right: 2rem;
+      z-index: 3;
+      font-family: var(--mono); font-size: 0.7rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      padding: 0.45rem 0.9rem; border-radius: 999px;
+      background: rgba(73,35,244,0.55); color: var(--paper);
+      border: 1px solid rgba(244,237,225,0.22);
+      backdrop-filter: blur(12px);
+    }
+
+    /* ─────────────────────────────────────────────────────────────────── */
+    /*  OPTION 1 — BRAVO ATMOSPHERE (drifting blurred orbs)               */
+    /* ─────────────────────────────────────────────────────────────────── */
+    .bg-atmosphere::before,
+    .bg-atmosphere::after {
+      content: ''; position: absolute;
+      width: 60vw; height: 60vw;
+      border-radius: 50%;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .bg-atmosphere::before {
+      background: var(--bravo);
+      opacity: 0.55;
+      left: -18vw; top: -18vw;
+      animation: drift-1 7s ease-in-out infinite alternate;
+    }
+    .bg-atmosphere::after {
+      background: var(--bravo-bright);
+      opacity: 0.45;
+      right: -22vw; bottom: -22vw;
+      animation: drift-2 9s ease-in-out infinite alternate;
+    }
+    @keyframes drift-1 {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(28vw, 18vh) scale(1.25); }
+    }
+    @keyframes drift-2 {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-24vw, -14vh) scale(0.85); }
+    }
+
+    /* ─────────────────────────────────────────────────────────────────── */
+    /*  OPTION 2 — TYPOGRAPHIC WATERMARK (scrolling outline text)         */
+    /* ─────────────────────────────────────────────────────────────────── */
+    .bg-watermark {
+      /* main typography on top will need higher z-index */
+    }
+    .bg-watermark .marquee-row {
+      position: absolute; left: 0; right: 0;
+      display: flex; gap: 4rem; white-space: nowrap;
+      z-index: 1;
+      pointer-events: none;
+      font-family: var(--display);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      -webkit-text-stroke: 2px rgba(244, 237, 225, 0.12);
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
+    .bg-watermark .marquee-row.row-1 {
+      top: 22%;
+      font-size: clamp(8rem, 22vw, 24rem);
+      animation: scroll-left 60s linear infinite;
+    }
+    .bg-watermark .marquee-row.row-2 {
+      top: 55%;
+      font-size: clamp(7rem, 18vw, 20rem);
+      animation: scroll-right 75s linear infinite;
+    }
+    @keyframes scroll-left {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    @keyframes scroll-right {
+      from { transform: translateX(-50%); }
+      to   { transform: translateX(0); }
+    }
+
+    /* ─────────────────────────────────────────────────────────────────── */
+    /*  OPTION 3 — COMBO (drifting blobs + film grain overlay)            */
+    /* ─────────────────────────────────────────────────────────────────── */
+    .bg-combo::before,
+    .bg-combo::after {
+      content: ''; position: absolute;
+      width: 60vw; height: 60vw;
+      border-radius: 50%;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .bg-combo::before {
+      background: var(--bravo);
+      opacity: 0.5;
+      left: -22vw; top: -10vh;
+      animation: drift-1 7s ease-in-out infinite alternate;
+    }
+    .bg-combo::after {
+      background: var(--bravo-bright);
+      opacity: 0.35;
+      right: -22vw; bottom: -22vw;
+      animation: drift-2 9s ease-in-out infinite alternate;
+    }
+    .grain {
+      position: absolute; inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.5;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95 0 0 0 0 0.93 0 0 0 0 0.88 0 0 0 0.5 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      background-size: 220px 220px;
+    }
+
+    /* ─────────────────────────────────────────────────────────────────── */
+    /*  Misc                                                              */
+    /* ─────────────────────────────────────────────────────────────────── */
+    .scroll-cue {
+      position: absolute; bottom: 2rem; left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      font-family: var(--mono); font-size: 0.65rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      opacity: 0.6;
+      display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
+    }
+    .scroll-cue::after {
+      content: ''; width: 1px; height: 32px;
+      background: currentColor;
+      animation: scrollbar 2s ease-in-out infinite;
+      transform-origin: top;
+    }
+    @keyframes scrollbar {
+      0%   { transform: scaleY(0); transform-origin: top; }
+      50%  { transform: scaleY(1); transform-origin: top; }
+      50.01% { transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    /* NOTE : sur cette page de test on garde les animations actives même si
+       le système a "Reduce Motion" coché — sinon impossible de juger les options.
+       Dans la vraie page on respectera prefers-reduced-motion. */
+  </style>
+</head>
+<body>
+
+<!-- Picker -->
+<nav class="picker" aria-label="Choisir une option">
+  <a href="#opt1" class="active">01 · Atmosphere</a>
+  <a href="#opt2">02 · Watermark</a>
+  <a href="#opt3">03 · Combo</a>
+</nav>
+
+<!-- ─────────── OPTION 1 — BRAVO ATMOSPHERE ─────────── -->
+<section id="opt1" class="hero bg-atmosphere">
+  <span class="option-tag">Option 01 — BRAVO atmosphere</span>
+  <div class="hero-inner">
+    <div>
+      <div class="crumb">
+        <a href="#opt1">Accueil</a>
+        <span class="sep">/</span>
+        <span>Studio</span>
+      </div>
+      <div class="title">
+        <h1>
+          Studio
+          <span class="sub">— <em>deux têtes</em>, <strong>un écosystème</strong>.</span>
+        </h1>
+      </div>
+    </div>
+    <p class="lede">
+      <strong>2 co-fondateurs</strong> au studio à Bruxelles, et autour de nous un réseau de
+      partenaires précis, choisis pour ce qu'ils font de mieux.
+    </p>
+  </div>
+  <div class="scroll-cue">Scroll</div>
+</section>
+
+<!-- ─────────── OPTION 2 — TYPOGRAPHIC WATERMARK ─────────── -->
+<section id="opt2" class="hero bg-watermark">
+  <span class="option-tag">Option 02 — Watermark typo</span>
+  <div class="marquee-row row-1">
+    <span>Bravo! Studio Bravo! Studio Bravo! Studio Bravo! Studio</span>
+    <span>Bravo! Studio Bravo! Studio Bravo! Studio Bravo! Studio</span>
+  </div>
+  <div class="marquee-row row-2">
+    <span>Deux têtes — un écosystème — Deux têtes — un écosystème</span>
+    <span>Deux têtes — un écosystème — Deux têtes — un écosystème</span>
+  </div>
+  <div class="hero-inner">
+    <div>
+      <div class="crumb">
+        <a href="#opt2">Accueil</a>
+        <span class="sep">/</span>
+        <span>Studio</span>
+      </div>
+      <div class="title">
+        <h1>
+          Studio
+          <span class="sub">— <em>deux têtes</em>, <strong>un écosystème</strong>.</span>
+        </h1>
+      </div>
+    </div>
+    <p class="lede">
+      <strong>2 co-fondateurs</strong> au studio à Bruxelles, et autour de nous un réseau de
+      partenaires précis, choisis pour ce qu'ils font de mieux.
+    </p>
+  </div>
+  <div class="scroll-cue">Scroll</div>
+</section>
+
+<!-- ─────────── OPTION 3 — COMBO (blobs + grain) ─────────── -->
+<section id="opt3" class="hero bg-combo">
+  <span class="option-tag">Option 03 — Blobs + grain</span>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="crumb">
+        <a href="#opt3">Accueil</a>
+        <span class="sep">/</span>
+        <span>Studio</span>
+      </div>
+      <div class="title">
+        <h1>
+          Studio
+          <span class="sub">— <em>deux têtes</em>, <strong>un écosystème</strong>.</span>
+        </h1>
+      </div>
+    </div>
+    <p class="lede">
+      <strong>2 co-fondateurs</strong> au studio à Bruxelles, et autour de nous un réseau de
+      partenaires précis, choisis pour ce qu'ils font de mieux.
+    </p>
+  </div>
+  <div class="scroll-cue">Scroll</div>
+</section>
+
+<script>
+  // Update picker "active" state on scroll
+  const pickerLinks = document.querySelectorAll('.picker a');
+  const sections = document.querySelectorAll('.hero');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        pickerLinks.forEach((l) => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+      }
+    });
+  }, { threshold: 0.5 });
+  sections.forEach((s) => observer.observe(s));
+</script>
+
+</body>
+</html>

@@ -4,58 +4,25 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
 
-import type { Media, Project } from '@/payload-types'
+import type { Media, Project, Sector, Service } from '@/payload-types'
+import { ProjectsExplorer } from '@/components/ProjectsExplorer'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
-
-const SECTOR_LABELS: Record<string, string> = {
-  ong: 'ONG',
-  culture: 'Culture',
-  industry: 'Industrie',
-  tech: 'Tech',
-  education: 'Éducation',
-  health: 'Santé',
-  public: 'Public',
-  other: 'Autre',
-}
-const SERVICE_LABELS: Record<string, string> = {
-  'brand-strategy': 'Stratégie',
-  'visual-identity': 'Identité',
-  website: 'Web',
-  campaign: 'Campagne',
-  'art-direction': 'Direction artistique',
-  video: 'Vidéo',
-  print: 'Print',
-  social: 'Social',
-  events: 'Événementiel',
-  consulting: 'Conseil',
-}
 
 function imageUrl(m: number | Media | null | undefined): string | null {
   if (!m || typeof m === 'number') return null
   return m.url || null
 }
 
-// Asymmetric grid placement rotation
-const SIZES = ['lg', 'lg', 'md', 'md', 'md', 'lg', 'tall', 'sm', 'wide', 'tall', 'md'] as const
-function sizeFor(i: number): (typeof SIZES)[number] {
-  return SIZES[i % SIZES.length]
+function serviceTitles(items: (number | Service)[] | null | undefined): string[] {
+  return (items || [])
+    .map((s) => (typeof s === 'object' && s !== null ? s.title : ''))
+    .filter(Boolean)
 }
 
-const sizeClasses: Record<(typeof SIZES)[number], string> = {
-  lg: 'md:col-span-6',
-  md: 'md:col-span-4',
-  sm: 'md:col-span-3',
-  tall: 'md:col-span-4',
-  wide: 'md:col-span-8',
-}
-const aspectClasses: Record<(typeof SIZES)[number], string> = {
-  lg: 'aspect-[5/4]',
-  md: 'aspect-[4/5]',
-  sm: 'aspect-square',
-  tall: 'aspect-[3/4]',
-  wide: 'aspect-[16/9]',
+function sectorOf(p: Project): Sector | null {
+  return typeof p.sector === 'object' && p.sector !== null ? p.sector : null
 }
 
 export const metadata: Metadata = {
@@ -67,22 +34,42 @@ export const metadata: Metadata = {
 export default async function ProjectsPage() {
   const payload = await getPayload({ config: configPromise })
 
-  const result = await payload.find({
-    collection: 'projects',
-    depth: 1,
-    limit: 100,
-    overrideAccess: false,
-    sort: '-year',
-  })
+  const [projectsResult, sectorsResult] = await Promise.all([
+    payload.find({
+      collection: 'projects',
+      depth: 1,
+      limit: 100,
+      overrideAccess: false,
+      sort: '-year',
+    }),
+    payload.find({
+      collection: 'sectors',
+      depth: 0,
+      limit: 100,
+      sort: 'order',
+    }),
+  ])
 
-  const projects = result.docs as Project[]
+  const projects = projectsResult.docs as Project[]
+  const sectorsList = sectorsResult.docs as Sector[]
   const total = projects.length
+
+  // Derived stats for the COUNTERS strip (V8 reference)
+  const clientCounts = new Map<string, number>()
+  for (const p of projects) if (p.client) clientCounts.set(p.client, (clientCounts.get(p.client) ?? 0) + 1)
+  const recurrentClients = Array.from(clientCounts.values()).filter((c) => c >= 2).length
+  const usedSectorIds = new Set(projects.map((p) => sectorOf(p)?.id).filter(Boolean))
+  const sectorsCount = usedSectorIds.size
+  const firstYear = projects.reduce<number | null>((min, p) => {
+    if (!p.year) return min
+    return min === null || p.year < min ? p.year : min
+  }, null)
 
   return (
     <main className="surface-ink min-h-screen pb-20">
-      {/* PAGE HERO */}
-      <section className="px-6 sm:px-10 pt-32 sm:pt-40 pb-16 sm:pb-24 section-rule-bravo">
-        <div className="mx-auto grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-12 items-end" style={{ maxWidth: '1640px' }}>
+      {/* PAGE HERO — 100vh full-bleed with animated BRAVO atmosphere blobs */}
+      <section className="relative min-h-screen flex items-end atmosphere-bravo-drift px-6 sm:px-10 pt-32 sm:pt-44 pb-[15vh] sm:pb-[18vh] section-rule-bravo">
+        <div className="relative z-10 mx-auto w-full grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-12 items-end" style={{ maxWidth: '1640px' }}>
           <div>
             <div
               className="font-mono text-[0.72rem] tracking-[0.12em] uppercase mb-6 flex gap-2 items-center"
@@ -94,7 +81,10 @@ export default async function ProjectsPage() {
             </div>
             <h1 className="font-display font-extrabold uppercase leading-[0.84] tracking-[-0.015em] text-[clamp(5rem,16vw,18rem)] text-[var(--color-paper)]">
               Travaux<br />
-              <span className="font-editorial italic font-normal normal-case tracking-[-0.02em]" style={{ color: 'var(--color-bravo-soft)' }}>
+              <span
+                className="block font-editorial italic font-normal normal-case tracking-[-0.02em] text-[clamp(2rem,7vw,7rem)] leading-[1] mt-2"
+                style={{ color: 'var(--color-bravo-soft)' }}
+              >
                 — index complet.
               </span>
             </h1>
@@ -108,82 +98,69 @@ export default async function ProjectsPage() {
         </div>
       </section>
 
-      {/* GALLERY */}
-      <section
-        className="mx-auto px-6 sm:px-10 pt-8 sm:pt-12"
-        style={{ maxWidth: '1640px' }}
-      >
-        {projects.length === 0 ? (
+      {/* COUNTERS strip — V8 reference */}
+      {total > 0 && (
+        <section
+          className="mx-auto px-6 sm:px-10 pt-12 sm:pt-16 pb-2"
+          style={{ maxWidth: '1640px' }}
+        >
+          <dl
+            className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-8 text-[var(--color-paper)]"
+          >
+            <Counter num={`${total}+`} label="Projets livrés" highlight />
+            <Counter num={String(recurrentClients).padStart(2, '0')} label="Clients récurrents" />
+            <Counter num={String(sectorsCount).padStart(2, '0')} label="Secteurs couverts" />
+            <Counter num={firstYear ? String(firstYear) : '—'} label="Premier projet" />
+          </dl>
+        </section>
+      )}
+
+      {/* GALLERY + FILTER UI (client component) */}
+      {projects.length === 0 ? (
+        <section className="mx-auto px-6 sm:px-10 pt-8 sm:pt-12" style={{ maxWidth: '1640px' }}>
           <EmptyState />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 md:gap-y-12 lg:gap-y-16">
-            {projects.map((p, i) => (
-              <ProjectTile key={p.id} project={p} size={sizeFor(i)} featured={!!p.featured} />
-            ))}
-          </div>
-        )}
-      </section>
+        </section>
+      ) : (
+        <ProjectsExplorer projects={projects} sectors={sectorsList} />
+      )}
     </main>
   )
 }
 
-function ProjectTile({
-  project,
-  size,
-  featured,
+function Counter({
+  num,
+  label,
+  highlight,
 }: {
-  project: Project
-  size: (typeof SIZES)[number]
-  featured: boolean
+  num: string
+  label: string
+  /** Use BRAVO bright as primary color for the digit — emphasises the first stat. */
+  highlight?: boolean
 }) {
-  const thumb = imageUrl(project.thumbnail) || imageUrl(project.heroImage)
+  // Splits num so the trailing `+` (when present) gets the BRAVO bright accent.
+  const match = /^(.+?)(\+)?$/.exec(num)
+  const main = match?.[1] ?? num
+  const suffix = match?.[2]
   return (
-    <Link
-      href={`/projets/${project.slug}`}
-      className={['group block relative overflow-hidden', sizeClasses[size]].join(' ')}
-    >
-      <div className={['relative overflow-hidden bg-[var(--color-ink-2)]', aspectClasses[size]].join(' ')}>
-        {thumb ? (
-          <div
-            className="absolute inset-0 bg-center bg-cover transition-transform duration-[1.2s] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.05]"
-            style={{ backgroundImage: `url(${thumb})` }}
-          />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-ink-2)] to-[var(--color-bravo-deep)]" />
-        )}
-        <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-b from-transparent via-transparent to-black/70" />
-        <span
-          className={[
-            'absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full backdrop-blur-sm',
-            'font-mono text-[0.62rem] tracking-[0.12em] uppercase font-medium text-[var(--color-paper)]',
-            'border',
-            featured
-              ? 'bg-[rgba(73,35,244,0.55)] border-[rgba(244,237,225,0.25)]'
-              : 'bg-[rgba(5,5,7,0.55)] border-[rgba(244,237,225,0.18)]',
-          ].join(' ')}
-        >
-          {featured ? '★ Featured' : project.year ?? ''}
-        </span>
-      </div>
-      <div className="mt-4 grid grid-cols-[1fr_auto] gap-2 items-end">
-        <h3 className="font-display font-extrabold uppercase leading-[0.95] tracking-[-0.005em] text-[clamp(1.6rem,2.2vw,2.2rem)] text-[var(--color-paper)]">
-          {project.title}
-        </h3>
-        <span className="font-mono text-[0.7rem] tracking-[0.1em] uppercase font-semibold" style={{ color: 'var(--color-bravo-soft)' }}>
-          {project.year ?? ''}
-        </span>
-        {project.services && project.services.length > 0 && (
-          <span className="col-span-full font-mono text-[0.65rem] tracking-[0.1em] uppercase opacity-65 text-[var(--color-paper)] flex flex-wrap gap-x-2">
-            {project.services.slice(0, 3).map((s, i) => (
-              <React.Fragment key={s}>
-                {i > 0 && <span className="opacity-50">·</span>}
-                <span>{SERVICE_LABELS[s] || s}</span>
-              </React.Fragment>
-            ))}
+    <div className="flex flex-col gap-2 pl-4 border-l" style={{ borderColor: highlight ? 'var(--color-bravo-bright)' : 'var(--color-rule-dark)' }}>
+      <span
+        className="font-display font-extrabold text-[clamp(1.8rem,3vw,2.4rem)] leading-none tracking-[-0.01em]"
+        style={{ color: highlight ? 'var(--color-bravo-bright)' : 'var(--color-paper)' }}
+      >
+        {main}
+        {suffix && (
+          <span style={{ color: highlight ? 'var(--color-paper)' : 'var(--color-bravo-bright)' }}>
+            {suffix}
           </span>
         )}
-      </div>
-    </Link>
+      </span>
+      <span
+        className="font-mono text-[0.72rem] tracking-[0.12em] uppercase font-semibold"
+        style={{ color: 'var(--color-bravo-soft)' }}
+      >
+        {label}
+      </span>
+    </div>
   )
 }
 

@@ -70,10 +70,11 @@ export default async function StudioPage() {
         }}
       />
 
-      {/* PAGE HERO */}
-      <section className="px-6 sm:px-10 pt-32 sm:pt-44 pb-16 sm:pb-24 section-rule-bravo">
+      {/* PAGE HERO — 100vh full-bleed, content sits in the lower-mid third.
+          `atmosphere-bravo-drift` adds animated BRAVO blobs in the bg (cf. globals.css). */}
+      <section className="relative min-h-screen flex items-end atmosphere-bravo-drift px-6 sm:px-10 pt-32 sm:pt-44 pb-[15vh] sm:pb-[18vh] section-rule-bravo">
         <div
-          className="mx-auto grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-12 items-end"
+          className="relative z-10 mx-auto w-full grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-12 items-end"
           style={{ maxWidth: '1640px' }}
         >
           <div>
@@ -98,7 +99,12 @@ export default async function StudioPage() {
               }
             >
               <h1>Studio</h1>
-              <h1>
+              <h1
+                className="mt-2"
+                style={
+                  { '--display-size': 'clamp(2rem,7vw,7rem)' } as React.CSSProperties
+                }
+              >
                 — <em>deux têtes</em>, <strong>un écosystème</strong>.
               </h1>
             </div>
@@ -224,11 +230,10 @@ export default async function StudioPage() {
             <span className="inline-block w-10 h-px bg-current" />
           </span>
           <div
-            className="prose-home-display wrap mx-auto text-center"
+            className="prose-home-display flex flex-col items-center text-center mx-auto"
             style={
               {
-                maxWidth: '880px',
-                '--display-size': 'clamp(2.8rem,8vw,8rem)',
+                '--display-size': 'clamp(2.4rem,6.5vw,6.5rem)',
                 '--display-color': 'var(--color-ink)',
                 '--display-accent': 'var(--color-bravo)',
               } as React.CSSProperties

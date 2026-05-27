@@ -9,6 +9,8 @@ import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Projects } from './collections/Projects'
+import { Sectors } from './collections/Sectors'
+import { Services } from './collections/Services'
 import { Team } from './collections/Team'
 import { Users } from './collections/Users'
 import { Footer } from './Footer/config'
@@ -104,6 +106,8 @@ export default buildConfig({
     Team,
     Media,
     Categories,
+    Sectors,
+    Services,
     Users,
   ],
   cors: [getServerSideURL()].filter(Boolean),

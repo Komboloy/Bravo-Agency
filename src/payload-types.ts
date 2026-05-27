@@ -74,6 +74,8 @@ export interface Config {
     team: Team;
     media: Media;
     categories: Category;
+    sectors: Sector;
+    services: Service;
     users: User;
     redirects: Redirect;
     forms: Form;
@@ -99,6 +101,8 @@ export interface Config {
     team: TeamSelect<false> | TeamSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    sectors: SectorsSelect<false> | SectorsSelect<true>;
+    services: ServicesSelect<false> | ServicesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
@@ -489,24 +493,14 @@ export interface Project {
    * Affiché sur la home et en tête de liste.
    */
   featured?: boolean | null;
-  sector?: ('ong' | 'culture' | 'industry' | 'tech' | 'education' | 'health' | 'public' | 'other') | null;
   /**
-   * Les disciplines effectivement livrées par BRAVO! sur ce projet. Apparaît dans la meta-bar de la page projet.
+   * Géré dans la collection « Secteurs ». Ajouter/modifier les options depuis la sidebar.
    */
-  services?:
-    | (
-        | 'brand-strategy'
-        | 'visual-identity'
-        | 'website'
-        | 'campaign'
-        | 'art-direction'
-        | 'video'
-        | 'print'
-        | 'social'
-        | 'events'
-        | 'consulting'
-      )[]
-    | null;
+  sector?: (number | null) | Sector;
+  /**
+   * Géré dans la collection « Services ». Ajouter/modifier les options depuis la sidebar. Apparaît dans la meta-bar de la page projet.
+   */
+  services?: (number | Service)[] | null;
   /**
    * Personnes qui ont conçu le projet. Utile si Stephan ou Michael l'ont créé dans une autre agence avant BRAVO!, ou si le concept vient d'un partenaire.
    */
@@ -722,6 +716,43 @@ export interface Project {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * Secteurs des projets (ONG, Culture, Industrie...). Affichés comme filtres sur /projets.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sectors".
+ */
+export interface Sector {
+  id: number;
+  title: string;
+  /**
+   * URL du document. Suit automatiquement « title » tant que tu n'édites pas ce champ manuellement.
+   */
+  slug: string;
+  /**
+   * Ordre dans les pills de filtre. Plus petit = plus à gauche.
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Services / disciplines proposés (Stratégie, Identité, Web, Campagne...). Affichés en tags sur les cards projet.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services".
+ */
+export interface Service {
+  id: number;
+  title: string;
+  /**
+   * URL du document. Suit automatiquement « title » tant que tu n'édites pas ce champ manuellement.
+   */
+  slug: string;
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1546,6 +1577,14 @@ export interface PayloadLockedDocument {
         value: number | Category;
       } | null)
     | ({
+        relationTo: 'sectors';
+        value: number | Sector;
+      } | null)
+    | ({
+        relationTo: 'services';
+        value: number | Service;
+      } | null)
+    | ({
         relationTo: 'users';
         value: number | User;
       } | null)
@@ -2096,6 +2135,28 @@ export interface CategoriesSelect<T extends boolean = true> {
         label?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sectors_select".
+ */
+export interface SectorsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services_select".
+ */
+export interface ServicesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  order?: T;
   updatedAt?: T;
   createdAt?: T;
 }

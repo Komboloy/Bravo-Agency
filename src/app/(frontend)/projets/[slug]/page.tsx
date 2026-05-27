@@ -5,40 +5,29 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React, { cache } from 'react'
 
-import type { Media, Project } from '@/payload-types'
+import type { Media, Project, Sector, Service } from '@/payload-types'
 import RichText from '@/components/RichText'
 import { generateMeta } from '@/utilities/generateMeta'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { JsonLd } from '@/components/JsonLd'
 import { getServerSideURL } from '@/utilities/getURL'
 
-// Pretty labels for the service select values stored in Payload
-const SERVICE_LABELS: Record<string, string> = {
-  'brand-strategy': 'Stratégie',
-  'visual-identity': 'Identité',
-  website: 'Web',
-  campaign: 'Campagne',
-  'art-direction': 'Direction artistique',
-  video: 'Vidéo',
-  print: 'Print / Édition',
-  social: 'Réseaux sociaux',
-  events: 'Événementiel',
-  consulting: 'Conseil',
-}
-const SECTOR_LABELS: Record<string, string> = {
-  ong: 'ONG · Engagement',
-  culture: 'Culture',
-  industry: 'Industrie',
-  tech: 'Tech · Digital',
-  education: 'Éducation',
-  health: 'Santé',
-  public: 'Public',
-  other: 'Autre',
-}
-
 function imageUrl(m: number | Media | null | undefined): string | null {
   if (!m || typeof m === 'number') return null
   return m.url || null
+}
+
+/** Extract a title from a populated (depth>=1) relationship; empty string if just an ID. */
+function relTitle(s: number | { title?: string | null } | null | undefined): string {
+  return typeof s === 'object' && s !== null ? s.title || '' : ''
+}
+
+function serviceTitles(items: (number | Service)[] | null | undefined): string[] {
+  return (items || []).map(relTitle).filter(Boolean)
+}
+
+function sectorTitle(s: number | Sector | null | undefined): string {
+  return relTitle(s)
 }
 
 export async function generateStaticParams() {
@@ -115,7 +104,7 @@ export default async function ProjectPage({ params: paramsPromise }: Args) {
             })),
           }),
           ...(project.services && project.services.length > 0 && {
-            keywords: project.services.map((s) => SERVICE_LABELS[s] || s).join(', '),
+            keywords: serviceTitles(project.services).join(', '),
           }),
         }}
       />
@@ -205,15 +194,12 @@ export default async function ProjectPage({ params: paramsPromise }: Args) {
           {hasCreation ? (
             <CreationField creation={project.creation!} />
           ) : (
-            project.sector && (
-              <Field k="Secteur" v={SECTOR_LABELS[project.sector] || project.sector} editorial />
+            project.sector && sectorTitle(project.sector) && (
+              <Field k="Secteur" v={sectorTitle(project.sector)} editorial />
             )
           )}
           {project.services && project.services.length > 0 ? (
-            <Field
-              k="Réalisation"
-              v={project.services.map((s) => SERVICE_LABELS[s] || s).join(' · ')}
-            />
+            <Field k="Réalisation" v={serviceTitles(project.services).join(' · ')} />
           ) : (
             <Field k="Notre rôle" v="—" />
           )}

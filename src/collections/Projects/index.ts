@@ -121,39 +121,23 @@ export const Projects: CollectionConfig<'projects'> = {
     },
     {
       name: 'sector',
-      type: 'select',
-      options: [
-        { label: 'ONG / Engagement', value: 'ong' },
-        { label: 'Culture', value: 'culture' },
-        { label: 'Industrie', value: 'industry' },
-        { label: 'Tech / Digital', value: 'tech' },
-        { label: 'Éducation', value: 'education' },
-        { label: 'Santé', value: 'health' },
-        { label: 'Public', value: 'public' },
-        { label: 'Autre', value: 'other' },
-      ],
+      type: 'relationship',
+      relationTo: 'sectors',
+      label: 'Secteur',
+      admin: {
+        description: 'Géré dans la collection « Secteurs ». Ajouter/modifier les options depuis la sidebar.',
+      },
     },
     {
       name: 'services',
-      type: 'select',
+      type: 'relationship',
+      relationTo: 'services',
       hasMany: true,
       label: 'Réalisation (disciplines livrées)',
       admin: {
         description:
-          'Les disciplines effectivement livrées par BRAVO! sur ce projet. Apparaît dans la meta-bar de la page projet.',
+          'Géré dans la collection « Services ». Ajouter/modifier les options depuis la sidebar. Apparaît dans la meta-bar de la page projet.',
       },
-      options: [
-        { label: 'Stratégie de marque', value: 'brand-strategy' },
-        { label: 'Identité visuelle', value: 'visual-identity' },
-        { label: 'Site web', value: 'website' },
-        { label: 'Campagne', value: 'campaign' },
-        { label: 'Direction artistique', value: 'art-direction' },
-        { label: 'Production vidéo', value: 'video' },
-        { label: 'Édition / Print', value: 'print' },
-        { label: 'Réseaux sociaux', value: 'social' },
-        { label: 'Événementiel', value: 'events' },
-        { label: 'Conseil', value: 'consulting' },
-      ],
     },
     {
       type: 'collapsible',
