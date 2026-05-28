@@ -97,12 +97,13 @@ export function ProjectsExplorer({
       >
         <div
           className="pt-6 border-t flex flex-col gap-5"
-          style={{ borderColor: 'var(--color-rule-dark)' }}
+          style={{ borderColor: 'rgba(5,5,7,0.14)', color: 'var(--color-ink)' }}
         >
           {/* Row 1: SECTEURS label + pills */}
           <div className="grid grid-cols-[auto_1fr] gap-x-4 sm:gap-x-6 gap-y-3 items-start">
             <span
-              className="font-mono text-[0.7rem] tracking-[0.14em] uppercase font-bold opacity-55 pt-2"
+              className="font-mono text-[0.7rem] tracking-[0.14em] uppercase font-bold pt-2"
+              style={{ opacity: 0.55 }}
             >
               Secteurs
             </span>
@@ -123,41 +124,46 @@ export function ProjectsExplorer({
             </div>
           </div>
 
-          {/* Row 2: TRIER (left) + search (right) */}
-          <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr_auto] gap-x-4 sm:gap-x-6 gap-y-3 items-center">
-            <span
-              className="font-mono text-[0.7rem] tracking-[0.14em] uppercase font-bold opacity-55"
-            >
-              Trier
-            </span>
-            <div className="flex items-center gap-2">
-              <SortButton active={sort === 'recent'} onClick={() => setSort('recent')} label="Récent" />
-              <span className="opacity-30 font-mono text-[0.7rem]">|</span>
-              <SortButton active={sort === 'az'} onClick={() => setSort('az')} label="A–Z" />
-            </div>
+          {/* Row 2: search (left) + TRIER juste à côté. Tout groupé à gauche,
+              hauteurs visuelles identiques (h-9), pas de gap béant. */}
+          <div className="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-3">
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Rechercher un projet, un client…"
-              className="w-full sm:w-64 px-4 py-2 rounded-full font-sans text-[0.78rem] outline-none transition-[background,border-color,box-shadow] placeholder:opacity-50 placeholder:font-mono placeholder:tracking-[0.06em] placeholder:uppercase placeholder:text-[0.7rem] focus:bg-[rgba(244,237,225,0.06)] focus:border-[var(--color-bravo-soft)] focus:shadow-[0_0_0_3px_rgba(244,237,225,0.06)]"
+              className="w-full sm:w-64 h-9 px-4 rounded-full font-mono text-[0.7rem] tracking-[0.06em] outline-none transition-[background,border-color,box-shadow] placeholder:opacity-50 placeholder:font-mono placeholder:tracking-[0.06em] placeholder:uppercase placeholder:text-[0.7rem] focus:bg-[rgba(5,5,7,0.04)] focus:border-[var(--color-bravo)] focus:shadow-[0_0_0_3px_rgba(73,35,244,0.08)]"
               style={{
-                background: 'rgba(244,237,225,0.03)',
-                border: '1px solid var(--color-rule-dark)',
-                color: 'var(--color-paper)',
+                background: 'rgba(5,5,7,0.03)',
+                border: '1px solid rgba(5,5,7,0.14)',
+                color: 'var(--color-ink)',
               }}
             />
+            <div className="flex items-center gap-2 h-9">
+              <span
+                className="font-mono text-[0.7rem] tracking-[0.14em] uppercase font-bold"
+                style={{ opacity: 0.55 }}
+              >
+                Trier
+              </span>
+              <SortButton active={sort === 'recent'} onClick={() => setSort('recent')} label="Récent" />
+              <span className="font-mono text-[0.7rem]" style={{ opacity: 0.3 }}>|</span>
+              <SortButton active={sort === 'az'} onClick={() => setSort('az')} label="A–Z" />
+            </div>
           </div>
         </div>
 
         {/* Active filter / result count */}
         {(selectedSector || query) && (
-          <div className="mt-4 font-mono text-[0.72rem] tracking-[0.12em] uppercase opacity-55">
+          <div
+            className="mt-4 font-mono text-[0.72rem] tracking-[0.12em] uppercase"
+            style={{ color: 'var(--color-ink)', opacity: 0.55 }}
+          >
             {filtered.length} {filtered.length <= 1 ? 'projet' : 'projets'}
             {selectedSector && (
               <>
                 {' · secteur: '}
-                <span style={{ color: 'var(--color-bravo-soft)' }}>
+                <span style={{ color: 'var(--color-bravo)', opacity: 1 }}>
                   {sectors.find((s) => s.slug === selectedSector)?.title}
                 </span>
               </>
@@ -165,7 +171,7 @@ export function ProjectsExplorer({
             {query && (
               <>
                 {' · recherche: '}
-                <span style={{ color: 'var(--color-bravo-soft)' }}>{query}</span>
+                <span style={{ color: 'var(--color-bravo)', opacity: 1 }}>{query}</span>
               </>
             )}
           </div>
@@ -200,8 +206,8 @@ function Pill({ active, onClick, label }: { active: boolean; onClick: () => void
       className={[
         'inline-flex items-center px-3.5 py-1.5 rounded-full font-mono text-[0.7rem] tracking-[0.1em] uppercase font-semibold cursor-pointer transition-[background,color,border-color]',
         active
-          ? 'bg-[var(--color-paper)] text-[var(--color-ink)] border border-[var(--color-paper)]'
-          : 'bg-transparent text-[var(--color-paper)] border border-[var(--color-rule-dark)] hover:border-[var(--color-bravo-soft)] hover:text-[var(--color-bravo-soft)]',
+          ? 'bg-[var(--color-bravo)] text-[var(--color-paper)] border border-[var(--color-bravo)]'
+          : 'bg-transparent text-[var(--color-ink)] border border-[rgba(5,5,7,0.14)] hover:border-[var(--color-bravo)] hover:text-[var(--color-bravo)]',
       ].join(' ')}
     >
       {label}
@@ -217,7 +223,7 @@ function SortButton({ active, onClick, label }: { active: boolean; onClick: () =
       aria-pressed={active}
       className={[
         'px-2.5 py-1 rounded-full font-mono text-[0.7rem] tracking-[0.1em] uppercase font-semibold cursor-pointer transition-colors',
-        active ? 'text-[var(--color-paper)]' : 'text-[var(--color-paper)] opacity-45 hover:opacity-100',
+        active ? 'text-[var(--color-ink)]' : 'text-[var(--color-ink)] opacity-45 hover:opacity-100',
       ].join(' ')}
     >
       {label}
@@ -249,35 +255,27 @@ function ProjectTile({
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-ink-2)] to-[var(--color-bravo-deep)]" />
         )}
-        <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-b from-transparent via-transparent to-black/70" />
-        <span
-          className={[
-            'absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full backdrop-blur-sm',
-            'font-mono text-[0.62rem] tracking-[0.12em] uppercase font-medium text-[var(--color-paper)]',
-            'border',
-            featured
-              ? 'bg-[rgba(73,35,244,0.55)] border-[rgba(244,237,225,0.25)]'
-              : 'bg-[rgba(5,5,7,0.55)] border-[rgba(244,237,225,0.18)]',
-          ].join(' ')}
-        >
-          {featured ? '★ Featured' : project.year ?? ''}
-        </span>
+        {featured && (
+          <span
+            className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full backdrop-blur-sm font-mono text-[0.62rem] tracking-[0.12em] uppercase font-medium border bg-[rgba(73,35,244,0.85)] border-[rgba(244,237,225,0.25)] text-[var(--color-paper)]"
+          >
+            ★ Featured
+          </span>
+        )}
       </div>
-      <div className="mt-4 grid grid-cols-[1fr_auto] gap-2 items-end">
-        <h3 className="font-display font-extrabold uppercase leading-[0.95] tracking-[-0.005em] text-[clamp(1.6rem,2.2vw,2.2rem)] text-[var(--color-paper)]">
+      <div className="mt-4 grid grid-cols-[1fr_auto] gap-2 items-end" style={{ color: 'var(--color-ink)' }}>
+        <div className="font-mono text-[0.62rem] tracking-[0.14em] uppercase font-bold mb-1 col-span-full" style={{ color: 'var(--color-bravo)' }}>
+          {String(project.year ?? '').padStart(2, '0')}
+          {project.year && project.client && ` · ${project.client}`}
+        </div>
+        <h3 className="font-display font-extrabold uppercase leading-[0.95] tracking-[-0.005em] text-[clamp(1.6rem,2.2vw,2.2rem)]">
           {project.title}
         </h3>
-        <span
-          className="font-mono text-[0.7rem] tracking-[0.1em] uppercase font-semibold"
-          style={{ color: 'var(--color-bravo-soft)' }}
-        >
-          {project.year ?? ''}
-        </span>
         {project.services && project.services.length > 0 && (
-          <span className="col-span-full font-mono text-[0.65rem] tracking-[0.1em] uppercase opacity-65 text-[var(--color-paper)] flex flex-wrap gap-x-2">
+          <span className="col-span-full font-mono text-[0.62rem] tracking-[0.12em] uppercase flex flex-wrap gap-x-2 mt-1" style={{ opacity: 0.55 }}>
             {serviceTitles(project.services).slice(0, 3).map((t, i) => (
               <React.Fragment key={t}>
-                {i > 0 && <span className="opacity-50">·</span>}
+                {i > 0 && <span style={{ opacity: 0.5 }}>·</span>}
                 <span>{t}</span>
               </React.Fragment>
             ))}
@@ -292,16 +290,16 @@ function NoMatchState() {
   return (
     <div
       className="border rounded-[28px] p-10 sm:p-14 text-center max-w-2xl mx-auto"
-      style={{ borderColor: 'var(--color-rule-dark)' }}
+      style={{ borderColor: 'rgba(5,5,7,0.14)', color: 'var(--color-ink)' }}
     >
       <div
         className="font-mono text-[0.72rem] tracking-[0.18em] uppercase font-semibold mb-3"
-        style={{ color: 'var(--color-bravo-soft)' }}
+        style={{ color: 'var(--color-bravo)' }}
       >
         Aucun résultat
       </div>
-      <p className="font-editorial italic text-[1.05rem] opacity-85 text-[var(--color-paper)] max-w-[40ch] mx-auto">
-        Essaie un autre secteur, élargis ta recherche, ou retire les filtres pour voir l'index complet.
+      <p className="font-editorial italic text-[1.05rem] max-w-[40ch] mx-auto" style={{ opacity: 0.78 }}>
+        Essaie un autre secteur, élargis ta recherche, ou retire les filtres pour voir l&apos;index complet.
       </p>
     </div>
   )

@@ -4,9 +4,16 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
 
+import type { Media, Team } from '@/payload-types'
+
 import { FormBlock } from '@/blocks/Form/Component'
 import { JsonLd } from '@/components/JsonLd'
 import { getServerSideURL } from '@/utilities/getURL'
+
+function imageUrl(m: number | Media | null | undefined): string | null {
+  if (!m || typeof m === 'number') return null
+  return m.url || null
+}
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -36,6 +43,8 @@ const STEPS = [
 ]
 
 export default async function ContactPage() {
+  const payload = await getPayload({ config: configPromise })
+
   // Try to find a "Contact" form from the plugin-form-builder, otherwise fall back to a simple section
   let contactForm: ContactForm = null
   try {
@@ -43,6 +52,19 @@ export default async function ContactPage() {
   } catch (_e) {
     contactForm = null
   }
+
+  // Fetch team members for the hero portrait (right side of split hero)
+  const teamResult = await payload.find({
+    collection: 'team',
+    depth: 1,
+    limit: 2,
+    sort: 'order',
+    overrideAccess: false,
+    where: { _status: { equals: 'published' } },
+  })
+  const members = teamResult.docs as Team[]
+  const heroMember = members[0]
+  const heroMemberPhoto = heroMember ? imageUrl(heroMember.photo) : null
 
   const siteUrl = getServerSideURL()
 
@@ -70,43 +92,105 @@ export default async function ContactPage() {
         }}
       />
 
-      {/* PAGE HERO */}
-      <section className="px-6 sm:px-10 pt-32 sm:pt-44 pb-16 sm:pb-24 section-rule-bravo">
-        <div
-          className="mx-auto grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-12 items-end"
-          style={{ maxWidth: '1640px' }}
-        >
-          <div>
+      {/* PAGE HERO — split BRAVO + portrait. Same pattern as /posts and /projets. */}
+      <section className="relative grid grid-cols-1 md:grid-cols-[0.85fr_1.15fr] min-h-screen section-rule-bravo">
+        {/* LEFT — BRAVO color block with atmosphere */}
+        <div className="surface-bravo atmosphere-bravo-drift relative flex flex-col justify-between px-6 sm:px-10 pt-32 sm:pt-44 pb-10 sm:pb-14 overflow-hidden">
+          <div className="relative z-10">
             <div
-              className="font-mono text-[0.72rem] tracking-[0.12em] uppercase mb-6 flex gap-2 items-center"
-              style={{ color: 'var(--color-bravo-soft)' }}
+              className="font-mono text-[0.72rem] tracking-[0.12em] uppercase flex gap-2 items-center"
+              style={{ color: 'rgba(244,237,225,0.65)' }}
             >
-              <Link href="/" className="opacity-65 hover:opacity-100">
+              <Link href="/" style={{ color: 'var(--color-paper)', opacity: 0.75 }} className="hover:!opacity-100">
                 Accueil
               </Link>
               <span className="opacity-40">/</span>
-              <span>Contact</span>
+              <span style={{ color: 'var(--color-paper)' }}>Contact</span>
             </div>
-            <h1 className="font-display font-extrabold uppercase leading-[0.84] tracking-[-0.015em] text-[clamp(5rem,16vw,18rem)] text-[var(--color-paper)]">
-              Premier<br />
-              <span
-                className="font-editorial italic font-normal normal-case tracking-[-0.02em]"
+          </div>
+          <div className="relative z-10">
+            <div
+              className="prose-home-display"
+              style={
+                {
+                  '--display-size': 'clamp(4rem,9vw,10rem)',
+                  '--display-color': 'var(--color-paper)',
+                  '--display-accent': 'var(--color-paper)',
+                } as React.CSSProperties
+              }
+            >
+              <h1>Premier</h1>
+              <h1 style={{ fontFamily: 'var(--font-editorial)', fontStyle: 'italic', fontWeight: 400, textTransform: 'none', letterSpacing: '-0.02em', fontSize: 'clamp(2rem,5vw,5rem)', marginTop: '0.4rem' }}>
+                pas.
+              </h1>
+            </div>
+            <p
+              className="mt-8 sm:mt-10 font-editorial italic text-[1.15rem] leading-[1.5] max-w-[38ch]"
+              style={{ color: 'var(--color-paper)', opacity: 0.92 }}
+            >
+              Un brief, une intuition, une commande spécifique — on lit{' '}
+              <strong
+                className="font-sans not-italic font-bold"
+                style={{ color: 'var(--color-paper)', fontStyle: 'normal' }}
+              >
+                tout
+              </strong>{' '}
+              et on répond sous 48h ouvrées.
+            </p>
+            <a
+              href="mailto:hello@bravo-agency.be"
+              className="inline-flex items-center gap-3 mt-8 sm:mt-10 font-mono text-[0.78rem] tracking-[0.14em] uppercase font-bold border-b border-current pb-1"
+              style={{ color: 'var(--color-paper)' }}
+            >
+              hello@bravo-agency.be <span>→</span>
+            </a>
+          </div>
+        </div>
+
+        {/* RIGHT — team member portrait with name + role overlay */}
+        <div className="relative overflow-hidden bg-[var(--color-ink-2)] min-h-[50vh] md:min-h-0">
+          {heroMemberPhoto ? (
+            <div
+              className="absolute inset-0 bg-center bg-cover"
+              style={{ backgroundImage: `url(${heroMemberPhoto})` }}
+            />
+          ) : (
+            <div
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(135deg, var(--color-ink-2), var(--color-bravo-deep))',
+              }}
+            />
+          )}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                'linear-gradient(180deg, transparent 40%, rgba(5,5,7,0.78) 100%)',
+            }}
+          />
+          {heroMember && (
+            <div className="absolute left-0 right-0 bottom-0 z-10 p-6 sm:p-10 text-[var(--color-paper)]">
+              <div
+                className="font-mono text-[0.72rem] tracking-[0.16em] uppercase font-bold mb-3"
                 style={{ color: 'var(--color-bravo-soft)' }}
               >
-                pas.
-              </span>
-            </h1>
-          </div>
-          <p className="font-editorial italic text-[1.2rem] leading-[1.55] max-w-[38ch] opacity-92 text-[var(--color-paper)]">
-            Un brief, une intuition, une commande spécifique — on lit{' '}
-            <strong
-              className="font-sans not-italic font-bold"
-              style={{ color: 'var(--color-bravo-soft)' }}
-            >
-              tout
-            </strong>{' '}
-            et on répond sous 48h ouvrées.
-          </p>
+                Tu parleras à
+              </div>
+              <h2 className="font-display font-extrabold uppercase leading-[0.92] tracking-[-0.005em] text-[clamp(2rem,3.5vw,3.4rem)]">
+                {heroMember.name}
+                {members[1] && (
+                  <>
+                    <span className="opacity-60 font-light"> ou </span>
+                    {members[1].name}
+                  </>
+                )}
+              </h2>
+              <div className="mt-3 font-mono text-[0.78rem] tracking-[0.14em] uppercase opacity-80">
+                {heroMember.role}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

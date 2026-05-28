@@ -117,7 +117,7 @@ export default async function StudioPage() {
               {members.length} {members.length <= 1 ? 'co-fondateur' : 'co-fondateurs'}
             </strong>{' '}
             au studio à Bruxelles, et autour de nous un réseau de partenaires précis,
-            choisis pour ce qu'ils font de mieux.
+            choisis pour ce qu&apos;ils font de mieux.
           </p>
         </div>
       </section>

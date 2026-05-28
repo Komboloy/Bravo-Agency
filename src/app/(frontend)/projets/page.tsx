@@ -65,125 +65,57 @@ export default async function ProjectsPage() {
     return min === null || p.year < min ? p.year : min
   }, null)
 
-  // Featured for the hero — prefer the most recent flagged `featured`, else most recent overall
-  const featuredProject = projects.find((p) => p.featured) || projects[0]
-  const featuredImg = featuredProject
-    ? imageUrl(featuredProject.heroImage) || imageUrl(featuredProject.thumbnail)
-    : null
-  const featuredSectorTitle = featuredProject ? (sectorOf(featuredProject)?.title || '') : ''
-
   return (
-    <main className="surface-ink min-h-screen pb-20">
-      {/* PAGE HERO — split 100vh BRAVO + featured project image. Same pattern
-          as /posts and /posts/[slug] hero for site-wide consistency. */}
-      <section className="relative grid grid-cols-1 md:grid-cols-[0.85fr_1.15fr] min-h-screen section-rule-bravo">
-        {/* LEFT — BRAVO color block with atmosphere */}
-        <div className="surface-bravo atmosphere-bravo-drift relative flex flex-col justify-between px-6 sm:px-10 pt-32 sm:pt-44 pb-10 sm:pb-14 overflow-hidden">
-          <div className="relative z-10">
-            <div
-              className="font-mono text-[0.72rem] tracking-[0.12em] uppercase flex gap-2 items-center"
-              style={{ color: 'rgba(244,237,225,0.65)' }}
-            >
-              <Link href="/" style={{ color: 'var(--color-paper)', opacity: 0.75 }} className="hover:!opacity-100">
-                Accueil
-              </Link>
-              <span className="opacity-40">/</span>
-              <span style={{ color: 'var(--color-paper)' }}>Travaux</span>
-            </div>
-          </div>
-          <div className="relative z-10">
-            <div
-              className="prose-home-display"
-              style={
-                {
-                  '--display-size': 'clamp(4rem,9vw,10rem)',
-                  '--display-color': 'var(--color-paper)',
-                  '--display-accent': 'var(--color-paper)',
-                } as React.CSSProperties
-              }
-            >
-              <h1>Travaux</h1>
-              <h1 style={{ fontFamily: 'var(--font-editorial)', fontStyle: 'italic', fontWeight: 400, textTransform: 'none', letterSpacing: '-0.02em', fontSize: 'clamp(2rem,5vw,5rem)', marginTop: '0.4rem' }}>
-                — index complet.
+    <main className="surface-paper min-h-screen pb-20">
+      {/* PAGE HERO — Editorial index (paper). Titre + lede en 2 colonnes,
+          séparés par une fine rule, stats inline en dessous. */}
+      <section className="px-6 sm:px-10 pt-32 sm:pt-40 pb-10 sm:pb-14">
+        <div className="mx-auto" style={{ maxWidth: '1640px' }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-24 items-end pb-10 sm:pb-14 border-b" style={{ borderColor: 'rgba(5,5,7,0.12)' }}>
+            <div>
+              <div
+                className="font-mono text-[0.72rem] tracking-[0.16em] uppercase mb-6 flex gap-2 items-center font-bold"
+                style={{ color: 'var(--color-bravo)' }}
+              >
+                <Link href="/" className="opacity-65 hover:opacity-100">Accueil</Link>
+                <span className="opacity-40">/</span>
+                <span>Travaux</span>
+              </div>
+              <h1
+                className="font-display font-extrabold uppercase leading-[0.86] tracking-[-0.015em] text-[clamp(4rem,10vw,10rem)]"
+                style={{ color: 'var(--color-ink)' }}
+              >
+                Travaux
+                <span
+                  className="block font-editorial italic font-normal normal-case tracking-[-0.02em] text-[clamp(1.8rem,4.5vw,5.5rem)] leading-[1.05] mt-2"
+                  style={{ color: 'var(--color-bravo)' }}
+                >
+                  — index complet.
+                </span>
               </h1>
             </div>
             <p
-              className="mt-8 sm:mt-10 font-editorial italic text-[1.15rem] leading-[1.5] max-w-[38ch]"
-              style={{ color: 'var(--color-paper)', opacity: 0.92 }}
+              className="font-editorial italic text-[clamp(1.15rem,1.6vw,1.4rem)] leading-[1.5] max-w-[38ch]"
+              style={{ color: 'var(--color-ink)', opacity: 0.78 }}
             >
-              <strong className="font-sans not-italic font-bold" style={{ color: 'var(--color-paper)', fontStyle: 'normal' }}>
+              <strong className="font-sans not-italic font-bold" style={{ color: 'var(--color-bravo)' }}>
                 {total} {total <= 1 ? 'projet' : 'projets'}
               </strong>{' '}
               livrés depuis 2018 pour des marques, ONG, institutions et nos propres initiatives.
             </p>
           </div>
+
+          {/* COUNTERS strip — inline, paper */}
+          {total > 0 && (
+            <dl className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-8 mt-10 sm:mt-12">
+              <Counter num={`${total}+`} label="Projets livrés" highlight />
+              <Counter num={String(recurrentClients).padStart(2, '0')} label="Clients récurrents" />
+              <Counter num={String(sectorsCount).padStart(2, '0')} label="Secteurs couverts" />
+              <Counter num={firstYear ? String(firstYear) : '—'} label="Premier projet" />
+            </dl>
+          )}
         </div>
-
-        {/* RIGHT — featured project hero image with meta overlay */}
-        {featuredProject && (
-          <Link
-            href={`/projets/${featuredProject.slug}`}
-            className="group relative overflow-hidden bg-[var(--color-ink-2)] min-h-[50vh] md:min-h-0"
-          >
-            {featuredImg && (
-              <div
-                className="absolute inset-0 bg-center bg-cover transition-transform duration-[1.2s] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.04]"
-                style={{ backgroundImage: `url(${featuredImg})` }}
-              />
-            )}
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                background:
-                  'linear-gradient(180deg, transparent 40%, rgba(5,5,7,0.78) 100%)',
-              }}
-            />
-            <div className="absolute left-0 right-0 bottom-0 z-10 p-6 sm:p-10 text-[var(--color-paper)]">
-              <div
-                className="font-mono text-[0.72rem] tracking-[0.16em] uppercase font-bold mb-3 flex flex-wrap gap-2"
-                style={{ color: 'var(--color-bravo-soft)' }}
-              >
-                <span>{featuredProject.featured ? 'À la une' : 'Dernier projet'}</span>
-                {featuredProject.year && (
-                  <>
-                    <span className="opacity-50">·</span>
-                    <span>{featuredProject.year}</span>
-                  </>
-                )}
-                {featuredSectorTitle && (
-                  <>
-                    <span className="opacity-50">·</span>
-                    <span>{featuredSectorTitle}</span>
-                  </>
-                )}
-              </div>
-              <h2 className="font-display font-extrabold uppercase leading-[0.92] tracking-[-0.005em] text-[clamp(2rem,3.5vw,3.4rem)] max-w-[22ch]">
-                {featuredProject.title}
-              </h2>
-              <span className="inline-flex items-center gap-2 mt-5 font-mono text-[0.72rem] tracking-[0.12em] uppercase font-semibold pb-1 border-b border-current group-hover:text-[var(--color-bravo-soft)] transition-colors">
-                Voir le projet <span>→</span>
-              </span>
-            </div>
-          </Link>
-        )}
       </section>
-
-      {/* COUNTERS strip — V8 reference */}
-      {total > 0 && (
-        <section
-          className="mx-auto px-6 sm:px-10 pt-12 sm:pt-16 pb-2"
-          style={{ maxWidth: '1640px' }}
-        >
-          <dl
-            className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-8 text-[var(--color-paper)]"
-          >
-            <Counter num={`${total}+`} label="Projets livrés" highlight />
-            <Counter num={String(recurrentClients).padStart(2, '0')} label="Clients récurrents" />
-            <Counter num={String(sectorsCount).padStart(2, '0')} label="Secteurs couverts" />
-            <Counter num={firstYear ? String(firstYear) : '—'} label="Premier projet" />
-          </dl>
-        </section>
-      )}
 
       {/* GALLERY + FILTER UI (client component) */}
       {projects.length === 0 ? (
@@ -212,21 +144,21 @@ function Counter({
   const main = match?.[1] ?? num
   const suffix = match?.[2]
   return (
-    <div className="flex flex-col gap-2 pl-4 border-l" style={{ borderColor: highlight ? 'var(--color-bravo-bright)' : 'var(--color-rule-dark)' }}>
+    <div className="flex flex-col gap-2">
       <span
-        className="font-display font-extrabold text-[clamp(1.8rem,3vw,2.4rem)] leading-none tracking-[-0.01em]"
-        style={{ color: highlight ? 'var(--color-bravo-bright)' : 'var(--color-paper)' }}
+        className="font-display font-extrabold text-[clamp(2rem,3.5vw,3rem)] leading-none tracking-[-0.01em]"
+        style={{ color: highlight ? 'var(--color-bravo)' : 'var(--color-ink)' }}
       >
         {main}
         {suffix && (
-          <span style={{ color: highlight ? 'var(--color-paper)' : 'var(--color-bravo-bright)' }}>
+          <span style={{ color: highlight ? 'var(--color-ink)' : 'var(--color-bravo)' }}>
             {suffix}
           </span>
         )}
       </span>
       <span
-        className="font-mono text-[0.72rem] tracking-[0.12em] uppercase font-semibold"
-        style={{ color: 'var(--color-bravo-soft)' }}
+        className="font-mono text-[0.72rem] tracking-[0.14em] uppercase font-semibold"
+        style={{ color: 'var(--color-ink)', opacity: 0.55 }}
       >
         {label}
       </span>
@@ -236,22 +168,26 @@ function Counter({
 
 function EmptyState() {
   return (
-    <div className="border border-[color:var(--color-rule-dark)] rounded-[28px] p-12 sm:p-16 text-center max-w-3xl mx-auto my-12">
+    <div className="border rounded-[28px] p-12 sm:p-16 text-center max-w-3xl mx-auto my-12" style={{ borderColor: 'rgba(5,5,7,0.14)' }}>
       <div
         className="font-mono text-[0.72rem] tracking-[0.18em] uppercase font-semibold mb-4"
-        style={{ color: 'var(--color-bravo-soft)' }}
+        style={{ color: 'var(--color-bravo)' }}
       >
         En préparation
       </div>
-      <h2 className="font-display font-extrabold uppercase leading-[0.95] tracking-[-0.005em] text-[clamp(2rem,4vw,3.5rem)] text-[var(--color-paper)] mb-4">
-        Aucun projet <span className="font-editorial italic font-normal normal-case" style={{ color: 'var(--color-bravo-soft)' }}>publié</span> pour l'instant.
+      <h2 className="font-display font-extrabold uppercase leading-[0.95] tracking-[-0.005em] text-[clamp(2rem,4vw,3.5rem)] mb-4" style={{ color: 'var(--color-ink)' }}>
+        Aucun projet{' '}
+        <span className="font-editorial italic font-normal normal-case" style={{ color: 'var(--color-bravo)' }}>
+          publié
+        </span>{' '}
+        pour l&apos;instant.
       </h2>
-      <p className="font-editorial italic text-[1.05rem] opacity-80 max-w-[42ch] mx-auto text-[var(--color-paper)]">
-        Ajoute un projet dans l'admin Payload (collection « Projets ») pour le voir apparaître ici.
+      <p className="font-editorial italic text-[1.05rem] opacity-70 max-w-[42ch] mx-auto" style={{ color: 'var(--color-ink)' }}>
+        Ajoute un projet dans l&apos;admin Payload (collection « Projets ») pour le voir apparaître ici.
       </p>
       <Link
         href="/admin/collections/projects/create"
-        className="inline-block mt-8 px-5 py-3 rounded-full bg-[var(--color-paper)] text-[var(--color-ink)] font-sans font-bold text-sm hover:bg-[var(--color-bravo)] hover:text-[var(--color-paper)] transition-colors"
+        className="inline-block mt-8 px-5 py-3 rounded-full bg-[var(--color-ink)] text-[var(--color-paper)] font-sans font-bold text-sm hover:bg-[var(--color-bravo)] transition-colors"
       >
         Créer un projet →
       </Link>

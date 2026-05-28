@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>/projets — Tests layout complet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800;900&family=Big+Shoulders+Display:wght@300;400;700;800;900&family=Fraunces:ital,wght@1,400;1,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --paper: #f4ede1;
+      --paper-2: #ece4d2;
+      --ink: #050507;
+      --ink-2: #0f1014;
+      --bravo: #4923f4;
+      --bravo-bright: #6843ff;
+      --bravo-soft: #c0b6ff;
+      --rule-dark: #1c1d22;
+      --rule-light: rgba(5, 5, 7, 0.14);
+
+      --sans: 'Raleway', system-ui, sans-serif;
+      --display: 'Big Shoulders Display', sans-serif;
+      --editorial: 'Fraunces', serif;
+      --mono: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { font-family: var(--sans); background: var(--paper); color: var(--ink); }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; height: auto; }
+
+    /* Picker */
+    .picker {
+      position: fixed; top: 1rem; left: 50%; transform: translateX(-50%);
+      z-index: 100; display: flex; gap: 0.4rem;
+      background: rgba(5, 5, 7, 0.92); color: var(--paper);
+      border: 1px solid rgba(244, 237, 225, 0.18);
+      backdrop-filter: blur(18px);
+      padding: 0.4rem; border-radius: 999px;
+      font-family: var(--mono); font-size: 0.7rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .picker a {
+      padding: 0.5rem 0.9rem; border-radius: 999px;
+      opacity: 0.7; transition: background .25s, opacity .25s, color .25s;
+    }
+    .picker a:hover { opacity: 1; background: rgba(244, 237, 225, 0.08); }
+    .picker .active { background: var(--bravo); opacity: 1; }
+
+    .layout {
+      position: relative;
+      border-bottom: 6px solid var(--bravo);
+    }
+    .layout-tag {
+      position: sticky; top: 5rem;
+      align-self: flex-start;
+      z-index: 50; pointer-events: none;
+      display: inline-block;
+      margin: 1rem 1rem 0 auto;
+      padding: 0.45rem 0.9rem; border-radius: 999px;
+      background: var(--bravo); color: var(--paper);
+      font-family: var(--mono); font-size: 0.7rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+    }
+
+    /* ─────────────────────────────────────────────────────────────────── */
+    /* OPTION 1 — EDITORIAL INDEX (magazine calme paper)                  */
+    /* ─────────────────────────────────────────────────────────────────── */
+    .L1 { background: var(--paper); color: var(--ink); padding: 6rem 2.5rem 6rem; }
+    .L1-tag {
+      position: absolute; top: 1rem; right: 2rem;
+      background: var(--bravo); color: var(--paper);
+      font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.14em;
+      text-transform: uppercase; padding: 0.45rem 0.9rem; border-radius: 999px;
+    }
+    .L1-head {
+      max-width: 1640px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 6rem; align-items: end;
+      padding-bottom: 4rem; border-bottom: 1px solid var(--rule-light);
+    }
+    .L1-crumb {
+      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.16em;
+      text-transform: uppercase; font-weight: 700;
+      color: var(--bravo); margin-bottom: 2rem;
+    }
+    .L1-h1 {
+      font-family: var(--display); font-weight: 800;
+      font-size: clamp(4rem, 10vw, 10rem);
+      line-height: 0.86; letter-spacing: -0.015em;
+      text-transform: uppercase;
+    }
+    .L1-h1 em {
+      font-family: var(--editorial); font-style: italic;
+      font-weight: 400; text-transform: none; color: var(--bravo);
+      letter-spacing: -0.02em; font-size: 0.55em;
+      display: block; margin-top: 0.3em;
+    }
+    .L1-lede {
+      font-family: var(--editorial); font-style: italic;
+      font-size: 1.3rem; line-height: 1.5;
+      max-width: 38ch; opacity: 0.78;
+    }
+    .L1-lede strong {
+      font-style: normal; font-family: var(--sans); font-weight: 700; color: var(--bravo);
+    }
+    .L1-stats {
+      max-width: 1640px; margin: 4rem auto 0;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 3rem;
+    }
+    .L1-stat .num {
+      font-family: var(--display); font-weight: 800; font-size: 3rem;
+      letter-spacing: -0.01em; line-height: 1;
+    }
+    .L1-stat .num .accent { color: var(--bravo); }
+    .L1-stat .label {
+      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em;
+      text-transform: uppercase; font-weight: 600; opacity: 0.55;
+      margin-top: 0.5rem;
+    }
+    .L1-filters {
+      max-width: 1640px; margin: 5rem auto 3rem;
+      padding-top: 2rem; border-top: 1px solid var(--rule-light);
+      display: grid; grid-template-columns: auto 1fr auto; gap: 2rem;
+      align-items: center;
+    }
+    .L1-filters .lbl {
+      font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.14em;
+      text-transform: uppercase; font-weight: 700; opacity: 0.55;
+    }
+    .L1-filters .pills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .L1-pill {
+      padding: 0.4rem 0.85rem; border-radius: 999px;
+      border: 1px solid var(--rule-light);
+      font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em;
+      text-transform: uppercase; font-weight: 700;
+    }
+    .L1-pill.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .L1-search {
+      padding: 0.5rem 1rem; border-radius: 999px;
+      background: rgba(5,5,7,0.04); border: 1px solid var(--rule-light);
+      font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.08em;
+      text-transform: uppercase; width: 220px;
+    }
+    .L1-grid {
+      max-width: 1640px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem 1.5rem;
+    }
+    .L1-grid .tile { position: relative; overflow: hidden; }
+    .L1-grid .tile .img {
+      width: 100%; background-size: cover; background-position: center;
+      transition: transform 1.2s cubic-bezier(.2,.7,.2,1);
+    }
+    .L1-grid .tile:hover .img { transform: scale(1.04); }
+    .L1-grid .tile .info { margin-top: 1rem; }
+    .L1-grid .tile .info .num {
+      font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.14em;
+      text-transform: uppercase; font-weight: 700; color: var(--bravo); margin-bottom: 0.5rem;
+    }
+    .L1-grid .tile .info h3 {
+      font-family: var(--display); font-weight: 800; font-size: 1.8rem;
+      line-height: 0.95; letter-spacing: -0.005em; text-transform: uppercase;
+    }
+    .L1-grid .tile .info .meta {
+      margin-top: 0.4rem;
+      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.12em;
+      text-transform: uppercase; opacity: 0.55;
+    }
+    .L1-grid .t-lg { grid-column: span 6; }
+    .L1-grid .t-md { grid-column: span 4; }
+    .L1-grid .t-sm { grid-column: span 3; }
+    .L1-grid .t-wd { grid-column: span 8; }
+    .L1-grid .t-lg .img { aspect-ratio: 5/4; }
+    .L1-grid .t-md .img { aspect-ratio: 4/5; }
+    .L1-grid .t-sm .img { aspect-ratio: 1/1; }
+    .L1-grid .t-wd .img { aspect-ratio: 16/9; }
+
+    /* ─────────────────────────────────────────────────────────────────── */
+    /* OPTION 2 — BRUTALIST ARCHIVE (numbered rows, paper, no fluff)      */
+    /* ─────────────────────────────────────────────────────────────────── */
+    .L2 { background: var(--paper); color: var(--ink); padding: 6rem 0 6rem; border-top: 3px solid var(--ink); }
+    .L2-head {
+      max-width: 1640px; margin: 0 auto 4rem; padding: 0 2.5rem;
+      display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: end;
+    }
+    .L2-h1 {
+      font-family: var(--display); font-weight: 900;
+      font-size: clamp(5rem, 16vw, 18rem); line-height: 0.82;
+      letter-spacing: -0.025em; text-transform: uppercase;
+    }
+    .L2-head .right {
+      font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.16em;
+      text-transform: uppercase; font-weight: 700; text-align: right;
+      line-height: 1.6;
+    }
+    .L2-head .right strong { color: var(--bravo); font-weight: 900; }
+    .L2-filters {
+      max-width: 1640px; margin: 0 auto;
+      padding: 1.5rem 2.5rem; border-top: 3px solid var(--ink); border-bottom: 3px solid var(--ink);
+      display: flex; flex-wrap: wrap; gap: 2.5rem; align-items: center;
+      font-family: var(--mono); font-size: 0.72rem;
+      letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    }
+    .L2-filters .group { display: flex; gap: 1rem; align-items: center; }
+    .L2-filters .lbl { opacity: 0.5; }
+    .L2-filters button {
+      background: none; border: none; padding: 0; cursor: pointer;
+      font: inherit; letter-spacing: inherit; text-transform: inherit;
+      opacity: 0.55;
+    }
+    .L2-filters button.active { opacity: 1; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px; }
+    .L2-filters .spacer { flex: 1; }
+    .L2-list { max-width: 1640px; margin: 0 auto; padding: 0 2.5rem; }
+    .L2-row {
+      display: grid; grid-template-columns: 4rem 8rem 1fr 12rem 2rem;
+      gap: 2rem; align-items: center;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--rule-light);
+      transition: background 0.2s;
+    }
+    .L2-row:hover { background: rgba(5,5,7,0.025); }
+    .L2-row .num { font-family: var(--mono); font-size: 0.95rem; letter-spacing: 0.1em; font-weight: 700; opacity: 0.4; }
+    .L2-row .thumb { aspect-ratio: 1/1; background-size: cover; background-position: center; }
+    .L2-row .title h3 {
+      font-family: var(--display); font-weight: 800; font-size: 2.1rem;
+      line-height: 0.95; text-transform: uppercase; letter-spacing: -0.005em;
+    }
+    .L2-row .title h3 em {
+      font-family: var(--editorial); font-style: italic; font-weight: 400;
+      text-transform: none; color: var(--bravo); letter-spacing: -0.02em;
+      font-size: 0.7em;
+    }
+    .L2-row .title .sub {
+      font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em;
+      text-transform: uppercase; opacity: 0.55; margin-top: 0.4rem;
+    }
+    .L2-row .meta {
+      font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em;
+      text-transform: uppercase; opacity: 0.55; line-height: 1.7;
+    }
+    .L2-row .arrow {
+      font-family: var(--display); font-size: 1.5rem; opacity: 0.4;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .L2-row:hover .arrow { opacity: 1; transform: translateX(4px); color: var(--bravo); }
+
+    /* ─────────────────────────────────────────────────────────────────── */
+    /* OPTION 3 — GROUPED BY YEAR (vertical timeline editorial)           */
+    /* ─────────────────────────────────────────────────────────────────── */
+    .L3 { background: var(--paper); color: var(--ink); padding: 6rem 2.5rem 6rem; }
+    .L3-head {
+      max-width: 1640px; margin: 0 auto 5rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: end;
+    }
+    .L3-h1 {
+      font-family: var(--display); font-weight: 800;
+      font-size: clamp(4rem, 11vw, 12rem); line-height: 0.84;
+      letter-spacing: -0.015em; text-transform: uppercase;
+    }
+    .L3-h1 em {
+      font-family: var(--editorial); font-style: italic; font-weight: 400;
+      text-transform: none; color: var(--bravo); letter-spacing: -0.02em;
+      font-size: 0.45em; display: block; margin-top: 0.3em;
+    }
+    .L3-lede { font-family: var(--editorial); font-style: italic; font-size: 1.2rem; line-height: 1.5; opacity: 0.8; max-width: 42ch; }
+    .L3-year {
+      max-width: 1640px; margin: 0 auto 5rem;
+    }
+    .L3-year-head {
+      display: grid; grid-template-columns: 8rem 1fr;
+      gap: 3rem; align-items: baseline;
+      padding-bottom: 1.5rem; margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--rule-light);
+    }
+    .L3-year-head .y {
+      font-family: var(--display); font-weight: 800; font-size: 4rem;
+      line-height: 1; letter-spacing: -0.02em; color: var(--bravo);
+    }
+    .L3-year-head .count {
+      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.16em;
+      text-transform: uppercase; font-weight: 700; opacity: 0.55;
+    }
+    .L3-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem;
+    }
+    .L3-tile .img {
+      aspect-ratio: 4/5; background-size: cover; background-position: center;
+      transition: transform 1.2s cubic-bezier(.2,.7,.2,1);
+    }
+    .L3-tile:hover .img { transform: scale(1.04); }
+    .L3-tile h3 {
+      margin-top: 1rem;
+      font-family: var(--display); font-weight: 800; font-size: 1.6rem;
+      line-height: 0.95; text-transform: uppercase; letter-spacing: -0.005em;
+    }
+    .L3-tile .sub {
+      margin-top: 0.5rem;
+      font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.14em;
+      text-transform: uppercase; opacity: 0.55;
+    }
+
+    /* ─────────────────────────────────────────────────────────────────── */
+    /* OPTION 4 — GRID FIRST (almost no hero, content takes over)         */
+    /* ─────────────────────────────────────────────────────────────────── */
+    .L4 { background: var(--ink); color: var(--paper); padding: 0; }
+    .L4-bar {
+      display: grid; grid-template-columns: auto 1fr auto auto auto;
+      gap: 2rem; align-items: center;
+      padding: 7rem 2.5rem 2rem; max-width: 1640px; margin: 0 auto;
+      border-bottom: 1px solid var(--rule-dark);
+    }
+    .L4-title {
+      font-family: var(--display); font-weight: 800;
+      font-size: 2rem; letter-spacing: -0.01em; text-transform: uppercase;
+    }
+    .L4-title em {
+      font-family: var(--editorial); font-style: italic;
+      color: var(--bravo-soft); font-weight: 400; font-size: 0.85em;
+    }
+    .L4-stats {
+      display: flex; gap: 2rem;
+      font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em;
+      text-transform: uppercase; opacity: 0.55;
+    }
+    .L4-stats strong { color: var(--bravo-soft); font-weight: 700; }
+    .L4-filter-group { display: flex; gap: 0.5rem; }
+    .L4-pill {
+      padding: 0.35rem 0.8rem; border-radius: 999px;
+      background: transparent; border: 1px solid var(--rule-dark); color: var(--paper);
+      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.12em;
+      text-transform: uppercase; font-weight: 700;
+    }
+    .L4-pill.active { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+    .L4-search {
+      padding: 0.4rem 0.9rem; border-radius: 999px;
+      background: rgba(244,237,225,0.04); border: 1px solid var(--rule-dark);
+      color: var(--paper);
+      font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.08em;
+      text-transform: uppercase; width: 180px;
+    }
+    .L4-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+    }
+    .L4-tile {
+      position: relative; aspect-ratio: 4/5;
+      background-size: cover; background-position: center;
+      overflow: hidden;
+      border-right: 1px solid var(--rule-dark);
+      border-bottom: 1px solid var(--rule-dark);
+    }
+    .L4-tile::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(180deg, transparent 50%, rgba(5,5,7,0.92) 100%);
+      transition: background 0.4s;
+    }
+    .L4-tile:hover::before { background: linear-gradient(180deg, rgba(73,35,244,0.4) 0%, rgba(5,5,7,0.92) 100%); }
+    .L4-tile .info {
+      position: absolute; left: 1.5rem; right: 1.5rem; bottom: 1.5rem; z-index: 2;
+    }
+    .L4-tile h3 {
+      font-family: var(--display); font-weight: 800; font-size: 1.9rem;
+      line-height: 0.95; text-transform: uppercase; letter-spacing: -0.005em;
+    }
+    .L4-tile .meta {
+      margin-top: 0.4rem;
+      font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.12em;
+      text-transform: uppercase; opacity: 0.7; color: var(--bravo-soft);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="picker" aria-label="Choisir une option">
+  <a href="#opt1" class="active">01 · Editorial</a>
+  <a href="#opt2">02 · Brutalist</a>
+  <a href="#opt3">03 · Timeline</a>
+  <a href="#opt4">04 · Grid first</a>
+</nav>
+
+<!-- ─────────── OPTION 1 — EDITORIAL INDEX ─────────── -->
+<section id="opt1" class="layout L1">
+  <span class="L1-tag">Option 01 — Editorial index</span>
+  <div class="L1-head">
+    <div>
+      <div class="L1-crumb">Accueil / Travaux</div>
+      <h1 class="L1-h1">
+        Travaux<em>— index complet.</em>
+      </h1>
+    </div>
+    <p class="L1-lede">
+      <strong>11 projets</strong> livrés depuis 2018 pour des marques, ONG, institutions et nos propres initiatives.
+    </p>
+  </div>
+  <div class="L1-stats">
+    <div class="L1-stat"><div class="num">11<span class="accent">+</span></div><div class="label">Projets livrés</div></div>
+    <div class="L1-stat"><div class="num">02</div><div class="label">Clients récurrents</div></div>
+    <div class="L1-stat"><div class="num">05</div><div class="label">Secteurs couverts</div></div>
+    <div class="L1-stat"><div class="num">2015</div><div class="label">Premier projet</div></div>
+  </div>
+  <div class="L1-filters">
+    <span class="lbl">Secteurs</span>
+    <div class="pills">
+      <span class="L1-pill active">Tous</span>
+      <span class="L1-pill">ONG</span>
+      <span class="L1-pill">Culture</span>
+      <span class="L1-pill">Industrie</span>
+      <span class="L1-pill">Tech</span>
+      <span class="L1-pill">Éducation</span>
+    </div>
+    <input class="L1-search" placeholder="Rechercher" />
+  </div>
+  <div class="L1-grid">
+    <article class="tile t-lg"><div class="img" style="background-image:url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1400&q=85&auto=format');"></div><div class="info"><div class="num">01 · 2024</div><h3>WWF — Together for tomorrow</h3><div class="meta">ONG · Campagne · Identité</div></div></article>
+    <article class="tile t-md"><div class="img" style="background-image:url('https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=1400&q=85&auto=format');"></div><div class="info"><div class="num">02 · 2023</div><h3>Le jardin</h3><div class="meta">Initiative · Art direction</div></div></article>
+    <article class="tile t-md"><div class="img" style="background-image:url('https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=1400&q=85&auto=format');"></div><div class="info"><div class="num">03 · 2024</div><h3>Noon</h3><div class="meta">Industrie · Branding</div></div></article>
+    <article class="tile t-md"><div class="img" style="background-image:url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1400&q=85&auto=format');"></div><div class="info"><div class="num">04 · 2023</div><h3>Spark OH!</h3><div class="meta">Culture · Identité · Campagne</div></div></article>
+    <article class="tile t-lg"><div class="img" style="background-image:url('https://images.unsplash.com/photo-1565008576549-57569a49371d?w=1400&q=85&auto=format');"></div><div class="info"><div class="num">05 · 2023</div><h3>Tomco</h3><div class="meta">Industrie · Branding · Web</div></div></article>
+    <article class="tile t-sm"><div class="img" style="background-image:url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=1400&q=85&auto=format');"></div><div class="info"><div class="num">06 · 2022</div><h3>Beefeater</h3><div class="meta">Industrie · Campagne</div></div></article>
+    <article class="tile t-wd"><div class="img" style="background-image:url('https://images.unsplash.com/photo-1551434678-e076c223a692?w=2000&q=85&auto=format');"></div><div class="info"><div class="num">07 · 2022</div><h3>L'enfant sauvage</h3><div class="meta">Culture · Scénographie · Édition</div></div></article>
+  </div>
+</section>
+
+<!-- ─────────── OPTION 2 — BRUTALIST ARCHIVE ─────────── -->
+<section id="opt2" class="layout L2">
+  <span class="L1-tag" style="position:absolute; top:2rem; right:2.5rem;">Option 02 — Brutalist archive</span>
+  <div class="L2-head">
+    <h1 class="L2-h1">Travaux.</h1>
+    <div class="right">
+      <strong>11 projets</strong> · 2015 → 2026<br>
+      <span style="opacity:0.6">Mis à jour le 28 mai 2026</span>
+    </div>
+  </div>
+  <div class="L2-filters">
+    <div class="group"><span class="lbl">Filtrer</span><button class="active">Tous</button><button>ONG</button><button>Culture</button><button>Industrie</button><button>Tech</button></div>
+    <div class="spacer"></div>
+    <div class="group"><span class="lbl">Trier</span><button class="active">Récent</button><button>A–Z</button></div>
+  </div>
+  <div class="L2-list">
+    <a class="L2-row" href="#"><div class="num">01</div><div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&q=85&auto=format');"></div><div class="title"><h3>WWF <em>Together for tomorrow</em></h3><div class="sub">WWF Belgium</div></div><div class="meta">2024<br>ONG<br>Campagne</div><div class="arrow">→</div></a>
+    <a class="L2-row" href="#"><div class="num">02</div><div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&q=85&auto=format');"></div><div class="title"><h3>Le <em>jardin</em></h3><div class="sub">BRAVO! — projet interne</div></div><div class="meta">2023<br>Initiative<br>Art direction</div><div class="arrow">→</div></a>
+    <a class="L2-row" href="#"><div class="num">03</div><div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=600&q=85&auto=format');"></div><div class="title"><h3>Noon</h3><div class="sub">Noon — cuisine du midi</div></div><div class="meta">2024<br>Industrie<br>Branding</div><div class="arrow">→</div></a>
+    <a class="L2-row" href="#"><div class="num">04</div><div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=600&q=85&auto=format');"></div><div class="title"><h3>Spark <em>OH!</em></h3><div class="sub">Spark OH! — Centre des sciences</div></div><div class="meta">2023<br>Culture<br>Identité</div><div class="arrow">→</div></a>
+    <a class="L2-row" href="#"><div class="num">05</div><div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1565008576549-57569a49371d?w=600&q=85&auto=format');"></div><div class="title"><h3>Tomco</h3><div class="sub">Tomco Industries</div></div><div class="meta">2023<br>Industrie<br>Branding</div><div class="arrow">→</div></a>
+    <a class="L2-row" href="#"><div class="num">06</div><div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600&q=85&auto=format');"></div><div class="title"><h3>Beefeater</h3><div class="sub">Beefeater Gin</div></div><div class="meta">2022<br>Industrie<br>Campagne</div><div class="arrow">→</div></a>
+    <a class="L2-row" href="#"><div class="num">07</div><div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1551434678-e076c223a692?w=600&q=85&auto=format');"></div><div class="title"><h3>L'enfant <em>sauvage</em></h3><div class="sub">BRAVO! × UMons</div></div><div class="meta">2022<br>Culture<br>Scénographie</div><div class="arrow">→</div></a>
+  </div>
+</section>
+
+<!-- ─────────── OPTION 3 — GROUPED BY YEAR ─────────── -->
+<section id="opt3" class="layout L3">
+  <span class="L1-tag">Option 03 — Timeline éditorial</span>
+  <div class="L3-head">
+    <h1 class="L3-h1">Travaux<em>— index complet.</em></h1>
+    <p class="L3-lede">
+      <strong style="font-style:normal;font-family:var(--sans);font-weight:700;color:var(--bravo)">11 projets</strong>
+      livrés depuis 2018 pour des marques, ONG, institutions et nos propres initiatives.
+      Classés par année.
+    </p>
+  </div>
+  <div class="L3-year">
+    <div class="L3-year-head">
+      <span class="y">2024</span>
+      <span class="count">02 projets</span>
+    </div>
+    <div class="L3-grid">
+      <article class="L3-tile"><div class="img" style="background-image:url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1400&q=85&auto=format');"></div><h3>WWF — Together</h3><div class="sub">WWF Belgium · ONG</div></article>
+      <article class="L3-tile"><div class="img" style="background-image:url('https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=1400&q=85&auto=format');"></div><h3>Noon</h3><div class="sub">Industrie · Branding</div></article>
+    </div>
+  </div>
+  <div class="L3-year">
+    <div class="L3-year-head">
+      <span class="y">2023</span>
+      <span class="count">03 projets</span>
+    </div>
+    <div class="L3-grid">
+      <article class="L3-tile"><div class="img" style="background-image:url('https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=1400&q=85&auto=format');"></div><h3>Le jardin</h3><div class="sub">Initiative · Art direction</div></article>
+      <article class="L3-tile"><div class="img" style="background-image:url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1400&q=85&auto=format');"></div><h3>Spark OH!</h3><div class="sub">Culture · Identité</div></article>
+      <article class="L3-tile"><div class="img" style="background-image:url('https://images.unsplash.com/photo-1565008576549-57569a49371d?w=1400&q=85&auto=format');"></div><h3>Tomco</h3><div class="sub">Industrie · Branding</div></article>
+    </div>
+  </div>
+  <div class="L3-year">
+    <div class="L3-year-head">
+      <span class="y">2022</span>
+      <span class="count">02 projets</span>
+    </div>
+    <div class="L3-grid">
+      <article class="L3-tile"><div class="img" style="background-image:url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=1400&q=85&auto=format');"></div><h3>Beefeater</h3><div class="sub">Industrie · Campagne</div></article>
+      <article class="L3-tile"><div class="img" style="background-image:url('https://images.unsplash.com/photo-1551434678-e076c223a692?w=1400&q=85&auto=format');"></div><h3>L'enfant sauvage</h3><div class="sub">Culture · Scénographie</div></article>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── OPTION 4 — GRID FIRST (ink, almost no hero) ─────────── -->
+<section id="opt4" class="layout L4">
+  <span class="L1-tag" style="position:absolute; top:2rem; right:2.5rem;">Option 04 — Grid first (ink)</span>
+  <div class="L4-bar">
+    <div class="L4-title">Travaux<em> · index complet.</em></div>
+    <div class="L4-stats">
+      <span><strong>11+</strong> Projets</span>
+      <span><strong>05</strong> Secteurs</span>
+      <span><strong>2015</strong> → 2026</span>
+    </div>
+    <div class="L4-filter-group">
+      <span class="L4-pill active">Tous</span>
+      <span class="L4-pill">ONG</span>
+      <span class="L4-pill">Culture</span>
+      <span class="L4-pill">Industrie</span>
+    </div>
+    <div class="L4-filter-group">
+      <span class="L4-pill active">Récent</span>
+      <span class="L4-pill">A–Z</span>
+    </div>
+    <input class="L4-search" placeholder="Rechercher" />
+  </div>
+  <div class="L4-grid">
+    <a class="L4-tile" href="#" style="background-image:url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1400&q=85&auto=format');"><div class="info"><h3>WWF — Together</h3><div class="meta">2024 · ONG</div></div></a>
+    <a class="L4-tile" href="#" style="background-image:url('https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=1400&q=85&auto=format');"><div class="info"><h3>Le jardin</h3><div class="meta">2023 · Initiative</div></div></a>
+    <a class="L4-tile" href="#" style="background-image:url('https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=1400&q=85&auto=format');"><div class="info"><h3>Noon</h3><div class="meta">2024 · Industrie</div></div></a>
+    <a class="L4-tile" href="#" style="background-image:url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1400&q=85&auto=format');"><div class="info"><h3>Spark OH!</h3><div class="meta">2023 · Culture</div></div></a>
+    <a class="L4-tile" href="#" style="background-image:url('https://images.unsplash.com/photo-1565008576549-57569a49371d?w=1400&q=85&auto=format');"><div class="info"><h3>Tomco</h3><div class="meta">2023 · Industrie</div></div></a>
+    <a class="L4-tile" href="#" style="background-image:url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=1400&q=85&auto=format');"><div class="info"><h3>Beefeater</h3><div class="meta">2022 · Industrie</div></div></a>
+    <a class="L4-tile" href="#" style="background-image:url('https://images.unsplash.com/photo-1551434678-e076c223a692?w=2000&q=85&auto=format');"><div class="info"><h3>L'enfant sauvage</h3><div class="meta">2022 · Culture</div></div></a>
+    <a class="L4-tile" href="#" style="background-image:url('https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=1400&q=85&auto=format');"><div class="info"><h3>Machao</h3><div class="meta">2024 · Culture</div></div></a>
+    <a class="L4-tile" href="#" style="background-image:url('https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1400&q=85&auto=format');"><div class="info"><h3>Horeca BXL</h3><div class="meta">2024 · Public</div></div></a>
+  </div>
+</section>
+
+<script>
+  const pickerLinks = document.querySelectorAll('.picker a');
+  const layouts = document.querySelectorAll('section.layout');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        pickerLinks.forEach((l) => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+      }
+    });
+  }, { threshold: 0.3 });
+  layouts.forEach((s) => observer.observe(s));
+</script>
+
+</body>
+</html>
