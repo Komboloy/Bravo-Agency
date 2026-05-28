@@ -833,6 +833,34 @@ html[data-theme='light'] {
   height: 2px;
   background: var(--color-bravo);
 }
+/* Inline media block (image mid-article) — break out of the 48rem reading column
+   slightly so the image feels more "editorial" than crammed text-width. */
+.prose-article .payload-richtext > div[class*="MediaBlock"],
+.prose-article figure,
+.prose-article img {
+  margin: 3rem 0;
+}
+.prose-article img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+.prose-article figcaption,
+.prose-article .payload-richtext figcaption {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: rgba(5, 5, 7, 0.65);
+  margin-top: 0.85rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--color-bravo);
+}
+/* Lexical wraps MediaBlock in its own container — make sure spacing flows */
+.prose-article .payload-richtext > * + * {
+  /* No extra gap — each block already manages its own margin */
+}
 .prose-article a {
   color: var(--color-bravo);
   text-decoration: underline;

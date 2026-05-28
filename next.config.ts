@@ -22,6 +22,11 @@ const nextConfig: NextConfig = {
       {
         pathname: '/api/media/file/**',
       },
+      {
+        // Media served as static assets after the Media.afterRead hook rewrite
+        // (cf. src/collections/Media.ts — /api/media/file/X → /media/X).
+        pathname: '/media/**',
+      },
     ],
     qualities: [100],
     remotePatterns: [

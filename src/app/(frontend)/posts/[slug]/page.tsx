@@ -99,87 +99,77 @@ export default async function PostPage({ params: paramsPromise }: Args) {
         }}
       />
 
-      {/* HERO — split image + title */}
-      <section className="px-6 sm:px-10 pt-32 sm:pt-40 pb-12 sm:pb-16 section-rule-bravo">
-        <div className="mx-auto" style={{ maxWidth: '1640px' }}>
-          <div
-            className="font-mono text-[0.72rem] tracking-[0.12em] uppercase mb-6 flex gap-2 items-center"
-            style={{ color: 'var(--color-bravo-soft)' }}
-          >
-            <Link href="/" className="opacity-65 hover:opacity-100">
-              Accueil
-            </Link>
-            <span className="opacity-40">/</span>
-            <Link href="/posts" className="opacity-65 hover:opacity-100 border-b border-current pb-px">
-              Bonnes nouvelles
-            </Link>
-            <span className="opacity-40">/</span>
-            <span>{post.title}</span>
+      {/* HERO — split 100vh BRAVO + article hero image. Same pattern as the
+          /posts index hero (v3). */}
+      <section className="relative grid grid-cols-1 md:grid-cols-[0.85fr_1.15fr] min-h-screen section-rule-bravo">
+        {/* LEFT — BRAVO color block with atmosphere */}
+        <div className="surface-bravo atmosphere-bravo-drift relative flex flex-col justify-between px-6 sm:px-10 pt-32 sm:pt-44 pb-10 sm:pb-14 overflow-hidden">
+          <div className="relative z-10">
+            <div
+              className="font-mono text-[0.72rem] tracking-[0.12em] uppercase flex gap-2 items-center flex-wrap"
+              style={{ color: 'rgba(244,237,225,0.65)' }}
+            >
+              <Link href="/" style={{ color: 'var(--color-paper)', opacity: 0.75 }} className="hover:!opacity-100">
+                Accueil
+              </Link>
+              <span className="opacity-40">/</span>
+              <Link href="/posts" style={{ color: 'var(--color-paper)', opacity: 0.75 }} className="hover:!opacity-100 border-b border-current pb-px">
+                Bonnes nouvelles
+              </Link>
+            </div>
           </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-6 sm:gap-12 items-end">
-            <div>
-              <div
-                className="font-mono text-[0.72rem] tracking-[0.16em] uppercase mb-6 flex flex-wrap gap-3"
-                style={{ color: 'var(--color-bravo-soft)' }}
-              >
-                <span>{formatDate(post.publishedAt)}</span>
-                {cats && (
-                  <>
-                    <span className="opacity-50">·</span>
-                    <span>{cats}</span>
-                  </>
-                )}
-              </div>
-              <div
-                className="prose-home-display wrap"
-                style={
-                  {
-                    '--display-size': 'clamp(2.5rem,6vw,6rem)',
-                    '--display-color': 'var(--color-paper)',
-                    '--display-accent': 'var(--color-bravo-bright)',
-                  } as React.CSSProperties
-                }
-              >
-                <h1>{post.title}</h1>
-              </div>
-              {post.meta?.description && (
-                <p className="mt-6 font-editorial italic text-[1.2rem] leading-[1.55] opacity-90 max-w-[48ch] text-[var(--color-paper)]">
-                  {post.meta.description}
-                </p>
+          <div className="relative z-10">
+            <div
+              className="font-mono text-[0.72rem] tracking-[0.16em] uppercase mb-6 flex flex-wrap gap-3 font-bold"
+              style={{ color: 'var(--color-bravo-soft)' }}
+            >
+              <span>{formatDate(post.publishedAt)}</span>
+              {cats && (
+                <>
+                  <span className="opacity-50">·</span>
+                  <span>{cats}</span>
+                </>
               )}
             </div>
-            {img && (
-              <div className="relative aspect-[5/4] overflow-hidden bg-[var(--color-ink-2)]">
-                <div
-                  className="absolute inset-0 bg-center bg-cover"
-                  style={{ backgroundImage: `url(${img})` }}
-                />
-              </div>
+            <div
+              className="prose-home-display wrap"
+              style={
+                {
+                  '--display-size': 'clamp(2.4rem,4.5vw,4.8rem)',
+                  '--display-color': 'var(--color-paper)',
+                  '--display-accent': 'var(--color-paper)',
+                } as React.CSSProperties
+              }
+            >
+              <h1>{post.title}</h1>
+            </div>
+            {post.meta?.description && (
+              <p
+                className="mt-7 sm:mt-9 font-editorial italic text-[1.1rem] sm:text-[1.2rem] leading-[1.55] max-w-[42ch]"
+                style={{ color: 'var(--color-paper)', opacity: 0.92 }}
+              >
+                {post.meta.description}
+              </p>
             )}
           </div>
         </div>
+
+        {/* RIGHT — article hero image */}
+        <div className="relative overflow-hidden bg-[var(--color-ink-2)] min-h-[50vh] md:min-h-0">
+          {img && (
+            <div
+              className="absolute inset-0 bg-center bg-cover"
+              style={{ backgroundImage: `url(${img})` }}
+            />
+          )}
+        </div>
       </section>
 
-      {/* ARTICLE CONTENT — paper bg for proper reading mood, after dark cinematic hero */}
-      <section className="surface-paper px-6 sm:px-10 py-20 sm:py-32">
+      {/* ARTICLE CONTENT — paper for reading mode after the BRAVO hero.
+          Lede now lives in the hero so the body starts straight on the first
+          paragraph (drop cap on first p, display h2 with BRAVO bar, etc.). */}
+      <section className="surface-paper px-6 sm:px-10 pt-20 sm:pt-28 pb-20 sm:pb-32">
         <div className="mx-auto max-w-[48rem]">
-          {/* Lede — meta description in editorial italic */}
-          {post.meta?.description && (
-            <p
-              className="font-editorial italic text-[clamp(1.4rem,2.2vw,1.95rem)] leading-[1.45] mb-12 sm:mb-16 pb-10 sm:pb-14 border-b"
-              style={{
-                color: 'var(--color-ink)',
-                borderColor: 'rgba(5,5,7,0.15)',
-              }}
-            >
-              {post.meta.description}
-            </p>
-          )}
-
-          {/* Body — drop cap on the first paragraph + display h2/h3, BRAVO accents.
-              `enableProse={false}` to bypass Tailwind Typography defaults and let
-              `.prose-article` rules drive the typography fully. */}
           <div className="prose-article">
             <RichText data={post.content} enableGutter={false} enableProse={false} />
           </div>

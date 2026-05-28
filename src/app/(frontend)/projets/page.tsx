@@ -65,37 +65,107 @@ export default async function ProjectsPage() {
     return min === null || p.year < min ? p.year : min
   }, null)
 
+  // Featured for the hero — prefer the most recent flagged `featured`, else most recent overall
+  const featuredProject = projects.find((p) => p.featured) || projects[0]
+  const featuredImg = featuredProject
+    ? imageUrl(featuredProject.heroImage) || imageUrl(featuredProject.thumbnail)
+    : null
+  const featuredSectorTitle = featuredProject ? (sectorOf(featuredProject)?.title || '') : ''
+
   return (
     <main className="surface-ink min-h-screen pb-20">
-      {/* PAGE HERO — 100vh full-bleed with animated BRAVO atmosphere blobs */}
-      <section className="relative min-h-screen flex items-end atmosphere-bravo-drift px-6 sm:px-10 pt-32 sm:pt-44 pb-[15vh] sm:pb-[18vh] section-rule-bravo">
-        <div className="relative z-10 mx-auto w-full grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-12 items-end" style={{ maxWidth: '1640px' }}>
-          <div>
+      {/* PAGE HERO — split 100vh BRAVO + featured project image. Same pattern
+          as /posts and /posts/[slug] hero for site-wide consistency. */}
+      <section className="relative grid grid-cols-1 md:grid-cols-[0.85fr_1.15fr] min-h-screen section-rule-bravo">
+        {/* LEFT — BRAVO color block with atmosphere */}
+        <div className="surface-bravo atmosphere-bravo-drift relative flex flex-col justify-between px-6 sm:px-10 pt-32 sm:pt-44 pb-10 sm:pb-14 overflow-hidden">
+          <div className="relative z-10">
             <div
-              className="font-mono text-[0.72rem] tracking-[0.12em] uppercase mb-6 flex gap-2 items-center"
-              style={{ color: 'var(--color-bravo-soft)' }}
+              className="font-mono text-[0.72rem] tracking-[0.12em] uppercase flex gap-2 items-center"
+              style={{ color: 'rgba(244,237,225,0.65)' }}
             >
-              <Link href="/" className="opacity-65 hover:opacity-100">Accueil</Link>
+              <Link href="/" style={{ color: 'var(--color-paper)', opacity: 0.75 }} className="hover:!opacity-100">
+                Accueil
+              </Link>
               <span className="opacity-40">/</span>
-              <span>Travaux</span>
+              <span style={{ color: 'var(--color-paper)' }}>Travaux</span>
             </div>
-            <h1 className="font-display font-extrabold uppercase leading-[0.84] tracking-[-0.015em] text-[clamp(5rem,16vw,18rem)] text-[var(--color-paper)]">
-              Travaux<br />
-              <span
-                className="block font-editorial italic font-normal normal-case tracking-[-0.02em] text-[clamp(2rem,7vw,7rem)] leading-[1] mt-2"
+          </div>
+          <div className="relative z-10">
+            <div
+              className="prose-home-display"
+              style={
+                {
+                  '--display-size': 'clamp(4rem,9vw,10rem)',
+                  '--display-color': 'var(--color-paper)',
+                  '--display-accent': 'var(--color-paper)',
+                } as React.CSSProperties
+              }
+            >
+              <h1>Travaux</h1>
+              <h1 style={{ fontFamily: 'var(--font-editorial)', fontStyle: 'italic', fontWeight: 400, textTransform: 'none', letterSpacing: '-0.02em', fontSize: 'clamp(2rem,5vw,5rem)', marginTop: '0.4rem' }}>
+                — index complet.
+              </h1>
+            </div>
+            <p
+              className="mt-8 sm:mt-10 font-editorial italic text-[1.15rem] leading-[1.5] max-w-[38ch]"
+              style={{ color: 'var(--color-paper)', opacity: 0.92 }}
+            >
+              <strong className="font-sans not-italic font-bold" style={{ color: 'var(--color-paper)', fontStyle: 'normal' }}>
+                {total} {total <= 1 ? 'projet' : 'projets'}
+              </strong>{' '}
+              livrés depuis 2018 pour des marques, ONG, institutions et nos propres initiatives.
+            </p>
+          </div>
+        </div>
+
+        {/* RIGHT — featured project hero image with meta overlay */}
+        {featuredProject && (
+          <Link
+            href={`/projets/${featuredProject.slug}`}
+            className="group relative overflow-hidden bg-[var(--color-ink-2)] min-h-[50vh] md:min-h-0"
+          >
+            {featuredImg && (
+              <div
+                className="absolute inset-0 bg-center bg-cover transition-transform duration-[1.2s] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.04]"
+                style={{ backgroundImage: `url(${featuredImg})` }}
+              />
+            )}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  'linear-gradient(180deg, transparent 40%, rgba(5,5,7,0.78) 100%)',
+              }}
+            />
+            <div className="absolute left-0 right-0 bottom-0 z-10 p-6 sm:p-10 text-[var(--color-paper)]">
+              <div
+                className="font-mono text-[0.72rem] tracking-[0.16em] uppercase font-bold mb-3 flex flex-wrap gap-2"
                 style={{ color: 'var(--color-bravo-soft)' }}
               >
-                — index complet.
+                <span>{featuredProject.featured ? 'À la une' : 'Dernier projet'}</span>
+                {featuredProject.year && (
+                  <>
+                    <span className="opacity-50">·</span>
+                    <span>{featuredProject.year}</span>
+                  </>
+                )}
+                {featuredSectorTitle && (
+                  <>
+                    <span className="opacity-50">·</span>
+                    <span>{featuredSectorTitle}</span>
+                  </>
+                )}
+              </div>
+              <h2 className="font-display font-extrabold uppercase leading-[0.92] tracking-[-0.005em] text-[clamp(2rem,3.5vw,3.4rem)] max-w-[22ch]">
+                {featuredProject.title}
+              </h2>
+              <span className="inline-flex items-center gap-2 mt-5 font-mono text-[0.72rem] tracking-[0.12em] uppercase font-semibold pb-1 border-b border-current group-hover:text-[var(--color-bravo-soft)] transition-colors">
+                Voir le projet <span>→</span>
               </span>
-            </h1>
-          </div>
-          <p className="font-editorial italic text-[1.2rem] leading-[1.5] max-w-[38ch] opacity-92 text-[var(--color-paper)]">
-            <strong className="font-sans not-italic font-bold" style={{ color: 'var(--color-bravo-soft)' }}>
-              {total} {total <= 1 ? 'projet' : 'projets'}
-            </strong>{' '}
-            livrés depuis 2018 pour des marques, ONG, institutions et nos propres initiatives.
-          </p>
-        </div>
+            </div>
+          </Link>
+        )}
       </section>
 
       {/* COUNTERS strip — V8 reference */}

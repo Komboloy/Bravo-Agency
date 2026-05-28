@@ -63,56 +63,19 @@ export default async function PostsPage() {
 
   return (
     <main className="surface-ink min-h-screen">
-      {/* PAGE HERO — 100vh full-bleed with animated BRAVO atmosphere blobs */}
-      <section className="relative min-h-screen flex items-end atmosphere-bravo-drift px-6 sm:px-10 pt-32 sm:pt-44 pb-[15vh] sm:pb-[18vh] section-rule-bravo">
-        <div
-          className="relative z-10 mx-auto w-full grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-12 items-end"
-          style={{ maxWidth: '1640px' }}
-        >
-          <div>
-            <div
-              className="font-mono text-[0.72rem] tracking-[0.12em] uppercase mb-6 flex gap-2 items-center"
-              style={{ color: 'var(--color-bravo-soft)' }}
-            >
-              <Link href="/" className="opacity-65 hover:opacity-100">
-                Accueil
-              </Link>
-              <span className="opacity-40">/</span>
-              <span>News</span>
-            </div>
-            <div
-              className="prose-home-display wrap"
-              style={
-                {
-                  '--display-size': 'clamp(4.5rem,15vw,16rem)',
-                  '--display-color': 'var(--color-paper)',
-                  '--display-accent': 'var(--color-bravo-bright)',
-                } as React.CSSProperties
-              }
-            >
-              <h1>Bonnes</h1>
-              <h1><strong>nouvelles</strong>.</h1>
-            </div>
-          </div>
-          <p className="font-editorial italic text-[1.2rem] leading-[1.5] max-w-[38ch] opacity-92 text-[var(--color-paper)]">
-            Quelques{' '}
-            <strong className="font-sans not-italic font-bold" style={{ color: 'var(--color-bravo-soft)' }}>
-              gouttes d'eau
-            </strong>{' '}
-            dans l'océan pour étancher la soif de changement, garder la tête hors de l'eau, éteindre les incendies.
-          </p>
-        </div>
-      </section>
+      {/* PAGE HERO — split 100vh : BRAVO color + atmosphere on the left,
+          latest post image + meta on the right. Magazine-cover energy without
+          the somber dark hero we had before. */}
+      {featured && <PostsHero featured={featured} />}
 
-      {/* CONTENT */}
+      {/* CONTENT — `featured` is already showcased in the hero, so we skip the
+          old FeaturedPost block and go straight to the rest of the grid. */}
       {posts.length === 0 ? (
         <EmptyState />
       ) : (
-        <section className="mx-auto px-6 sm:px-10 py-12 sm:py-20" style={{ maxWidth: '1640px' }}>
-          {featured && <FeaturedPost post={featured} />}
-
+        <section className="mx-auto px-6 sm:px-10 py-16 sm:py-24" style={{ maxWidth: '1640px' }}>
           {rest.length > 0 && (
-            <div className="mt-12 sm:mt-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
               {rest.map((p) => (
                 <PostCard key={p.id} post={p} />
               ))}
@@ -134,7 +97,110 @@ export default async function PostsPage() {
 }
 
 /* ===========================================================
-   Featured (most recent) — wide editorial card
+   Page hero — split BRAVO color + featured post image (validated v3)
+   =========================================================== */
+
+function PostsHero({ featured }: { featured: Post }) {
+  const img = imageUrl(featured.heroImage) || imageUrl(featured.meta?.image)
+  const cats = categoriesLabel(featured.categories)
+  return (
+    <section className="relative grid grid-cols-1 md:grid-cols-[0.85fr_1.15fr] min-h-screen section-rule-bravo">
+      {/* LEFT — BRAVO color block with atmosphere */}
+      <div className="surface-bravo atmosphere-bravo-drift relative flex flex-col justify-between px-6 sm:px-10 pt-32 sm:pt-44 pb-10 sm:pb-14 overflow-hidden">
+        <div className="relative z-10">
+          <div
+            className="font-mono text-[0.72rem] tracking-[0.12em] uppercase mb-6 flex gap-2 items-center"
+            style={{ color: 'rgba(244, 237, 225, 0.6)' }}
+          >
+            <Link href="/" style={{ color: 'var(--color-paper)', opacity: 0.75 }} className="hover:!opacity-100">
+              Accueil
+            </Link>
+            <span className="opacity-40">/</span>
+            <span style={{ color: 'var(--color-paper)' }}>Bonnes nouvelles</span>
+          </div>
+        </div>
+        <div className="relative z-10">
+          <div
+            className="prose-home-display"
+            style={
+              {
+                '--display-size': 'clamp(4rem,9vw,10rem)',
+                '--display-color': 'var(--color-paper)',
+                '--display-accent': 'var(--color-paper)',
+              } as React.CSSProperties
+            }
+          >
+            <h1>Bonnes</h1>
+            <h1 style={{ fontFamily: 'var(--font-editorial)', fontStyle: 'italic', fontWeight: 400, textTransform: 'none', letterSpacing: '-0.02em', fontSize: 'clamp(2rem,5vw,5rem)', marginTop: '0.4rem' }}>
+              nouvelles.
+            </h1>
+          </div>
+          <p
+            className="mt-8 sm:mt-10 font-editorial italic text-[1.15rem] leading-[1.5] max-w-[38ch]"
+            style={{ color: 'var(--color-paper)', opacity: 0.92 }}
+          >
+            Quelques{' '}
+            <strong
+              className="font-sans not-italic font-bold"
+              style={{ color: 'var(--color-paper)', fontStyle: 'normal' }}
+            >
+              gouttes d&apos;eau
+            </strong>{' '}
+            dans l&apos;océan pour étancher la soif de changement, garder la
+            tête hors de l&apos;eau, éteindre les incendies.
+          </p>
+        </div>
+      </div>
+
+      {/* RIGHT — featured article image + meta overlay */}
+      <Link
+        href={`/posts/${featured.slug}`}
+        className="group relative overflow-hidden bg-[var(--color-ink-2)] min-h-[50vh] md:min-h-0"
+      >
+        {img && (
+          <div
+            className="absolute inset-0 bg-center bg-cover transition-transform duration-[1.2s] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.04]"
+            style={{ backgroundImage: `url(${img})` }}
+          />
+        )}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(180deg, transparent 40%, rgba(5,5,7,0.78) 100%)',
+          }}
+        />
+        <div className="absolute left-0 right-0 bottom-0 z-10 p-6 sm:p-10 text-[var(--color-paper)]">
+          <div
+            className="font-mono text-[0.72rem] tracking-[0.16em] uppercase font-bold mb-3 flex flex-wrap gap-2"
+            style={{ color: 'var(--color-bravo-soft)' }}
+          >
+            <span>À la une</span>
+            <span className="opacity-50">·</span>
+            <span>{formatDate(featured.publishedAt)}</span>
+            {cats && (
+              <>
+                <span className="opacity-50">·</span>
+                <span>{cats}</span>
+              </>
+            )}
+          </div>
+          <h2 className="font-display font-extrabold uppercase leading-[0.92] tracking-[-0.005em] text-[clamp(2rem,3.5vw,3.4rem)] max-w-[22ch]">
+            {featured.title}
+          </h2>
+          <span className="inline-flex items-center gap-2 mt-5 font-mono text-[0.72rem] tracking-[0.12em] uppercase font-semibold pb-1 border-b border-current group-hover:text-[var(--color-bravo-soft)] transition-colors">
+            Lire l&apos;article <span>→</span>
+          </span>
+        </div>
+      </Link>
+    </section>
+  )
+}
+
+/* ===========================================================
+   Featured (most recent) — wide editorial card (unused since v3 hero
+   showcases the latest post itself; kept as a reference for fallback
+   layouts in case we want to bring it back somewhere else)
    =========================================================== */
 
 function FeaturedPost({ post }: { post: Post }) {

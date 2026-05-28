@@ -205,13 +205,21 @@ async function fetchBuffer(url: string): Promise<Buffer> {
   return Buffer.from(arr)
 }
 
-async function uploadImage(payload: Payload, url: string, alt: string, name: string): Promise<number> {
+async function uploadImage(
+  payload: Payload,
+  url: string,
+  alt: string,
+  name: string,
+  caption?: string,
+): Promise<number> {
   const data = await fetchBuffer(url)
   // Suffix with a short random hex to avoid filename collisions on re-runs
   const suffix = Math.random().toString(16).slice(2, 8)
+  const mediaData: Record<string, unknown> = { alt }
+  if (caption) mediaData.caption = richText([caption])
   const created = await payload.create({
     collection: 'media',
-    data: { alt },
+    data: mediaData as never,
     file: {
       data,
       mimetype: 'image/jpeg',
@@ -817,6 +825,12 @@ const CATEGORIES_DATA: Array<{ slug: Category; title: string }> = [
   { slug: 'methode', title: 'Méthode' },
 ]
 
+type PostBodyItem =
+  | string // markdown line ("##", "###", "**strong**", "*em*")
+  | { img: string; alt: string; caption?: string } // mediaBlock injected mid-article
+  | { quote: string } // editorial pull-quote
+  | { hr: true } // horizontal section break
+
 type PostSeed = {
   slug: string
   title: string
@@ -824,7 +838,7 @@ type PostSeed = {
   categories: Category[]
   publishedAt: string // ISO date
   excerpt: string // → meta.description
-  paragraphs: string[] // article body, supports light markdown
+  body: PostBodyItem[] // article body — mix of markdown strings and rich nodes
 }
 
 const POSTS_DATA: PostSeed[] = [
@@ -836,12 +850,19 @@ const POSTS_DATA: PostSeed[] = [
     publishedAt: '2026-04-12',
     excerpt:
       "On a comparé trois ans de campagnes WWF, Oxfam et MSF : la culpabilisation comme levier d'engagement s'épuise. Voici ce que les chiffres disent et ce qu'on en fait dans nos briefs.",
-    paragraphs: [
+    body: [
       "## Trois ans, *un même réflexe*.",
       "Entre 2022 et 2025, on a regardé **plus de 120 campagnes** d'ONG belges et internationales. Le réflexe : montrer la victime, dramatiser la situation, demander un don. La logique semble évidente — *plus c'est douloureux, plus ça mobilise*.",
       "Sauf que les taux de réponse s'effondrent. **−18% de dons** chez les <35 ans en trois ans sur le marché belge (source : Donorinfo).",
+      {
+        img: U('1532012197267-da84d127e765', 85, 1800),
+        alt: 'Image abstraite — gestes solidaires',
+        caption: "120 campagnes analysées sur trois ans, toutes ONG confondues.",
+      },
+      { quote: "Ce n'est pas l'engagement qui diminue. C'est la capacité du cerveau à tenir l'attention émotionnelle quinze fois par jour." },
       "## Le **donneur** *aussi* est fatigué.",
       "Ce n'est pas l'engagement qui diminue, c'est la **capacité d'attention émotionnelle**. À force de voir des images de famine, de noyade, d'enfants en pleurs, le cerveau apprend à *détourner le regard*. C'est documenté, c'est mesurable, c'est notre boulot d'en tenir compte.",
+      { hr: true },
       "Sur le projet Oxfam, on a refusé le levier de la culpabilité. La plateforme **« La solidarité comme infrastructure »** parle de chaînes logistiques, pas de larmes. Les résultats ont confirmé l'intuition.",
     ],
   },
@@ -853,13 +874,25 @@ const POSTS_DATA: PostSeed[] = [
     publishedAt: '2026-03-28',
     excerpt:
       "La nouvelle directive européenne Green Claims entre en vigueur. Ce qui change concrètement pour les marques — et les agences qui les conseillent.",
-    paragraphs: [
+    body: [
       "## La directive *Green Claims*.",
       "Depuis mars 2026, l'UE encadre strictement les **allégations environnementales** sur les emballages, sites web et campagnes. Plus question d'écrire « éco-responsable » sans pouvoir le **prouver chiffres en main**.",
+      {
+        img: U('1518531933037-91b2f5f229cc', 85, 1800),
+        alt: 'Visuel — feuilles et photographie',
+        caption: 'Texte de loi UE 2026/543 — entrée en vigueur 27 mars 2026.',
+      },
       "## Ce que ça change *pour nos clients*.",
       "Trois niveaux d'impact : (1) les claims vagues (« naturel », « vert », « bon pour la planète ») doivent être **justifiés ou retirés**, (2) les comparaisons (« moins polluant que X ») doivent référencer une méthodologie publique, (3) les logos d'auto-certification non régulés sont *interdits*.",
+      { quote: "Une marque qui dit moins mais le prouve gagne plus en confiance qu'une marque qui pavoise." },
       "## Notre position.",
       "On accompagne nos clients à **substituer le claim vague par le fait vérifiable**. Pas par défensive — par hygiène. Une marque qui dit moins mais le prouve gagne plus en confiance qu'une marque qui pavoise.",
+      { hr: true },
+      {
+        img: U('1466692476868-aef1dfb1e735', 85, 1800),
+        alt: 'Détail nature — feuilles à contre-jour',
+      },
+      "Trois clients sont déjà passés à la version *prouvée* de leur claim depuis février. Les briefs qui suivent sont *plus simples à écrire*, paradoxalement.",
     ],
   },
   {
@@ -870,13 +903,26 @@ const POSTS_DATA: PostSeed[] = [
     publishedAt: '2026-02-18',
     excerpt:
       "Notre podcast d'enquête sur les campagnes militantes boucle sa deuxième saison. Retour sur la méthode, les refus d'interview, les surprises et le format qu'on garde.",
-    paragraphs: [
+    body: [
       "## Douze épisodes, *plus de quatre-vingts heures d'interviews*.",
       "On a interrogé **42 personnes** entre janvier 2025 et janvier 2026. Anciens directeurs de création, militants encartés, sociologues, et trois CEO d'ONG qui ont accepté de parler off-record (et on a respecté l'off-record).",
+      {
+        img: U('1493225457124-a3eb161ffa5f', 85, 1800),
+        alt: 'Studio audio — micro et table de mixage',
+        caption: 'Studio Machao — Bruxelles, montage saison 2.',
+      },
       "## Les *refus* ont parlé autant que les acceptations.",
-      "Sept refus formels, dont **deux marques de luxe** qui ont menacé d'une action en référé si leur nom apparaissait à côté du mot « militant ». On a respecté. On en a tiré une conclusion : la frontière entre *com d'engagement* et *com de marque* reste très défendue.",
+      "Sept refus formels, dont **deux marques de luxe** qui ont menacé d'une action en référé si leur nom apparaissait à côté du mot « militant ». On a respecté.",
+      { quote: "La frontière entre com d'engagement et com de marque reste très défendue. Notre boulot, c'est aussi de la documenter." },
+      "On en a tiré une conclusion : la frontière entre *com d'engagement* et *com de marque* reste très défendue.",
+      { hr: true },
       "## Le format qu'on garde.",
-      "**1h par épisode, deux voix montées serré, archives audio**. Pas de musique d'ambiance, pas d'effets. Le silence porte autant que la parole. On reconduit le format en saison 3.",
+      "**1h par épisode, deux voix montées serré, archives audio**. Pas de musique d'ambiance, pas d'effets. Le silence porte autant que la parole.",
+      {
+        img: U('1485579149621-3123dd979885', 85, 1800),
+        alt: 'Plan rapproché — main qui ajuste un micro',
+      },
+      "On reconduit le format en saison 3. Premier épisode prévu pour **septembre 2026**.",
     ],
   },
   {
@@ -887,16 +933,28 @@ const POSTS_DATA: PostSeed[] = [
     publishedAt: '2026-01-22',
     excerpt:
       "Un brief de campagne pour une banque qu'on ne nommera pas. Refus argumenté. Voici la lettre qu'on leur a envoyée, anonymisée.",
-    paragraphs: [
+    body: [
       "## Le brief.",
       "Une banque belge — top 5 du marché — nous demande une campagne de notoriété sur ses **fonds dits responsables**. Budget intéressant. Notoriété pour le studio. Belle équipe en face.",
+      {
+        img: U('1554224155-6726b3ff858f', 85, 1800),
+        alt: 'Bâtiments de bureaux corporate',
+        caption: "Quartier d'affaires — où se prennent les briefs qu'on accepte ou refuse.",
+      },
       "## Le problème.",
       "On lit les fiches techniques des fonds en question. **Plusieurs lignes incluent des énergies fossiles** via des holdings intermédiaires (le standard de l'industrie, mais qui ne se voit pas dans la com).",
       "On demande au client de modifier le claim ou d'élargir la base. Pas de greenwashing, juste de la précision. **Refus** côté client.",
+      { quote: "Pas un grand geste — juste un alignement avec ce qu'on défend dans Machao depuis deux ans." },
       "## Le refus.",
-      "On a écrit une lettre de refus argumentée. Pas un grand geste — juste *un alignement avec ce qu'on défend dans Machao depuis deux ans*. La banque a trouvé une autre agence. Le brief existe toujours.",
+      "On a écrit une lettre de refus argumentée. La banque a trouvé une autre agence. *Le brief existe toujours*.",
+      { hr: true },
       "## Pourquoi on en parle ici.",
-      "Pas pour donner des leçons. Pour **rendre visible un arbitrage** qui se prend tous les ans dans toutes les agences, et qu'on ne raconte jamais. Si vous êtes briefé par un client, posez-vous la question avant de signer.",
+      "Pas pour donner des leçons. Pour **rendre visible un arbitrage** qui se prend tous les ans dans toutes les agences, et qu'on ne raconte jamais.",
+      {
+        img: U('1450101499163-c8848c66ca85', 85, 1800),
+        alt: "Lettres — bureau d'écriture",
+      },
+      "Si vous êtes briefé par un client, *posez-vous la question avant de signer*. Pas le contraire.",
     ],
   },
   {
@@ -907,14 +965,25 @@ const POSTS_DATA: PostSeed[] = [
     publishedAt: '2025-12-08',
     excerpt:
       "Sept ans de production, 100 livraisons. On a passé deux jours à les classer par succès, échec, regret. Cinq patterns qui reviennent.",
-    paragraphs: [
-      "## Le pattern n°1 — *les briefs trop précis échouent plus souvent*.",
+    body: [
+      "## Pattern n°1 — *les briefs trop précis échouent plus souvent*.",
       "Contre-intuitif. Quand le client arrive avec **un livrable très défini**, on a moins de marge pour identifier le vrai problème. 60% de nos *échecs commerciaux* (clients pas reconduits) viennent de briefs sur-spécifiés.",
+      {
+        img: U('1542038784456-1ea8e935640e', 85, 1800),
+        alt: 'Tableau blanc — esquisses de stratégie',
+        caption: 'Mur de l\'atelier — mois 2 d\'un projet typique.',
+      },
       "## Pattern n°2 — *les meilleurs projets ont eu une crise au milieu*.",
       "Sur 100 projets, **23 ont eu une crise majeure entre la mi-temps et la livraison** (changement de direction client, revirement stratégique, désaccord créatif). Ces 23 sont aussi 18 de nos 25 favoris.",
+      { quote: "On a appris à facturer au juste prix, pas à la taille du client. Ça change tout le rapport au projet." },
       "## Pattern n°3 — *les petits clients sont plus exigeants que les gros*.",
       "Vrai. Et c'est très bien comme ça. On a appris à **facturer au juste prix**, pas à la taille du client.",
-      "## Pattern n°4 — *les projets qu'on a faits pour nous nous rendent meilleurs sur ceux des clients*.",
+      { hr: true },
+      {
+        img: U('1559686043-aef1abad5805', 85, 1800),
+        alt: 'Détail typographique — composition imprimée',
+      },
+      "## Pattern n°4 — *les projets auto-initiés rendent meilleurs sur les commerciaux*.",
       "Le jardin, Machao, L'enfant sauvage — trois projets *auto-initiés* — ont influencé environ **60% de nos décisions créatives** sur les briefs commerciaux qui ont suivi.",
       "## Pattern n°5 — *on est devenu bons à dire non*.",
       "Pas par snobisme. Par hygiène méthodologique. Voir l'édito précédent sur le refus.",
@@ -1127,6 +1196,63 @@ async function seedBravo() {
     }
     payload.logger.info(`+ post: ${p.title} — uploading hero…`)
     const heroId = await uploadImage(payload, p.hero, `${p.title} — Hero`, `post-${p.slug}-hero`)
+
+    // Walk the body array: upload images, then build a Lexical document with
+    // mixed paragraph / heading / quote / hr / mediaBlock nodes
+    payload.logger.info(`+ post: ${p.title} — uploading body media…`)
+    const children: unknown[] = []
+    let imgIdx = 0
+    for (const item of p.body) {
+      if (typeof item === 'string') {
+        if (item.startsWith('# ')) children.push(heading('h1', parseInlines(item.slice(2))))
+        else if (item.startsWith('## ')) children.push(heading('h2', parseInlines(item.slice(3))))
+        else if (item.startsWith('### ')) children.push(heading('h3', parseInlines(item.slice(4))))
+        else children.push(paragraph(parseInlines(item)))
+      } else if ('img' in item) {
+        imgIdx++
+        const mediaId = await uploadImage(
+          payload,
+          item.img,
+          item.alt,
+          `post-${p.slug}-body-${String(imgIdx).padStart(2, '0')}`,
+          item.caption,
+        )
+        children.push({
+          type: 'block',
+          format: '',
+          version: 2,
+          fields: {
+            blockName: '',
+            blockType: 'mediaBlock',
+            media: mediaId,
+          },
+        })
+      } else if ('quote' in item) {
+        children.push({
+          type: 'quote',
+          format: '',
+          indent: 0,
+          version: 1,
+          direction: 'ltr',
+          children: [
+            { type: 'text', text: item.quote, format: 0, mode: 'normal', style: '', detail: 0, version: 1 },
+          ],
+        })
+      } else if ('hr' in item) {
+        children.push({ type: 'horizontalrule', version: 1 })
+      }
+    }
+    const content = {
+      root: {
+        type: 'root',
+        direction: 'ltr',
+        format: '',
+        indent: 0,
+        version: 1,
+        children,
+      },
+    }
+
     payload.logger.info(`+ post: ${p.title} — creating doc…`)
     await payload.create({
       collection: 'posts',
@@ -1134,7 +1260,7 @@ async function seedBravo() {
         title: p.title,
         slug: p.slug,
         heroImage: heroId,
-        content: richText(p.paragraphs) as never,
+        content: content as never,
         categories: p.categories
           .map((slug) => categoryMap.get(slug))
           .filter((id): id is number => typeof id === 'number'),
@@ -1145,6 +1271,7 @@ async function seedBravo() {
         },
         _status: 'published',
       },
+      locale: 'fr',
       context: { disableRevalidate: true },
     })
     postsCreated++
@@ -1234,5 +1361,8 @@ try {
   await seedBravo()
 } catch (e) {
   console.error('Seed failed:', e)
+  if (e && typeof e === 'object' && 'data' in e) {
+    console.error('Error data:', JSON.stringify((e as { data: unknown }).data, null, 2))
+  }
   process.exit(1)
 }
