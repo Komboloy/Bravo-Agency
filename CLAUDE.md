@@ -38,12 +38,20 @@ Site refonte de **bravo-agency.be**. Agence de pub bruxelloise, 2 co-fondateurs.
 - **`.atmosphere-bravo-drift`** — blobs violets animés pour fond ink "vide" (Studio hero, Travaux hero)
 - **`.bravo-atmosphere`** — variante statique pour sections surface-bravo (manifeste home)
 
-### Pattern hero 100vh (Studio + Travaux)
-```jsx
-<section className="relative min-h-screen flex items-end atmosphere-bravo-drift px-6 sm:px-10 pt-32 sm:pt-44 pb-[15vh] sm:pb-[18vh] section-rule-bravo">
-  <div className="relative z-10 mx-auto w-full ...">...</div>
-</section>
-```
+### Hiérarchie des pages (paper-lift, 2026-05-28)
+
+Le client a diagnostiqué que le fond ink massif rendait le site "lourd". Hiérarchie validée :
+
+- **Pages "loud" (dark/image)** : `/` (Home cinématique), `/projets/[slug]` (case-study image full-bleed)
+- **Pages "calme" (paper-first)** : `/projets`, `/studio`, `/contact`, `/posts/[slug]` body
+- **Pages "mixtes"** : `/posts` (hero split BRAVO + cards paper)
+
+**Règle de respiration colorée** : sur les pages calmes, garder UN SEUL moment BRAVO color par page (Studio → manifeste, Contact → process steps). Pas plus.
+
+Cf. `feedback_paper_lift.md` en mémoire pour les détails de conversion ink→paper.
+
+### Pattern hero 100vh atmosphere (deprecated sur pages secondaires)
+Existait pour Studio + Travaux + Posts mais a été remplacé par les patterns Editorial paper / split BRAVO. Reste pertinent uniquement pour le Hero carrousel de la home et le case-study individuel.
 
 ## Architecture Payload
 

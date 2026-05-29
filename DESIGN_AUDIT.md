@@ -7,6 +7,29 @@ Date de l'audit : 2026-05-28
 
 ---
 
+## ⚡ UPDATE 2026-05-29 — Décisions appliquées (paper-lift)
+
+Le client a diagnostiqué que **le fond ink massif rendait le site "lourd"**. Direction validée sur 4 layouts statiques (cf. `public/design/projets-layout-tests.html` → Option 01 Editorial).
+
+**Pages refactorées en paper :**
+- ✅ `/projets` — Editorial paper (hero 2-col + counters inline + filter pills paper + grid asymétrique 12-col avec captions ink)
+- ✅ `/studio` — paper avec Manifesto BRAVO color band conservé comme respiration
+- ✅ `/contact` — paper avec Process 3 steps BRAVO conservé, contact methods + form + CTA bottom en paper
+
+**Pages inchangées :**
+- ✅ `/` (Home) — HeroCarousel cinématique conservé
+- ✅ `/projets/[slug]` (case-study) — image full-bleed conservée
+- ✅ `/posts` — split BRAVO + featured conservé (validé par le client)
+- ✅ `/posts/[slug]` — split BRAVO hero + body paper conservé
+
+**Hiérarchie validée :** pages "loud" (Home, case-study) vs pages "calme" (Travaux, Studio, Contact). UN seul moment BRAVO color par page calme comme respiration.
+
+Détails de la convention ink→paper : voir `feedback_paper_lift.md` en mémoire Claude.
+
+---
+
+---
+
 ## 1) PAGES — état des heroes et sections
 
 ### Home (`/`)

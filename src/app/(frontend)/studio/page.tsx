@@ -41,7 +41,7 @@ export default async function StudioPage() {
   const siteUrl = getServerSideURL()
 
   return (
-    <main className="surface-ink min-h-screen">
+    <main className="surface-paper min-h-screen">
       {/* Schema.org AboutPage with the team as members */}
       <JsonLd
         data={{
@@ -70,55 +70,43 @@ export default async function StudioPage() {
         }}
       />
 
-      {/* PAGE HERO — 100vh full-bleed, content sits in the lower-mid third.
-          `atmosphere-bravo-drift` adds animated BRAVO blobs in the bg (cf. globals.css). */}
-      <section className="relative min-h-screen flex items-end atmosphere-bravo-drift px-6 sm:px-10 pt-32 sm:pt-44 pb-[15vh] sm:pb-[18vh] section-rule-bravo">
-        <div
-          className="relative z-10 mx-auto w-full grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-12 items-end"
-          style={{ maxWidth: '1640px' }}
-        >
-          <div>
-            <div
-              className="font-mono text-[0.72rem] tracking-[0.12em] uppercase mb-6 flex gap-2 items-center"
-              style={{ color: 'var(--color-bravo-soft)' }}
-            >
-              <Link href="/" className="opacity-65 hover:opacity-100">
-                Accueil
-              </Link>
-              <span className="opacity-40">/</span>
-              <span>Studio</span>
-            </div>
-            <div
-              className="prose-home-display wrap"
-              style={
-                {
-                  '--display-size': 'clamp(5rem,16vw,18rem)',
-                  '--display-color': 'var(--color-paper)',
-                  '--display-accent': 'var(--color-bravo-bright)',
-                } as React.CSSProperties
-              }
-            >
-              <h1>Studio</h1>
-              <h1
-                className="mt-2"
-                style={
-                  { '--display-size': 'clamp(2rem,7vw,7rem)' } as React.CSSProperties
-                }
+      {/* PAGE HERO — Editorial paper (même pattern que /projets) */}
+      <section className="px-6 sm:px-10 pt-32 sm:pt-40 pb-10 sm:pb-14">
+        <div className="mx-auto" style={{ maxWidth: '1640px' }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-24 items-end pb-10 sm:pb-14 border-b" style={{ borderColor: 'rgba(5,5,7,0.12)' }}>
+            <div>
+              <div
+                className="font-mono text-[0.72rem] tracking-[0.16em] uppercase mb-6 flex gap-2 items-center font-bold"
+                style={{ color: 'var(--color-bravo)' }}
               >
-                — <em>deux têtes</em>, <strong>un écosystème</strong>.
+                <Link href="/" className="opacity-65 hover:opacity-100">Accueil</Link>
+                <span className="opacity-40">/</span>
+                <span>Studio</span>
+              </div>
+              <h1
+                className="font-display font-extrabold uppercase leading-[0.86] tracking-[-0.015em] text-[clamp(4rem,10vw,10rem)]"
+                style={{ color: 'var(--color-ink)' }}
+              >
+                Studio
+                <span
+                  className="block font-editorial italic font-normal normal-case tracking-[-0.02em] text-[clamp(1.8rem,4.5vw,5.5rem)] leading-[1.05] mt-2"
+                  style={{ color: 'var(--color-bravo)' }}
+                >
+                  — deux têtes, un écosystème.
+                </span>
               </h1>
             </div>
-          </div>
-          <p className="font-editorial italic text-[1.2rem] leading-[1.5] max-w-[38ch] opacity-92 text-[var(--color-paper)]">
-            <strong
-              className="font-sans not-italic font-bold"
-              style={{ color: 'var(--color-bravo-soft)' }}
+            <p
+              className="font-editorial italic text-[clamp(1.15rem,1.6vw,1.4rem)] leading-[1.5] max-w-[38ch]"
+              style={{ color: 'var(--color-ink)', opacity: 0.78 }}
             >
-              {members.length} {members.length <= 1 ? 'co-fondateur' : 'co-fondateurs'}
-            </strong>{' '}
-            au studio à Bruxelles, et autour de nous un réseau de partenaires précis,
-            choisis pour ce qu&apos;ils font de mieux.
-          </p>
+              <strong className="font-sans not-italic font-bold" style={{ color: 'var(--color-bravo)' }}>
+                {members.length} {members.length <= 1 ? 'co-fondateur' : 'co-fondateurs'}
+              </strong>{' '}
+              au studio à Bruxelles, et autour de nous un réseau de partenaires précis,
+              choisis pour ce qu&apos;ils font de mieux.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -159,18 +147,18 @@ export default async function StudioPage() {
         </div>
       </section>
 
-      {/* TEAM GRID */}
+      {/* TEAM GRID — paper now */}
       <section
-        className="surface-ink section-rule-bravo py-20 sm:py-32 px-6 sm:px-10"
+        className="surface-paper section-rule-bravo py-20 sm:py-32 px-6 sm:px-10"
         id="team"
       >
         <div className="mx-auto" style={{ maxWidth: '1640px' }}>
           <div
             className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 items-end mb-12 sm:mb-16 pb-6 border-b"
-            style={{ borderColor: 'var(--color-rule-dark)' }}
+            style={{ borderColor: 'rgba(5,5,7,0.14)' }}
           >
             <div>
-              <span className="section-label" style={{ color: 'var(--color-bravo-soft)' }}>
+              <span className="section-label" style={{ color: 'var(--color-bravo)' }}>
                 §02 · Équipe · Effectif
               </span>
               <div
@@ -178,8 +166,8 @@ export default async function StudioPage() {
                 style={
                   {
                     '--display-size': 'clamp(2.4rem,5.5vw,5rem)',
-                    '--display-color': 'var(--color-paper)',
-                    '--display-accent': 'var(--color-bravo-bright)',
+                    '--display-color': 'var(--color-ink)',
+                    '--display-accent': 'var(--color-bravo)',
                   } as React.CSSProperties
                 }
               >
@@ -190,7 +178,7 @@ export default async function StudioPage() {
             </div>
             <span
               className="font-mono text-[0.78rem] tracking-[0.14em] uppercase font-semibold"
-              style={{ color: 'var(--color-bravo-soft)' }}
+              style={{ color: 'var(--color-bravo)' }}
             >
               {members.length.toString().padStart(2, '0')} ·{' '}
               {members.length <= 1 ? 'Co-fondateur' : 'Co-fondateurs'}
@@ -312,23 +300,23 @@ function MemberCard({ member, index }: { member: Team; index: number }) {
         </div>
       </div>
 
-      {/* Bio + links */}
+      {/* Bio + links — paper bg, ink text */}
       {(member.bio || member.email || (member.links && member.links.length > 0)) && (
-        <div className="mt-6 text-[var(--color-paper)] grid gap-4">
+        <div className="mt-6 grid gap-4" style={{ color: 'var(--color-ink)' }}>
           {member.bio && (
-            <div className="font-sans text-[0.98rem] leading-[1.65] opacity-90 max-w-[55ch] prose-bravo">
-              <RichText data={member.bio} enableGutter={false} />
+            <div className="font-sans text-[0.98rem] leading-[1.65] max-w-[55ch]" style={{ opacity: 0.82 }}>
+              <RichText data={member.bio} enableGutter={false} enableProse={false} />
             </div>
           )}
           {(member.email || (member.links && member.links.length > 0)) && (
-            <div className="flex flex-wrap gap-x-5 gap-y-2 font-mono text-[0.72rem] tracking-[0.12em] uppercase">
+            <div className="flex flex-wrap gap-x-5 gap-y-2 font-mono text-[0.72rem] tracking-[0.12em] uppercase font-semibold" style={{ color: 'var(--color-bravo)' }}>
               {member.links?.map((l) => (
                 <a
                   key={l.id || l.url}
                   href={l.url}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="border-b pb-px hover:text-[var(--color-bravo-soft)] hover:border-[var(--color-bravo-soft)] transition-colors"
+                  className="border-b pb-px hover:opacity-70 transition-opacity"
                   style={{ borderColor: 'currentColor' }}
                 >
                   {l.label}
@@ -337,7 +325,7 @@ function MemberCard({ member, index }: { member: Team; index: number }) {
               {member.email && (
                 <a
                   href={`mailto:${member.email}`}
-                  className="border-b pb-px hover:text-[var(--color-bravo-soft)] hover:border-[var(--color-bravo-soft)] transition-colors"
+                  className="border-b pb-px hover:opacity-70 transition-opacity"
                   style={{ borderColor: 'currentColor' }}
                 >
                   Email
@@ -355,30 +343,30 @@ function EmptyState() {
   return (
     <div
       className="border rounded-[28px] p-12 sm:p-16 text-center max-w-3xl mx-auto"
-      style={{ borderColor: 'var(--color-rule-dark)' }}
+      style={{ borderColor: 'rgba(5,5,7,0.14)', color: 'var(--color-ink)' }}
     >
       <div
         className="font-mono text-[0.72rem] tracking-[0.18em] uppercase font-semibold mb-4"
-        style={{ color: 'var(--color-bravo-soft)' }}
+        style={{ color: 'var(--color-bravo)' }}
       >
         En préparation
       </div>
-      <h3 className="font-display font-extrabold uppercase leading-[0.95] tracking-[-0.005em] text-[clamp(2rem,4vw,3.5rem)] mb-4 text-[var(--color-paper)]">
+      <h3 className="font-display font-extrabold uppercase leading-[0.95] tracking-[-0.005em] text-[clamp(2rem,4vw,3.5rem)] mb-4">
         Aucun{' '}
         <span
           className="font-editorial italic font-normal normal-case"
-          style={{ color: 'var(--color-bravo-soft)' }}
+          style={{ color: 'var(--color-bravo)' }}
         >
           membre
         </span>{' '}
         publié pour l'instant.
       </h3>
-      <p className="font-editorial italic text-[1.05rem] opacity-80 max-w-[42ch] mx-auto text-[var(--color-paper)]">
-        Ajoute un membre dans l'admin Payload (collection « L'équipe ») pour le voir apparaître ici.
+      <p className="font-editorial italic text-[1.05rem] max-w-[42ch] mx-auto" style={{ opacity: 0.78 }}>
+        Ajoute un membre dans l&apos;admin Payload (collection « L&apos;équipe ») pour le voir apparaître ici.
       </p>
       <Link
         href="/admin/collections/team/create"
-        className="inline-block mt-8 px-5 py-3 rounded-full bg-[var(--color-paper)] text-[var(--color-ink)] font-sans font-bold text-sm hover:bg-[var(--color-bravo)] hover:text-[var(--color-paper)] transition-colors"
+        className="inline-block mt-8 px-5 py-3 rounded-full bg-[var(--color-ink)] text-[var(--color-paper)] font-sans font-bold text-sm hover:bg-[var(--color-bravo)] transition-colors"
       >
         Ajouter un membre →
       </Link>

@@ -69,7 +69,7 @@ export default async function ContactPage() {
   const siteUrl = getServerSideURL()
 
   return (
-    <main className="surface-ink min-h-screen">
+    <main className="surface-paper min-h-screen">
       {/* Schema.org ContactPage */}
       <JsonLd
         data={{
@@ -246,27 +246,27 @@ export default async function ContactPage() {
         </div>
       </section>
 
-      {/* CONTACT METHODS + FORM */}
-      <section className="surface-ink section-rule-bravo py-20 sm:py-32 px-6 sm:px-10">
+      {/* CONTACT METHODS + FORM — paper now */}
+      <section className="surface-paper section-rule-bravo py-20 sm:py-32 px-6 sm:px-10">
         <div
           className="mx-auto grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-12 lg:gap-20"
           style={{ maxWidth: '1640px' }}
         >
           {/* Left column — contact methods */}
-          <div>
-            <span className="section-label" style={{ color: 'var(--color-bravo-soft)' }}>
+          <div style={{ color: 'var(--color-ink)' }}>
+            <span className="section-label" style={{ color: 'var(--color-bravo)' }}>
               §02 · Joindre le studio
             </span>
-            <h2 className="mt-4 font-display font-extrabold uppercase leading-[0.95] tracking-[-0.005em] text-[clamp(2.2rem,4.5vw,4rem)] text-[var(--color-paper)]">
+            <h2 className="mt-4 font-display font-extrabold uppercase leading-[0.95] tracking-[-0.005em] text-[clamp(2.2rem,4.5vw,4rem)]">
               On préfère{' '}
               <span
                 className="font-editorial italic font-normal normal-case tracking-[-0.02em]"
-                style={{ color: 'var(--color-bravo-soft)' }}
+                style={{ color: 'var(--color-bravo)' }}
               >
-                qu'on parle.
+                qu&apos;on parle.
               </span>
             </h2>
-            <p className="mt-6 font-editorial italic text-[1.05rem] leading-[1.55] opacity-85 max-w-[36ch] text-[var(--color-paper)]">
+            <p className="mt-6 font-editorial italic text-[1.05rem] leading-[1.55] max-w-[36ch]" style={{ opacity: 0.78 }}>
               Email ou rendez-vous direct au studio. Le formulaire à droite arrive aussi dans la même boîte mail.
             </p>
 
@@ -276,7 +276,7 @@ export default async function ContactPage() {
                 v={
                   <a
                     href="mailto:hello@bravo-agency.be"
-                    className="font-display font-extrabold uppercase text-[clamp(1.4rem,2.2vw,2rem)] tracking-[-0.01em] leading-[1] hover:text-[var(--color-bravo-soft)] transition-colors break-all"
+                    className="font-display font-extrabold uppercase text-[clamp(1.4rem,2.2vw,2rem)] tracking-[-0.01em] leading-[1] hover:opacity-70 transition-opacity break-all"
                   >
                     hello@bravo-agency.be
                   </a>
@@ -287,7 +287,7 @@ export default async function ContactPage() {
                 v={
                   <a
                     href="tel:+3220000000"
-                    className="font-display font-extrabold uppercase text-[clamp(1.4rem,2.2vw,2rem)] tracking-[-0.01em] leading-[1] hover:text-[var(--color-bravo-soft)] transition-colors"
+                    className="font-display font-extrabold uppercase text-[clamp(1.4rem,2.2vw,2rem)] tracking-[-0.01em] leading-[1] hover:opacity-70 transition-opacity"
                   >
                     +32 2 000 00 00
                   </a>
@@ -298,7 +298,7 @@ export default async function ContactPage() {
                 v={
                   <span className="font-display font-extrabold uppercase text-[clamp(1.4rem,2.2vw,2rem)] tracking-[-0.01em] leading-[1.1] block">
                     Rue exemple 12<br />
-                    <span className="font-editorial italic font-normal normal-case tracking-[-0.02em] text-[0.85em]" style={{ color: 'var(--color-bravo-soft)' }}>
+                    <span className="font-editorial italic font-normal normal-case tracking-[-0.02em] text-[0.85em]" style={{ color: 'var(--color-bravo)' }}>
                       1000 Bruxelles · Belgique
                     </span>
                   </span>
@@ -307,12 +307,12 @@ export default async function ContactPage() {
               <Method
                 k="Réseaux"
                 v={
-                  <span className="flex flex-wrap gap-x-5 gap-y-2 font-mono text-[0.85rem] tracking-[0.14em] uppercase">
+                  <span className="flex flex-wrap gap-x-5 gap-y-2 font-mono text-[0.85rem] tracking-[0.14em] uppercase font-semibold" style={{ color: 'var(--color-bravo)' }}>
                     <a
                       href="https://instagram.com/"
                       target="_blank"
                       rel="noreferrer noopener"
-                      className="border-b border-current pb-px hover:text-[var(--color-bravo-soft)] hover:border-[var(--color-bravo-soft)]"
+                      className="border-b border-current pb-px hover:opacity-70 transition-opacity"
                     >
                       Instagram
                     </a>
@@ -320,7 +320,7 @@ export default async function ContactPage() {
                       href="https://linkedin.com/"
                       target="_blank"
                       rel="noreferrer noopener"
-                      className="border-b border-current pb-px hover:text-[var(--color-bravo-soft)] hover:border-[var(--color-bravo-soft)]"
+                      className="border-b border-current pb-px hover:opacity-70 transition-opacity"
                     >
                       LinkedIn
                     </a>
@@ -328,7 +328,7 @@ export default async function ContactPage() {
                       href="https://behance.net/"
                       target="_blank"
                       rel="noreferrer noopener"
-                      className="border-b border-current pb-px hover:text-[var(--color-bravo-soft)] hover:border-[var(--color-bravo-soft)]"
+                      className="border-b border-current pb-px hover:opacity-70 transition-opacity"
                     >
                       Behance
                     </a>
@@ -342,15 +342,15 @@ export default async function ContactPage() {
           <div className="lg:pt-10">
             {contactForm ? (
               // Render Payload form-builder form when available
-              <div className="border rounded-[28px] p-8 sm:p-10 bg-[var(--color-ink-2)] [&_form_label]:!text-[var(--color-paper)] [&_form_input]:!bg-[var(--color-ink)] [&_form_input]:!text-[var(--color-paper)] [&_form_input]:!border-[color:var(--color-rule-dark)] [&_form_textarea]:!bg-[var(--color-ink)] [&_form_textarea]:!text-[var(--color-paper)] [&_form_textarea]:!border-[color:var(--color-rule-dark)]" style={{ borderColor: 'var(--color-rule-dark)' }}>
-                <span className="section-label" style={{ color: 'var(--color-bravo-soft)' }}>
+              <div className="border rounded-[28px] p-8 sm:p-10" style={{ borderColor: 'rgba(5,5,7,0.14)', background: 'rgba(5,5,7,0.03)', color: 'var(--color-ink)' }}>
+                <span className="section-label" style={{ color: 'var(--color-bravo)' }}>
                   §03 · Formulaire
                 </span>
-                <h3 className="mt-4 mb-6 font-display font-extrabold uppercase leading-[0.95] tracking-[-0.005em] text-[clamp(1.8rem,3vw,2.6rem)] text-[var(--color-paper)]">
+                <h3 className="mt-4 mb-6 font-display font-extrabold uppercase leading-[0.95] tracking-[-0.005em] text-[clamp(1.8rem,3vw,2.6rem)]">
                   Dites-nous{' '}
                   <span
                     className="font-editorial italic font-normal normal-case tracking-[-0.02em]"
-                    style={{ color: 'var(--color-bravo-soft)' }}
+                    style={{ color: 'var(--color-bravo)' }}
                   >
                     tout.
                   </span>
@@ -413,24 +413,24 @@ export default async function ContactPage() {
         </div>
       </section>
 
-      {/* CTA bottom */}
-      <section className="surface-ink section-rule-bravo-top px-6 sm:px-10 py-24 sm:py-36 text-center relative overflow-hidden">
+      {/* CTA bottom — paper now */}
+      <section className="surface-paper section-rule-bravo-top px-6 sm:px-10 py-24 sm:py-36 text-center relative overflow-hidden">
         <div
           aria-hidden
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] rounded-full pointer-events-none"
           style={{
             background: 'radial-gradient(circle, var(--color-bravo) 0%, transparent 60%)',
             filter: 'blur(150px)',
-            opacity: 0.45,
+            opacity: 0.18,
           }}
         />
         <div className="relative z-10 mx-auto" style={{ maxWidth: '1100px' }}>
-          <h2 className="font-display font-light uppercase leading-[0.92] tracking-[-0.005em] text-[clamp(2.8rem,8vw,8rem)] max-w-[18ch] mx-auto text-[var(--color-paper)]">
+          <h2 className="font-display font-light uppercase leading-[0.92] tracking-[-0.005em] text-[clamp(2.8rem,8vw,8rem)] max-w-[18ch] mx-auto" style={{ color: 'var(--color-ink)' }}>
             On ne <span className="font-extrabold">vend pas</span><br />
             de réponses{' '}
             <span
               className="font-editorial italic font-normal normal-case tracking-[-0.02em]"
-              style={{ color: 'var(--color-bravo-soft)' }}
+              style={{ color: 'var(--color-bravo)' }}
             >
               à des questions
             </span><br />
@@ -450,15 +450,15 @@ function Method({ k, v }: { k: string; v: React.ReactNode }) {
   return (
     <li
       className="grid grid-cols-[110px_1fr] gap-4 sm:gap-6 items-baseline pt-4 border-t"
-      style={{ borderColor: 'var(--color-rule-dark)' }}
+      style={{ borderColor: 'rgba(5,5,7,0.14)' }}
     >
       <span
         className="font-mono text-[0.72rem] tracking-[0.16em] uppercase font-medium pt-1.5"
-        style={{ color: 'var(--color-bravo-soft)' }}
+        style={{ color: 'var(--color-bravo)' }}
       >
         {k}
       </span>
-      <div className="text-[var(--color-paper)]">{v}</div>
+      <div style={{ color: 'var(--color-ink)' }}>{v}</div>
     </li>
   )
 }
@@ -466,26 +466,27 @@ function Method({ k, v }: { k: string; v: React.ReactNode }) {
 function FormPlaceholder() {
   return (
     <div
-      className="border rounded-[28px] p-8 sm:p-12 bg-[var(--color-ink-2)]"
-      style={{ borderColor: 'var(--color-rule-dark)' }}
+      className="border rounded-[28px] p-8 sm:p-12"
+      style={{ borderColor: 'rgba(5,5,7,0.14)', background: 'rgba(5,5,7,0.03)', color: 'var(--color-ink)' }}
     >
-      <span className="section-label" style={{ color: 'var(--color-bravo-soft)' }}>
+      <span className="section-label" style={{ color: 'var(--color-bravo)' }}>
         §03 · Formulaire
       </span>
-      <h3 className="mt-4 font-display font-extrabold uppercase leading-[0.95] tracking-[-0.005em] text-[clamp(1.8rem,3vw,2.6rem)] text-[var(--color-paper)] mb-4">
+      <h3 className="mt-4 font-display font-extrabold uppercase leading-[0.95] tracking-[-0.005em] text-[clamp(1.8rem,3vw,2.6rem)] mb-4">
         Formulaire{' '}
         <span
           className="font-editorial italic font-normal normal-case tracking-[-0.02em]"
-          style={{ color: 'var(--color-bravo-soft)' }}
+          style={{ color: 'var(--color-bravo)' }}
         >
           en préparation.
         </span>
       </h3>
-      <p className="font-editorial italic text-[1.05rem] leading-[1.55] opacity-85 max-w-[42ch] text-[var(--color-paper)]">
+      <p className="font-editorial italic text-[1.05rem] leading-[1.55] max-w-[42ch]" style={{ opacity: 0.78 }}>
         En attendant, écris-nous directement à{' '}
         <a
           href="mailto:hello@bravo-agency.be"
-          className="not-italic font-sans font-bold border-b border-current pb-px hover:text-[var(--color-bravo-soft)]"
+          className="not-italic font-sans font-bold border-b border-current pb-px hover:opacity-70 transition-opacity"
+          style={{ color: 'var(--color-bravo)' }}
         >
           hello@bravo-agency.be
         </a>
@@ -493,9 +494,9 @@ function FormPlaceholder() {
       </p>
       <Link
         href="/admin/collections/forms/create"
-        className="inline-block mt-8 px-5 py-3 rounded-full bg-[var(--color-paper)] text-[var(--color-ink)] font-sans font-bold text-sm hover:bg-[var(--color-bravo)] hover:text-[var(--color-paper)] transition-colors"
+        className="inline-block mt-8 px-5 py-3 rounded-full bg-[var(--color-ink)] text-[var(--color-paper)] font-sans font-bold text-sm hover:bg-[var(--color-bravo)] transition-colors"
       >
-        Créer un formulaire dans l'admin →
+        Créer un formulaire dans l&apos;admin →
       </Link>
     </div>
   )
